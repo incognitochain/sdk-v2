@@ -18,7 +18,7 @@ interface InitParam extends TokenInfo {
   supplyAmount: number,
 };
 
-export async function inPrivacyToken({
+export default async function inPrivacyToken({
   accountKeySet,
   avaiableCoins,
   nativeFee,

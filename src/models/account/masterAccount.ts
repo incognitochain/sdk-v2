@@ -1,17 +1,12 @@
 import BaseAccountModel from './baseAccount';
 import AccountModel from './account';
-
-interface MasterAccountModelParam {
-  key: object,
-  name: string,
-  child: AccountModel[],
-};
+import KeyWalletModel from '../key/keyWallet';
 
 class MasterAccountModel extends BaseAccountModel {
   child: AccountModel[];
 
-  constructor({ name, key, child } : MasterAccountModelParam) {
-    super({ name, key });
+  constructor(name: string, key: KeyWalletModel, child: AccountModel[]) {
+    super(name, key);
 
     this.child = child;
   }

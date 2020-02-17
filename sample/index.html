@@ -22,7 +22,7 @@
       }
 
       function initWallet(incognito) {
-        const wallet = new incognito.Wallet('wallet', 'pass');
+        const wallet = new incognito.Wallet('pass');
 
         return wallet;
       }
@@ -49,20 +49,22 @@
             return setStorage(incognitoJs);
           });
 
-          // await section('INIT WALLET', async () => {
-          //   const wallet = initWallet(incognitoJs);
-          //   window.wallet = wallet;
-          //   wallet.addAccount('Acc 1', { privateKey: '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd' });
-          //   window.account = wallet.masterAccount.child[0];
-          //   window.account1 = wallet.masterAccount.child[1];
-          //   window.nativeToken = account.nativeToken;
+          await section('INIT WALLET', async () => {
+            const wallet = initWallet(incognitoJs);
+            window.wallet = wallet;
+            window.masterAccount = wallet.masterAccount;
+            window.masterAccount.importAccount('test', '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd');
+            // wallet.addAccount('Acc 1', { privateKey: '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd' });
+            // window.account = wallet.masterAccount.child[0];
+            window.account1 = wallet.masterAccount.child[1];
+            // window.nativeToken = account.nativeToken;
 
-          //   window.account.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
-          //   window.account.followTokenById('a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df');
-          //   window.account.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
+            window.account1.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
+            window.account1.followTokenById('a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df');
+            window.account1.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
             
-          //   // console.log('Wallet', await wallet.getAccounts());
-          // });
+            // console.log('Wallet', await wallet.getAccounts());
+          });
         } else {
           throw new Error('Incognito module load failed');
         }

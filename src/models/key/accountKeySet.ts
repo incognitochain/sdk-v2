@@ -46,7 +46,7 @@ class AccountKeySetModel extends BaseModel {
   }
 
   get validatorKey(): string {
-    return checkEncode(hashSha3BytesToBytes(hashSha3BytesToBytes(this.privateKey)), ENCODE_VERSION);
+    return checkEncode(hashSha3BytesToBytes(hashSha3BytesToBytes(this.privateKey.privateKeyBytes)), ENCODE_VERSION);
   }
 
   get publicKeyBytes(): string {

@@ -1,18 +1,14 @@
 import BaseAccountModel from './baseAccount';
 import NativeTokenModel from '../token/nativeToken';
-
-interface AccountModelParam {
-  key: object,
-  name: string,
-};
+import KeyWalletModel from '../key/keyWallet';
 
 class AccountModel extends BaseAccountModel {
   isImport: boolean;
   nativeToken: NativeTokenModel;
   privacyTokenIds: string[];
 
-  constructor({ name, key } : AccountModelParam) {
-    super({ name, key });
+  constructor(name: string, key: KeyWalletModel) {
+    super(name, key);
 
     this.isImport = false;
     this.nativeToken = null;

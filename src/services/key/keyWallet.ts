@@ -209,7 +209,6 @@ export function getIntermediary(childIndex: number, keyWalletChainCode: KeyWalle
   return intermediary;
 }
 
-
 export function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWalletDepth, keyWalletChainCode: KeyWalletChainCode) {
   let intermediary = getIntermediary(childIndex, keyWalletChainCode);
   let newSeed = intermediary.slice(0, 32);

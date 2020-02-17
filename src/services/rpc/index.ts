@@ -87,7 +87,7 @@ class RpcClient {
         'id': 1
       };
 
-      if (tokenID != null) {
+      if (tokenID !== null) {
         data['params'][2] = tokenID;
       }
 

@@ -5,7 +5,7 @@ interface ImplementInterface {
   namespace: string;
 };
 
-class Storage {
+export class Storage {
   namespace: string;
   setMethod: Function;
   getMethod: Function;
@@ -44,4 +44,6 @@ class Storage {
   }
 }
 
-export default new Storage();
+const storage = new Storage();
+
+export default storage;
