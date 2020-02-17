@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="../build/web/browser/index.js"></script>
+  <title>Test</title>
+</head>
+<body>  
+  <p>Open your Console, play with "incognitoJs" library</p>
+  <script>
+    if (typeof incognitoJs === 'object') {
+      async function section(label, f) {
+        if (typeof f === 'function') {
+          console.time(label);
+          console.log(`=========\t${label}\t=========`);
+          await f();
+          console.timeEnd(label);
+          console.log('\n\n');
+        }
+      }
+
+      function initWallet(incognito) {
+        const wallet = new incognito.Wallet('wallet', 'pass');
+
+        return wallet;
+      }
+
+      function setStorage(incognito) {
+        incognito.storage.implement({
+          setMethod: (key, data) => {
+            return localStorage.setItem(key, data);
+          },
+          getMethod: (key) => {
+            return localStorage.getItem(key);
+          },
+          removeMethod: (key) => localStorage.removeItem(key),
+          namespace: 'WALLET'
+        });
+      }
+
+      async function main() {
+        if (incognitoJs) {
+          console.log('Incognito module', incognitoJs);
+          await section('LOAD WASM', incognitoJs.loadWASM);
+
+          await section('SET STORAGE', async () => {
+            return setStorage(incognitoJs);
+          });
+
+          // await section('INIT WALLET', async () => {
+          //   const wallet = initWallet(incognitoJs);
+          //   window.wallet = wallet;
+          //   wallet.addAccount('Acc 1', { privateKey: '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd' });
+          //   window.account = wallet.masterAccount.child[0];
+          //   window.account1 = wallet.masterAccount.child[1];
+          //   window.nativeToken = account.nativeToken;
+
+          //   window.account.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
+          //   window.account.followTokenById('a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df');
+          //   window.account.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
+            
+          //   // console.log('Wallet', await wallet.getAccounts());
+          // });
+        } else {
+          throw new Error('Incognito module load failed');
+        }
+      }
+      main();
+    }
+    else
+      console.log('Load "incognitoJs" module failed, please make sure that you run "yarn build" or "yarn build:web:browser", then try again');
+  </script>
+</body>
+</html>

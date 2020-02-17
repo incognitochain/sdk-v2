@@ -1,0 +1,2 @@
+SOURCES= core/sjcl.js core/aes.js core/bitArray.js core/codecString.js core/codecHex.js core/codecBase32.js core/codecBase64.js core/codecBytes.js core/codecZ85.js core/sha256.js core/sha512.js core/sha1.js core/ccm.js core/ctr.js core/cbc.js core/ocb2.js core/ocb2progressive.js core/gcm.js core/hmac.js core/pbkdf2.js core/scrypt.js core/random.js core/convenience.js core/bn.js core/ecc.js core/srp.js core/ccmArrayBuffer.js core/codecArrayBuffer.js core/ripemd160.js core/exports.js 
+COMPRESS= core_closure.js

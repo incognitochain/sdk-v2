@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@src/*": ["./*"],
+      "@root/*": ["../*"],
+    },
+    "allowJs": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "module": "es6",
+    "target": "es5"
+  },
+  "exclude": ["node_modules", "build", "src/wasm"],
+  "files": ["./index.ts"]
+}

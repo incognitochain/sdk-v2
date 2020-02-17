@@ -1,0 +1,9 @@
+const NATIVE_TOKEN = {
+  tokenId: '0000000000000000000000000000000000000000000000000000000000000004',
+  name: 'Privacy',
+  symbol: 'PRV'
+};
+
+export default {
+  NATIVE_TOKEN
+};
