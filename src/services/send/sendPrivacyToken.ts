@@ -68,6 +68,7 @@ export async function createTx({
     tokenTxType: CustomTokenTransfer,
     fee: privacyTokenFeeBN.toNumber(),
     paymentInfoForPToken: privacyPaymentInfoList,
+    tokenInputs: <any>[],
     ...privacyTokenParamAdditional
   };
 
@@ -75,7 +76,7 @@ export async function createTx({
     privacyTokenParam,
     senderSK: privateKeySerialized,
     paramPaymentInfos: nativePaymentInfoList,
-    inputCoinStrs: nativeTxInput.inputCoinStrs,
+    inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
     fee: nativeTokenFeeBN.toNumber(),
     isPrivacy: true,
     isPrivacyForPToken: true,

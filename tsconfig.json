@@ -12,6 +12,5 @@
     "module": "es6",
     "target": "es5"
   },
-  "exclude": ["node_modules", "build", "src/wasm"],
-  "files": ["./index.ts"]
+  "exclude": ["node_modules", "build", "src/wasm"]
 }

@@ -5,6 +5,8 @@ import AccountModel from '@src/models/account/account';
 import KeyWalletModel from '@src/models/key/keyWallet';
 import rpc from '@src/services/rpc';
 import initPrivacyToken from '@src/services/send/initPrivacyToken';
+import { getUnspentCoins } from '@src/services/coin';
+import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface AccountModelInterface extends AccountModel {
   nativeToken: NativeToken;
@@ -48,15 +50,18 @@ class Account extends BaseAccount implements AccountModelInterface {
     _.remove(this.privacyTokenIds, id => id === tokenId);
   }
   
-  // issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee = 10 } : IssuePrivacyTokenInterface) {
-  //   return new initPrivacyToken({
-  //     accountKeySet: this.key.keySet,
-  //     avaiableCoins: 
-  //     tokenName,
-  //     tokenSymbol,
-  //     supplyAmount
-  //   }).send();
-  // }
+  async issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee = DEFAULT_NATIVE_FEE } : IssuePrivacyTokenInterface) {
+    const availableCoins = await this.nativeToken.getAvailableCoins();
+    
+    return initPrivacyToken({
+      accountKeySet: this.key.keySet,
+      availableNativeCoins: availableCoins,
+      nativeFee: nativeTokenFee,
+      tokenName,
+      tokenSymbol,
+      supplyAmount
+    });
+  }
 
   /**
    * Find by tokenId or all if tokenId is null

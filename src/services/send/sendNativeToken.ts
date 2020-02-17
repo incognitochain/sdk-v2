@@ -12,11 +12,9 @@ import CoinModel from '@src/models/coin';
 
 interface SendParam {
   accountKeySet: AccountKeySetModel,
-  avaiableCoins: CoinModel[],
+  availableCoins: CoinModel[],
   nativePaymentInfoList: PaymentInfoModel[],
-  privacyPaymentInfoList: PaymentInfoModel[],
   nativeFee: number,
-  privacyFee: number,
 };
 
 interface CreateTxParam {
@@ -35,7 +33,7 @@ async function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput
   const paramInitTx = {
     senderSK: privateKeySerialized,
     paramPaymentInfos: nativePaymentInfoList,
-    inputCoinStrs: nativeTxInput.inputCoinStrs,
+    inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
     fee: nativeTokenFeeBN.toNumber(),
     isPrivacy: true,
     tokenID: <string>null,
@@ -80,11 +78,11 @@ async function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput
 //   };
 // }
 
-export async function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, avaiableCoins } : SendParam) {
+export default async function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins } : SendParam) {
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTokenFeeBN = toBNAmount(nativeFee);
 
-  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, avaiableCoins, nativePaymentAmountBN, nativeTokenFeeBN);
+  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableCoins, nativePaymentAmountBN, nativeTokenFeeBN);
   console.log('txInput', nativeTxInput);
 
   const txInfo = await createTx({ nativeTxInput, nativePaymentAmountBN, nativeTokenFeeBN, privateKeySerialized: accountKeySet.privateKeySerialized, nativePaymentInfoList });

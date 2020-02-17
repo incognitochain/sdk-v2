@@ -53,14 +53,15 @@
             const wallet = initWallet(incognitoJs);
             window.wallet = wallet;
             window.masterAccount = wallet.masterAccount;
-            window.masterAccount.importAccount('test', '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd');
-            // wallet.addAccount('Acc 1', { privateKey: '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd' });
+            window.masterAccount.importAccount('TEST', '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd');
+            window.masterAccount.importAccount('ICO', '112t8roafGgHL1rhAP9632Yef3sx5k8xgp8cwK4MCJsCL1UWcxXvpzg97N4dwvcD735iKf31Q2ZgrAvKfVjeSUEvnzKJyyJD3GqqSZdxN4or');
+            
             // window.account = wallet.masterAccount.child[0];
             window.account1 = wallet.masterAccount.child[1];
             // window.nativeToken = account.nativeToken;
 
             window.account1.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
-            window.account1.followTokenById('a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df');
+            window.account1.followTokenById('30cce7bcc677f4e598f6518657ffa25528b7d20d2f0a394682003a2f9a5b8674');
             window.account1.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
             
             // console.log('Wallet', await wallet.getAccounts());

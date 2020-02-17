@@ -13,14 +13,14 @@ interface TokenInfo {
 
 interface InitParam extends TokenInfo {
   accountKeySet: AccountKeySetModel,
-  avaiableCoins: CoinModel[],
+  availableNativeCoins: CoinModel[],
   nativeFee: number,
   supplyAmount: number,
 };
 
 export default async function inPrivacyToken({
   accountKeySet,
-  avaiableCoins,
+  availableNativeCoins,
   nativeFee,
   tokenSymbol,
   tokenName,
@@ -33,13 +33,13 @@ export default async function inPrivacyToken({
       message: ''
     })
   ];
-  const tokenId = <string>null;
+  const tokenId = <string>'';
   const nativePaymentInfoList = <PaymentInfoModel[]>[];
   const nativeTokenFeeBN = toBNAmount(nativeFee);
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const privacyTokenFeeBN = toBNAmount(0);
-  const privacyPaymentAmountBN = getTotalAmountFromPaymentList(privacyPaymentInfoList);
-  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, avaiableCoins, nativePaymentAmountBN, nativeTokenFeeBN);
+  const privacyPaymentAmountBN = toBNAmount(0);
+  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN);
 
   console.log('nativeTxInput', nativeTxInput);
 

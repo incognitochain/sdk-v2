@@ -161,18 +161,21 @@ export function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpend
   }
 
   const sndOutputs: string[] = new Array(numberOutput);
-  const sndOutputStrs = wasmMethods.randomScalars(numberOutput);
-  if (sndOutputStrs === null || sndOutputStrs === '') {
-    throw new Error('Can not random scalars for output coins');
-  }
 
-  console.log('sndOutputStrs: ', sndOutputStrs);
-
-  let sndDecodes = base64Decode(sndOutputStrs);
-
-  for (let i = 0; i < numberOutput; i++) {
-    let sndBytes = sndDecodes.slice(i * ED25519_KEY_SIZE, (i + 1) * ED25519_KEY_SIZE);
-    sndOutputs[i] = checkEncode(sndBytes, ENCODE_VERSION);
+  if (numberOutput > 0) {
+    const sndOutputStrs = wasmMethods.randomScalars(numberOutput);
+    if (sndOutputStrs === null || sndOutputStrs === '') {
+      throw new Error('Can not random scalars for output coins');
+    }
+  
+    console.log('sndOutputStrs: ', sndOutputStrs);
+  
+    let sndDecodes = base64Decode(sndOutputStrs);
+  
+    for (let i = 0; i < numberOutput; i++) {
+      let sndBytes = sndDecodes.slice(i * ED25519_KEY_SIZE, (i + 1) * ED25519_KEY_SIZE);
+      sndOutputs[i] = checkEncode(sndBytes, ENCODE_VERSION);
+    }
   }
 
   return sndOutputs;
