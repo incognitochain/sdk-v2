@@ -19,7 +19,8 @@ interface TokenInfo {
 
 interface SendParam extends TokenInfo {
   accountKeySet: AccountKeySetModel,
-  avaiableCoins: CoinModel[],
+  nativeAvailableCoins: CoinModel[],
+  privacyAvailableCoins: CoinModel[],
   nativePaymentInfoList: PaymentInfoModel[],
   privacyPaymentInfoList: PaymentInfoModel[],
   nativeFee: number,
@@ -68,7 +69,7 @@ export async function createTx({
     tokenTxType: CustomTokenTransfer,
     fee: privacyTokenFeeBN.toNumber(),
     paymentInfoForPToken: privacyPaymentInfoList,
-    tokenInputs: <any>[],
+    tokenInputs: privacyTxInput.inputCoinStrs.map(coin => coin.toJson()),
     ...privacyTokenParamAdditional
   };
 
@@ -130,9 +131,10 @@ export async function createTx({
 //   };
 // }
 
-export async function sendPrivacyToken({
+export default async function sendPrivacyToken({
   accountKeySet,
-  avaiableCoins,
+  nativeAvailableCoins,
+  privacyAvailableCoins,
   nativePaymentInfoList,
   privacyPaymentInfoList,
   nativeFee,
@@ -145,10 +147,10 @@ export async function sendPrivacyToken({
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const privacyTokenFeeBN = toBNAmount(privacyFee);
   const privacyPaymentAmountBN = getTotalAmountFromPaymentList(privacyPaymentInfoList);
-  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, avaiableCoins, nativePaymentAmountBN, nativeTokenFeeBN);
+  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, nativeAvailableCoins, nativePaymentAmountBN, nativeTokenFeeBN);
   console.log('nativeTxInput', nativeTxInput);
 
-  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN);
+  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN);
   console.log('privacyTxInput', privacyTxInput);
 
   const txInfo = await createTx({

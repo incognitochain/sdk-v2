@@ -57,13 +57,19 @@
             window.masterAccount.importAccount('ICO', '112t8roafGgHL1rhAP9632Yef3sx5k8xgp8cwK4MCJsCL1UWcxXvpzg97N4dwvcD735iKf31Q2ZgrAvKfVjeSUEvnzKJyyJD3GqqSZdxN4or');
             
             // window.account = wallet.masterAccount.child[0];
-            window.account1 = wallet.masterAccount.child[1];
+            window.testAcc = wallet.masterAccount.child[1];
+            window.icoAcc = wallet.masterAccount.child[2];
             // window.nativeToken = account.nativeToken;
 
-            window.account1.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
-            window.account1.followTokenById('30cce7bcc677f4e598f6518657ffa25528b7d20d2f0a394682003a2f9a5b8674');
-            window.account1.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
-            
+            window.testAcc.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
+            window.testAcc.followTokenById('30cce7bcc677f4e598f6518657ffa25528b7d20d2f0a394682003a2f9a5b8674');
+            window.testAcc.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
+
+            window.icoAcc.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
+            window.icoAcc.followTokenById('30cce7bcc677f4e598f6518657ffa25528b7d20d2f0a394682003a2f9a5b8674');
+            window.icoAcc.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
+            window.icoAcc.followTokenById('60dcb18876927405343024b133879f980fb4a9ef1266b0de909806054e6529b5');
+
             // console.log('Wallet', await wallet.getAccounts());
           });
         } else {

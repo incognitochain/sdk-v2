@@ -86,7 +86,7 @@ export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, a
  * @param privacyPaymentAmountBN Amount to send
  * @param privacyTokenFeeBN Fee to send (privacy token fee)
  */
-export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, tokenId: TokenIdType, privacyPaymentAmountBN: bn, privacyTokenFeeBN: bn) : Promise<TxInputType> {
+export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, privacyAvailableCoins: CoinModel[], tokenId: TokenIdType, privacyPaymentAmountBN: bn, privacyTokenFeeBN: bn) : Promise<TxInputType> {
   let coinsToSpend: CoinModel[] = [];
   let totalValueToSpentBN = new bn(0);
   let commitmentIndices = [];
@@ -95,9 +95,8 @@ export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, 
 
   if (tokenId) {
     const paymentAddress = accountKeySet.paymentAddressKeySerialized;
-    const availableCoins = await this.tokenService.getAvailableCoins(accountKeySet, tokenId);
     const totalAmountBN = privacyPaymentAmountBN.add(privacyTokenFeeBN);
-    const bestCoins = chooseBestCoinToSpent(availableCoins, totalAmountBN);
+    const bestCoins = chooseBestCoinToSpent(privacyAvailableCoins, totalAmountBN);
 
     coinsToSpend = bestCoins.resultInputCoins;
     totalValueToSpentBN = getValueFromCoins(coinsToSpend);

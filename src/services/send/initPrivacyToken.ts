@@ -40,10 +40,11 @@ export default async function inPrivacyToken({
   const privacyTokenFeeBN = toBNAmount(0);
   const privacyPaymentAmountBN = toBNAmount(0);
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN);
+  const privacyAvailableCoins: CoinModel[] = [];
 
   console.log('nativeTxInput', nativeTxInput);
 
-  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN);
+  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN);
   console.log('privacyTxInput', privacyTxInput);
 
   const txInfo = await createTx({

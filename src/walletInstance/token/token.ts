@@ -24,23 +24,23 @@ class Token implements BaseTokenModel {
     this.symbol = symbol;
   }
 
-  async getAllOutputCoins() {
-    return await getAllOutputCoins(this.accountKeySet, this.tokenId);
+  async getAllOutputCoins(tokenId: TokenIdType) {
+    return await getAllOutputCoins(this.accountKeySet, tokenId);
   }
 
-  async deriveSerialNumbers() {
-    const allCoins = await this.getAllOutputCoins();
+  async deriveSerialNumbers(tokenId: TokenIdType) {
+    const allCoins = await this.getAllOutputCoins(tokenId);
 
     // return { serialNumberList, coins }
     return await deriveSerialNumbers(this.accountKeySet, allCoins);
   }
 
-  async getUnspentCoins() {
-    const serialData = await this.deriveSerialNumbers();
+  async getUnspentCoins(tokenId: TokenIdType) {
+    const serialData = await this.deriveSerialNumbers(tokenId);
 
     const { coins } = serialData || {};
 
-    const unspentCoins = await getUnspentCoins(this.accountKeySet, coins, this.tokenId);
+    const unspentCoins = await getUnspentCoins(this.accountKeySet, coins, tokenId);
 
     return unspentCoins;
   }
@@ -49,15 +49,23 @@ class Token implements BaseTokenModel {
     return [];
   }
 
-  async getAvailableCoins() {
-    const unspentCoins = await this.getUnspentCoins();
+   /**
+   * 
+   * @param tokenId use `null` for native token
+   */
+  async getAvailableCoins(tokenId: TokenIdType = this.tokenId) {
+    const unspentCoins = await this.getUnspentCoins(tokenId);
     const spendingSerialNumbers = await this.getSpendingCoinSerialNumber();
 
     return unspentCoins?.filter(coin => !spendingSerialNumbers.includes(coin.serialNumber));
   }
 
-  async getTotalBalance() {
-    const unspentCoins = await this.getUnspentCoins();
+  /**
+   * 
+   * @param tokenId use `null` for native token
+   */
+  async getTotalBalance(tokenId: TokenIdType = this.tokenId) {
+    const unspentCoins = await this.getUnspentCoins(tokenId);
 
     return unspentCoins?.reduce((balance, coin) => Number.parseInt(coin.value) + balance, 0) || 0;
   }

@@ -66530,7 +66530,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 function inPrivacyToken(_a) {
     var accountKeySet = _a.accountKeySet, availableNativeCoins = _a.availableNativeCoins, nativeFee = _a.nativeFee, tokenSymbol = _a.tokenSymbol, tokenName = _a.tokenName, supplyAmount = _a.supplyAmount;
     return __awaiter(this, void 0, void 0, function () {
-        var privacyPaymentInfoList, tokenId, nativePaymentInfoList, nativeTokenFeeBN, nativePaymentAmountBN, privacyTokenFeeBN, privacyPaymentAmountBN, nativeTxInput, privacyTxInput, txInfo, sentInfo, _b, nativeSpendingCoinSNs, nativeListUTXO, _c, privacySpendingCoinSNs, privacyListUTXO;
+        var privacyPaymentInfoList, tokenId, nativePaymentInfoList, nativeTokenFeeBN, nativePaymentAmountBN, privacyTokenFeeBN, privacyPaymentAmountBN, nativeTxInput, privacyAvailableCoins, privacyTxInput, txInfo, sentInfo, _b, nativeSpendingCoinSNs, nativeListUTXO, _c, privacySpendingCoinSNs, privacyListUTXO;
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
@@ -66550,8 +66550,9 @@ function inPrivacyToken(_a) {
                     return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getNativeTokenTxInput"])(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN)];
                 case 1:
                     nativeTxInput = _d.sent();
+                    privacyAvailableCoins = [];
                     console.log('nativeTxInput', nativeTxInput);
-                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getPrivacyTokenTxInput"])(accountKeySet, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN)];
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getPrivacyTokenTxInput"])(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN)];
                 case 2:
                     privacyTxInput = _d.sent();
                     console.log('privacyTxInput', privacyTxInput);
@@ -66747,13 +66748,13 @@ function sendNativeToken(_a) {
 /*!***********************************************!*\
   !*** ./src/services/send/sendPrivacyToken.ts ***!
   \***********************************************/
-/*! exports provided: createTx, sendPrivacyToken */
+/*! exports provided: createTx, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTx", function() { return createTx; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendPrivacyToken", function() { return sendPrivacyToken; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sendPrivacyToken; });
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bn.js */ "./node_modules/bn.js/lib/bn.js");
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bn_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/services/send/utils.ts");
@@ -66834,7 +66835,7 @@ function createTx(_a) {
                     privacyOutputCoins = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["createOutputCoin"])(privacyPaymentAmountBN.add(privacyTokenFeeBN), privacyTxInput.totalValueInputBN, privacyPaymentInfoList);
                     console.log('nativeOutputCoins', nativeOutputCoins);
                     console.log('privacyOutputCoins', privacyOutputCoins);
-                    privacyTokenParam = __assign({ propertyID: tokenId, propertyName: tokenName, propertySymbol: tokenSymbol, amount: 0, tokenTxType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_8__["CustomTokenTransfer"], fee: privacyTokenFeeBN.toNumber(), paymentInfoForPToken: privacyPaymentInfoList, tokenInputs: [] }, privacyTokenParamAdditional);
+                    privacyTokenParam = __assign({ propertyID: tokenId, propertyName: tokenName, propertySymbol: tokenSymbol, amount: 0, tokenTxType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_8__["CustomTokenTransfer"], fee: privacyTokenFeeBN.toNumber(), paymentInfoForPToken: privacyPaymentInfoList, tokenInputs: privacyTxInput.inputCoinStrs.map(function (coin) { return coin.toJson(); }) }, privacyTokenParamAdditional);
                     paramInitTx = {
                         privacyTokenParam: privacyTokenParam,
                         senderSK: privateKeySerialized,
@@ -66888,7 +66889,7 @@ function createTx(_a) {
 //   };
 // }
 function sendPrivacyToken(_a) {
-    var accountKeySet = _a.accountKeySet, avaiableCoins = _a.avaiableCoins, nativePaymentInfoList = _a.nativePaymentInfoList, privacyPaymentInfoList = _a.privacyPaymentInfoList, nativeFee = _a.nativeFee, privacyFee = _a.privacyFee, tokenId = _a.tokenId, tokenSymbol = _a.tokenSymbol, tokenName = _a.tokenName;
+    var accountKeySet = _a.accountKeySet, nativeAvailableCoins = _a.nativeAvailableCoins, privacyAvailableCoins = _a.privacyAvailableCoins, nativePaymentInfoList = _a.nativePaymentInfoList, privacyPaymentInfoList = _a.privacyPaymentInfoList, nativeFee = _a.nativeFee, privacyFee = _a.privacyFee, tokenId = _a.tokenId, tokenSymbol = _a.tokenSymbol, tokenName = _a.tokenName;
     return __awaiter(this, void 0, void 0, function () {
         var nativeTokenFeeBN, nativePaymentAmountBN, privacyTokenFeeBN, privacyPaymentAmountBN, nativeTxInput, privacyTxInput, txInfo, sentInfo, _b, nativeSpendingCoinSNs, nativeListUTXO, _c, privacySpendingCoinSNs, privacyListUTXO;
         return __generator(this, function (_d) {
@@ -66898,11 +66899,11 @@ function sendPrivacyToken(_a) {
                     nativePaymentAmountBN = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getTotalAmountFromPaymentList"])(nativePaymentInfoList);
                     privacyTokenFeeBN = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["toBNAmount"])(privacyFee);
                     privacyPaymentAmountBN = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getTotalAmountFromPaymentList"])(privacyPaymentInfoList);
-                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getNativeTokenTxInput"])(accountKeySet, avaiableCoins, nativePaymentAmountBN, nativeTokenFeeBN)];
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getNativeTokenTxInput"])(accountKeySet, nativeAvailableCoins, nativePaymentAmountBN, nativeTokenFeeBN)];
                 case 1:
                     nativeTxInput = _d.sent();
                     console.log('nativeTxInput', nativeTxInput);
-                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getPrivacyTokenTxInput"])(accountKeySet, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN)];
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getPrivacyTokenTxInput"])(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN)];
                 case 2:
                     privacyTxInput = _d.sent();
                     console.log('privacyTxInput', privacyTxInput);
@@ -67084,9 +67085,9 @@ function getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymen
  * @param privacyPaymentAmountBN Amount to send
  * @param privacyTokenFeeBN Fee to send (privacy token fee)
  */
-function getPrivacyTokenTxInput(accountKeySet, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN) {
+function getPrivacyTokenTxInput(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN) {
     return __awaiter(this, void 0, void 0, function () {
-        var coinsToSpend, totalValueToSpentBN, commitmentIndices, myCommitmentIndices, commitmentStrs, paymentAddress, availableCoins, totalAmountBN, bestCoins, commitmentData, i;
+        var coinsToSpend, totalValueToSpentBN, commitmentIndices, myCommitmentIndices, commitmentStrs, paymentAddress, totalAmountBN, bestCoins, commitmentData, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -67095,20 +67096,17 @@ function getPrivacyTokenTxInput(accountKeySet, tokenId, privacyPaymentAmountBN, 
                     commitmentIndices = [];
                     myCommitmentIndices = [];
                     commitmentStrs = [];
-                    if (!tokenId) return [3 /*break*/, 3];
+                    if (!tokenId) return [3 /*break*/, 2];
                     paymentAddress = accountKeySet.paymentAddressKeySerialized;
-                    return [4 /*yield*/, this.tokenService.getAvailableCoins(accountKeySet, tokenId)];
-                case 1:
-                    availableCoins = _a.sent();
                     totalAmountBN = privacyPaymentAmountBN.add(privacyTokenFeeBN);
-                    bestCoins = Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_7__["chooseBestCoinToSpent"])(availableCoins, totalAmountBN);
+                    bestCoins = Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_7__["chooseBestCoinToSpent"])(privacyAvailableCoins, totalAmountBN);
                     coinsToSpend = bestCoins.resultInputCoins;
                     totalValueToSpentBN = Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_7__["getValueFromCoins"])(coinsToSpend);
                     if (totalAmountBN.cmp(totalValueToSpentBN) === 1) {
                         throw new Error('Not enough coin');
                     }
                     return [4 /*yield*/, _src_services_rpc__WEBPACK_IMPORTED_MODULE_5__["default"].randomCommitmentsProcess(paymentAddress, coinsToSpend, tokenId)];
-                case 2:
+                case 1:
                     commitmentData = _a.sent();
                     commitmentIndices = commitmentData.commitmentIndices;
                     myCommitmentIndices = commitmentData.myCommitmentIndices;
@@ -67124,8 +67122,8 @@ function getPrivacyTokenTxInput(accountKeySet, tokenId, privacyPaymentAmountBN, 
                         // set info for input coin is null
                         coinsToSpend[i].info = '';
                     }
-                    _a.label = 3;
-                case 3: return [2 /*return*/, {
+                    _a.label = 2;
+                case 2: return [2 /*return*/, {
                         inputCoinStrs: coinsToSpend,
                         totalValueInputBN: totalValueToSpentBN,
                         commitmentIndices: commitmentIndices,
@@ -68210,7 +68208,7 @@ var Account = /** @class */ (function (_super) {
      * Find by tokenId or all if tokenId is null
      * @param {*} tokenId
      */
-    Account.prototype.getFollowingPrivacyTokenAsync = function (tokenId) {
+    Account.prototype.getFollowingPrivacyToken = function (tokenId) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
             var tokens, privacyTokens;
@@ -68540,6 +68538,8 @@ var NativeToken = /** @class */ (function (_super) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _token__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./token */ "./src/walletInstance/token/token.ts");
+/* harmony import */ var _src_services_send_sendPrivacyToken__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/send/sendPrivacyToken */ "./src/services/send/sendPrivacyToken.ts");
+/* harmony import */ var _src_constants_constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/constants/constants */ "./src/constants/constants.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -68553,6 +68553,44 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
 
 ;
 var PrivacyToken = /** @class */ (function (_super) {
@@ -68564,6 +68602,47 @@ var PrivacyToken = /** @class */ (function (_super) {
         _this.isPrivacyToken = true;
         return _this;
     }
+    PrivacyToken.prototype.getNativeAvailableCoins = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.getAvailableCoins(null)];
+            });
+        });
+    };
+    PrivacyToken.prototype.transfer = function (_a) {
+        var _b = _a === void 0 ? {} : _a, _c = _b.nativeFee, nativeFee = _c === void 0 ? _src_constants_constants__WEBPACK_IMPORTED_MODULE_2__["DEFAULT_NATIVE_FEE"] : _c, _d = _b.privacyFee, privacyFee = _d === void 0 ? 0 : _d, _e = _b.paymentList, paymentList = _e === void 0 ? [
+            {
+                paymentAddressStr: '12S1sAiqwpTCaYaftMC9N8ytPiJZCnpeMYXCMrbC7FxQcitn9HMensYhJrFdv7tnkaNYSXRafc1NS6svpy9YUvfe7Dq6yhy5zqBfh9q',
+                amount: 1,
+                message: 'Cool'
+            }
+        ] : _e;
+        return __awaiter(this, void 0, void 0, function () {
+            var _f, _g;
+            return __generator(this, function (_h) {
+                switch (_h.label) {
+                    case 0:
+                        _f = _src_services_send_sendPrivacyToken__WEBPACK_IMPORTED_MODULE_1__["default"];
+                        _g = {
+                            accountKeySet: this.accountKeySet
+                        };
+                        return [4 /*yield*/, this.getNativeAvailableCoins()];
+                    case 1:
+                        _g.nativeAvailableCoins = _h.sent();
+                        return [4 /*yield*/, this.getAvailableCoins()];
+                    case 2: return [2 /*return*/, _f.apply(void 0, [(_g.privacyAvailableCoins = _h.sent(),
+                                _g.nativeFee = nativeFee,
+                                _g.privacyFee = privacyFee,
+                                _g.privacyPaymentInfoList = paymentList,
+                                _g.nativePaymentInfoList = [],
+                                _g.tokenId = this.tokenId,
+                                _g.tokenName = this.name,
+                                _g.tokenSymbol = this.symbol,
+                                _g)])];
+                }
+            });
+        });
+    };
     return PrivacyToken;
 }(_token__WEBPACK_IMPORTED_MODULE_0__["default"]));
 /* harmony default export */ __webpack_exports__["default"] = (PrivacyToken);
@@ -68627,22 +68706,22 @@ var Token = /** @class */ (function () {
         this.name = name;
         this.symbol = symbol;
     }
-    Token.prototype.getAllOutputCoins = function () {
+    Token.prototype.getAllOutputCoins = function (tokenId) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getAllOutputCoins"])(this.accountKeySet, this.tokenId)];
+                    case 0: return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getAllOutputCoins"])(this.accountKeySet, tokenId)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    Token.prototype.deriveSerialNumbers = function () {
+    Token.prototype.deriveSerialNumbers = function (tokenId) {
         return __awaiter(this, void 0, void 0, function () {
             var allCoins;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getAllOutputCoins()];
+                    case 0: return [4 /*yield*/, this.getAllOutputCoins(tokenId)];
                     case 1:
                         allCoins = _a.sent();
                         return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["deriveSerialNumbers"])(this.accountKeySet, allCoins)];
@@ -68653,16 +68732,16 @@ var Token = /** @class */ (function () {
             });
         });
     };
-    Token.prototype.getUnspentCoins = function () {
+    Token.prototype.getUnspentCoins = function (tokenId) {
         return __awaiter(this, void 0, void 0, function () {
             var serialData, coins, unspentCoins;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.deriveSerialNumbers()];
+                    case 0: return [4 /*yield*/, this.deriveSerialNumbers(tokenId)];
                     case 1:
                         serialData = _a.sent();
                         coins = (serialData || {}).coins;
-                        return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getUnspentCoins"])(this.accountKeySet, coins, this.tokenId)];
+                        return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getUnspentCoins"])(this.accountKeySet, coins, tokenId)];
                     case 2:
                         unspentCoins = _a.sent();
                         return [2 /*return*/, unspentCoins];
@@ -68677,13 +68756,18 @@ var Token = /** @class */ (function () {
             });
         });
     };
-    Token.prototype.getAvailableCoins = function () {
+    /**
+    *
+    * @param tokenId use `null` for native token
+    */
+    Token.prototype.getAvailableCoins = function (tokenId) {
+        if (tokenId === void 0) { tokenId = this.tokenId; }
         var _a;
         return __awaiter(this, void 0, void 0, function () {
             var unspentCoins, spendingSerialNumbers;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.getUnspentCoins()];
+                    case 0: return [4 /*yield*/, this.getUnspentCoins(tokenId)];
                     case 1:
                         unspentCoins = _b.sent();
                         return [4 /*yield*/, this.getSpendingCoinSerialNumber()];
@@ -68694,13 +68778,18 @@ var Token = /** @class */ (function () {
             });
         });
     };
-    Token.prototype.getTotalBalance = function () {
+    /**
+     *
+     * @param tokenId use `null` for native token
+     */
+    Token.prototype.getTotalBalance = function (tokenId) {
+        if (tokenId === void 0) { tokenId = this.tokenId; }
         var _a;
         return __awaiter(this, void 0, void 0, function () {
             var unspentCoins;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.getUnspentCoins()];
+                    case 0: return [4 /*yield*/, this.getUnspentCoins(tokenId)];
                     case 1:
                         unspentCoins = _b.sent();
                         return [2 /*return*/, ((_a = unspentCoins) === null || _a === void 0 ? void 0 : _a.reduce(function (balance, coin) { return Number.parseInt(coin.value) + balance; }, 0)) || 0];

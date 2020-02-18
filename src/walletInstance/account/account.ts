@@ -67,7 +67,7 @@ class Account extends BaseAccount implements AccountModelInterface {
    * Find by tokenId or all if tokenId is null
    * @param {*} tokenId 
    */
-  async getFollowingPrivacyTokenAsync(tokenId: TokenIdType) {
+  async getFollowingPrivacyToken(tokenId: TokenIdType) {
     const tokens = await rpc.listPrivacyCustomTokens();
     const privacyTokens = (tokenId ? [tokenId] : this.privacyTokenIds).map(id => {
       const token = tokens.find((token: { [key: string]: any }) => token.ID === id);
