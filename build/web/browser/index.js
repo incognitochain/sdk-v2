@@ -68449,6 +68449,12 @@ var MasterAccount = /** @class */ (function (_super) {
         this.child.push(account);
         return account;
     };
+    MasterAccount.prototype.removeAccount = function (name) {
+        lodash__WEBPACK_IMPORTED_MODULE_0___default.a.remove(this.child, function (account) { return account.name === name; });
+    };
+    MasterAccount.prototype.getAccounts = function () {
+        return this.child;
+    };
     MasterAccount.prototype.importAccount = function (name, privateKey) {
         var _a = Object(_src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_4__["base58CheckDeserialize"])(privateKey), key = _a.key, type = _a.type;
         if (type === 'PRIVATE_KEY') {

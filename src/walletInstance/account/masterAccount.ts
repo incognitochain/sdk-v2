@@ -61,6 +61,14 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     return account;
   }
 
+  removeAccount(name: string) {
+    _.remove(this.child, account => account.name === name);
+  }
+
+  getAccounts() {
+    return this.child;
+  }
+
   importAccount(name: string, privateKey: string) {
     const { key, type } = base58CheckDeserialize(privateKey);
     if (type === 'PRIVATE_KEY') {
