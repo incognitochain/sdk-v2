@@ -9,6 +9,8 @@ import { getValueFromCoins, chooseBestCoinToSpent } from '@src/services/coin';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import CoinModel from '@src/models/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
+import { TxHistory } from '@src/models/txHistory';
+import { SuccessTx } from '@src/services/wallet/constants';
 
 export interface TxInputType {
   inputCoinStrs: CoinModel[],
@@ -16,6 +18,27 @@ export interface TxInputType {
   commitmentIndices: number[],
   myCommitmentIndices: number[],
   commitmentStrs: string[],
+};
+
+export interface CreateHistoryParam {
+  txId: string,
+  lockTime: number,
+  nativePaymentInfoList: PaymentInfoModel[],
+  privacyPaymentInfoList?: PaymentInfoModel[],
+  nativeFee: number,
+  privacyFee?: number,
+  tokenId?: TokenIdType,
+  tokenSymbol?: TokenSymbolType,
+  tokenName?: TokenNameType,
+  nativeSpendingCoinSNs: string[],
+  privacySpendingCoinSNs?: string[],
+  nativeListUTXO: string[],
+  privacyListUTXO?: string[],
+  nativePaymentAmount: number,
+  privacyPaymentAmount?: number,
+  meta?: any,
+  txType?: any,
+  privacyTokenTxType?: any,
 };
 
 /**
@@ -186,13 +209,13 @@ export function encryptPaymentMessage(paymentInfoList: PaymentInfoModel[]) {
 }
 
 export async function sendB58CheckEncodeTxToChain(handler: Function, b58CheckEncodeTx: string) {
-  const response = await handler(b58CheckEncodeTx);
+  const response: { txId: string } = await handler(b58CheckEncodeTx);
 
-  if (!response?.txId) {
-    throw new Error('Send tx failed');
+  if (response?.txId) {
+    return response;
   }
 
-  return response;
+  throw new Error('Send tx failed');
 }
 
 
@@ -209,4 +232,54 @@ export function getCoinInfoForCache(coins: CoinModel[]) {
     serialNumberList,
     listUTXO
   };
+}
+
+
+export function createHistoryInfo({
+  txId,
+  lockTime,
+  nativePaymentInfoList,
+  privacyPaymentInfoList,
+  nativePaymentAmount,
+  privacyPaymentAmount,
+  nativeFee,
+  privacyFee,
+  tokenId,
+  tokenSymbol,
+  tokenName,
+  nativeSpendingCoinSNs,
+  privacySpendingCoinSNs,
+  nativeListUTXO,
+  privacyListUTXO,
+  meta,
+  txType,
+  privacyTokenTxType
+}: CreateHistoryParam) {
+  return new TxHistory({
+    txId,
+    txType,
+    lockTime,
+    status: SuccessTx,
+    nativeTokenInfo: {
+      spendingCoinSNs: nativeSpendingCoinSNs,
+      listUTXO: nativeListUTXO,
+      fee: nativeFee,
+      amount: nativePaymentAmount,
+      paymentInfoList: nativePaymentInfoList,
+      usePrivacy: true
+    },
+    privacyTokenInfo: {
+      spendingCoinSNs: privacySpendingCoinSNs,
+      listUTXO: privacyListUTXO,
+      tokenName,
+      tokenSymbol,
+      tokenId,
+      fee: privacyFee,
+      amount: privacyPaymentAmount,
+      paymentInfoList: privacyPaymentInfoList,
+      usePrivacy: true,
+      privacyTokenTxType
+    },
+    meta,
+  });
 }

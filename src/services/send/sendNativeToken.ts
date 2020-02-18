@@ -1,5 +1,5 @@
 import bn from 'bn.js';
-import { getTotalAmountFromPaymentList, createOutputCoin, TxInputType, initTx, getNativeTokenTxInput, toBNAmount, sendB58CheckEncodeTxToChain, getCoinInfoForCache } from './utils';
+import { getTotalAmountFromPaymentList, createOutputCoin, TxInputType, initTx, getNativeTokenTxInput, toBNAmount, sendB58CheckEncodeTxToChain, getCoinInfoForCache, createHistoryInfo } from './utils';
 import rpc from '@src/services/rpc';
 import { base64Decode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
@@ -8,6 +8,7 @@ import wasmMethods from '@src/wasm/methods';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
+import { TxNormalType } from '@src/tx/constants';
 
 
 interface SendParam {
@@ -67,17 +68,6 @@ async function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput
   };
 }
 
-// function createHistoryInfo(txInfo) {
-//   return {
-//     ...txInfo,
-//     typeTx: TxNormalType,
-//     feeNativeToken: nativeTokenFeeBN.toNumber(),
-//     lockTime: txInfo.lockTime,
-//     amountNativeToken: nativePaymentAmountBN.toNumber(),
-//     txStatus: SuccessTx
-//   };
-// }
-
 export default async function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins } : SendParam) {
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTokenFeeBN = toBNAmount(nativeFee);
@@ -94,9 +84,14 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
 
   const { serialNumberList, listUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
   
-  return {
-    sentInfo,
-    serialNumberList,
-    listUTXO
-  };
+  return createHistoryInfo({
+    txId: sentInfo.txId,
+    lockTime: txInfo.lockTime,
+    nativePaymentInfoList,
+    nativeFee,
+    nativeListUTXO: listUTXO,
+    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativeSpendingCoinSNs: serialNumberList,
+    txType: TxNormalType,
+  });
 }

@@ -1,9 +1,9 @@
-import { getTotalAmountFromPaymentList, getNativeTokenTxInput, toBNAmount, sendB58CheckEncodeTxToChain, getCoinInfoForCache, getPrivacyTokenTxInput } from './utils';
+import { getTotalAmountFromPaymentList, getNativeTokenTxInput, toBNAmount, sendB58CheckEncodeTxToChain, getCoinInfoForCache, getPrivacyTokenTxInput, createHistoryInfo } from './utils';
 import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import { CustomTokenInit } from '@src/tx/constants';
+import { CustomTokenInit, TxCustomTokenPrivacyType } from '@src/tx/constants';
 import { createTx } from './sendPrivacyToken';
 
 interface TokenInfo {
@@ -70,16 +70,22 @@ export default async function inPrivacyToken({
 
   const sentInfo = await sendB58CheckEncodeTxToChain(rpc.sendRawTxCustomTokenPrivacy, txInfo.b58CheckEncodeTx);
 
-  // const historyInfo = createHistoryInfo({ ...sentInfo, lockTime: txInfo.lockTime });
-
   const { serialNumberList: nativeSpendingCoinSNs, listUTXO: nativeListUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
-  const { serialNumberList: privacySpendingCoinSNs, listUTXO: privacyListUTXO } = getCoinInfoForCache(privacyTxInput.inputCoinStrs);
   
-  return {
-    sentInfo,
-    nativeSpendingCoinSNs,
+  return createHistoryInfo({
+    txId: sentInfo.txId,
+    lockTime: txInfo.lockTime,
+    nativePaymentInfoList,
+    nativeFee,
     nativeListUTXO,
-    privacySpendingCoinSNs,
-    privacyListUTXO
-  };
+    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativeSpendingCoinSNs,
+    tokenSymbol,
+    tokenName,
+    tokenId: txInfo.tokenID,
+    txType: TxCustomTokenPrivacyType,
+    privacyTokenTxType: CustomTokenInit,
+    privacyPaymentInfoList,
+    privacyPaymentAmount: supplyAmount
+  });
 }
