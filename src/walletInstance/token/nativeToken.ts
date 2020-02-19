@@ -23,7 +23,7 @@ class NativeToken extends Token implements NativeTokenModel {
   async transfer({ fee = DEFAULT_NATIVE_FEE, paymentInfoList = [
     {
       paymentAddressStr: '12S1sAiqwpTCaYaftMC9N8ytPiJZCnpeMYXCMrbC7FxQcitn9HMensYhJrFdv7tnkaNYSXRafc1NS6svpy9YUvfe7Dq6yhy5zqBfh9q',
-      amount: 10e9,
+      amount: 1,
       message: 'Cool'
     }
   ]} = {}) {

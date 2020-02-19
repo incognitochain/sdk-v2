@@ -7,8 +7,6 @@ interface NativeTokenModelParam {
 };
 
 class NativeTokenModel extends BaseTokenModel {
-  isNativeToken: boolean;
-
   constructor({ tokenId, name, symbol } : NativeTokenModelParam) {
     super({ tokenId, name, symbol });
 

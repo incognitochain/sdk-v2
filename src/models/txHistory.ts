@@ -27,7 +27,7 @@ interface PrivacyTokenHistoryInfo extends NativeTokenHistoryInfo{
   privacyTokenTxType: number
 };
 
-interface TxHistoryParam {
+interface TxHistoryModelParam {
   txId: string,
   txType: string,
   lockTime: number,
@@ -37,7 +37,7 @@ interface TxHistoryParam {
   meta?: any
 };
 
-export class TxHistory {
+export class TxHistoryModel {
   txId: string;
   txType: string;
   lockTime: number;
@@ -46,7 +46,7 @@ export class TxHistory {
   privacyTokenInfo: PrivacyTokenHistoryInfo;
   meta: any;
 
-  constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta } : TxHistoryParam) {
+  constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta } : TxHistoryModelParam) {
     this.txId = txId;
     this.txType = txType;
     this.lockTime = lockTime;
@@ -54,6 +54,18 @@ export class TxHistory {
     this.nativeTokenInfo = nativeTokenInfo;
     this.privacyTokenInfo = privacyTokenInfo;
     this.meta = meta;
+  }
+
+  toJson() {
+    return {
+      txId: this.txId,
+      txType: this.txType,
+      lockTime: this.lockTime,
+      status: this.status,
+      nativeTokenInfo: this.nativeTokenInfo,
+      privacyTokenInfo: this.privacyTokenInfo,
+      meta: this.meta
+    };
   }
 }
   

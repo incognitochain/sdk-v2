@@ -10,7 +10,6 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import { TxNormalType } from '@src/tx/constants';
 
-
 interface SendParam {
   accountKeySet: AccountKeySetModel,
   availableCoins: CoinModel[],
@@ -83,8 +82,8 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
   // const historyInfo = createHistoryInfo({ ...sentInfo, lockTime: txInfo.lockTime });
 
   const { serialNumberList, listUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
-  
-  return createHistoryInfo({
+
+  const history = createHistoryInfo({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
     nativePaymentInfoList,
@@ -94,4 +93,6 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     nativeSpendingCoinSNs: serialNumberList,
     txType: TxNormalType,
   });
+
+  return history;
 }

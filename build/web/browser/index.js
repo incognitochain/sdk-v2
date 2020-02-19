@@ -60750,6 +60750,24 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/constants/keys.ts":
+/*!*******************************!*\
+  !*** ./src/constants/keys.ts ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+    SPENDING_COIN_CACHE: 'SPENDING_COIN_CACHE',
+    TX_HISTORY_CACHE: 'TX_HISTORY_CACHE',
+    WALLET_CACHE: 'WALLET_CACHE'
+});
+
+
+/***/ }),
+
 /***/ "./src/constants/tokenInfo.ts":
 /*!************************************!*\
   !*** ./src/constants/tokenInfo.ts ***!
@@ -61330,17 +61348,17 @@ var PaymentInfoModel = /** @class */ (function (_super) {
 /*!*********************************!*\
   !*** ./src/models/txHistory.ts ***!
   \*********************************/
-/*! exports provided: TxHistory */
+/*! exports provided: TxHistoryModel */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TxHistory", function() { return TxHistory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TxHistoryModel", function() { return TxHistoryModel; });
 ;
 ;
 ;
-var TxHistory = /** @class */ (function () {
-    function TxHistory(_a) {
+var TxHistoryModel = /** @class */ (function () {
+    function TxHistoryModel(_a) {
         var txId = _a.txId, txType = _a.txType, lockTime = _a.lockTime, status = _a.status, nativeTokenInfo = _a.nativeTokenInfo, privacyTokenInfo = _a.privacyTokenInfo, meta = _a.meta;
         this.txId = txId;
         this.txType = txType;
@@ -61350,7 +61368,18 @@ var TxHistory = /** @class */ (function () {
         this.privacyTokenInfo = privacyTokenInfo;
         this.meta = meta;
     }
-    return TxHistory;
+    TxHistoryModel.prototype.toJson = function () {
+        return {
+            txId: this.txId,
+            txType: this.txType,
+            lockTime: this.lockTime,
+            status: this.status,
+            nativeTokenInfo: this.nativeTokenInfo,
+            privacyTokenInfo: this.privacyTokenInfo,
+            meta: this.meta
+        };
+    };
+    return TxHistoryModel;
 }());
 
 
@@ -64664,19 +64693,122 @@ function pad(l) {
 
 /***/ }),
 
+/***/ "./src/services/cache/txHistory.ts":
+/*!*****************************************!*\
+  !*** ./src/services/cache/txHistory.ts ***!
+  \*****************************************/
+/*! exports provided: getTxHistoryCache, cacheTxHistory */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTxHistoryCache", function() { return getTxHistoryCache; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cacheTxHistory", function() { return cacheTxHistory; });
+/* harmony import */ var _src_services_storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/storage */ "./src/services/storage/index.ts");
+/* harmony import */ var _src_constants_keys__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/constants/keys */ "./src/constants/keys.ts");
+/* harmony import */ var _src_models_txHistory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/models/txHistory */ "./src/models/txHistory.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+;
+function getTxHistoryCache() {
+    return __awaiter(this, void 0, void 0, function () {
+        var prevCached, txIds, data;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, _src_services_storage__WEBPACK_IMPORTED_MODULE_0__["default"].get(_src_constants_keys__WEBPACK_IMPORTED_MODULE_1__["default"].TX_HISTORY_CACHE)];
+                case 1:
+                    prevCached = (_a.sent()) || {};
+                    txIds = Object.keys(prevCached);
+                    data = {};
+                    txIds.forEach(function (txId) {
+                        var historyData = prevCached[txId];
+                        data[txId] = new _src_models_txHistory__WEBPACK_IMPORTED_MODULE_2__["TxHistoryModel"]({
+                            txId: historyData.txId,
+                            txType: historyData.txType,
+                            lockTime: historyData.lockTime,
+                            status: historyData.status,
+                            nativeTokenInfo: historyData.nativeTokenInfo,
+                            privacyTokenInfo: historyData.privacyTokenInfo,
+                            meta: historyData.meta,
+                        });
+                    });
+                    return [2 /*return*/, data];
+            }
+        });
+    });
+}
+function cacheTxHistory(txId, history) {
+    return __awaiter(this, void 0, void 0, function () {
+        var prevCached, txIds, data;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getTxHistoryCache()];
+                case 1:
+                    prevCached = _a.sent();
+                    txIds = Object.keys(prevCached);
+                    data = {};
+                    txIds.forEach(function (txId) {
+                        data[txId] = prevCached[txId].toJson();
+                    });
+                    data[txId] = history.toJson();
+                    _src_services_storage__WEBPACK_IMPORTED_MODULE_0__["default"].set(_src_constants_keys__WEBPACK_IMPORTED_MODULE_1__["default"].TX_HISTORY_CACHE, data);
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/services/coin/index.ts":
 /*!************************************!*\
   !*** ./src/services/coin/index.ts ***!
   \************************************/
-/*! exports provided: getAllOutputCoins, deriveSerialNumbers, getUnspentCoins, getSpendingSerialCoins, getValueFromCoins, chooseBestCoinToSpent */
+/*! exports provided: getAllOutputCoins, deriveSerialNumbers, getValueFromCoins, chooseBestCoinToSpent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAllOutputCoins", function() { return getAllOutputCoins; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deriveSerialNumbers", function() { return deriveSerialNumbers; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUnspentCoins", function() { return getUnspentCoins; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSpendingSerialCoins", function() { return getSpendingSerialCoins; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValueFromCoins", function() { return getValueFromCoins; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "chooseBestCoinToSpent", function() { return chooseBestCoinToSpent; });
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bn.js */ "./node_modules/bn.js/lib/bn.js");
@@ -64817,30 +64949,6 @@ function deriveSerialNumbers(accountKeySet, coins) {
                         coins: coins,
                     }];
             }
-        });
-    });
-}
-function getUnspentCoins(accountKeySet, coins, tokenId) {
-    var _a, _b;
-    return __awaiter(this, void 0, void 0, function () {
-        var paymentAddress, serialNumberList, serialNumberStatus;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    paymentAddress = accountKeySet.paymentAddressKeySerialized;
-                    serialNumberList = ((_a = coins) === null || _a === void 0 ? void 0 : _a.map(function (coin) { return coin.serialNumber; })) || [];
-                    return [4 /*yield*/, _src_services_rpc__WEBPACK_IMPORTED_MODULE_3__["default"].hasSerialNumber(paymentAddress, serialNumberList, tokenId)];
-                case 1:
-                    serialNumberStatus = _c.sent();
-                    return [2 /*return*/, (_b = coins) === null || _b === void 0 ? void 0 : _b.filter(function (coin, index) { return !serialNumberStatus[index]; })];
-            }
-        });
-    });
-}
-function getSpendingSerialCoins() {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, []];
         });
     });
 }
@@ -66786,7 +66894,7 @@ function createTx(_a) {
 function sendNativeToken(_a) {
     var nativePaymentInfoList = _a.nativePaymentInfoList, nativeFee = _a.nativeFee, accountKeySet = _a.accountKeySet, availableCoins = _a.availableCoins;
     return __awaiter(this, void 0, void 0, function () {
-        var nativePaymentAmountBN, nativeTokenFeeBN, nativeTxInput, txInfo, sentInfo, _b, serialNumberList, listUTXO;
+        var nativePaymentAmountBN, nativeTokenFeeBN, nativeTxInput, txInfo, sentInfo, _b, serialNumberList, listUTXO, history;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -66804,16 +66912,17 @@ function sendNativeToken(_a) {
                 case 3:
                     sentInfo = _c.sent();
                     _b = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["getCoinInfoForCache"])(nativeTxInput.inputCoinStrs), serialNumberList = _b.serialNumberList, listUTXO = _b.listUTXO;
-                    return [2 /*return*/, Object(_utils__WEBPACK_IMPORTED_MODULE_1__["createHistoryInfo"])({
-                            txId: sentInfo.txId,
-                            lockTime: txInfo.lockTime,
-                            nativePaymentInfoList: nativePaymentInfoList,
-                            nativeFee: nativeFee,
-                            nativeListUTXO: listUTXO,
-                            nativePaymentAmount: nativePaymentAmountBN.toNumber(),
-                            nativeSpendingCoinSNs: serialNumberList,
-                            txType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_7__["TxNormalType"],
-                        })];
+                    history = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["createHistoryInfo"])({
+                        txId: sentInfo.txId,
+                        lockTime: txInfo.lockTime,
+                        nativePaymentInfoList: nativePaymentInfoList,
+                        nativeFee: nativeFee,
+                        nativeListUTXO: listUTXO,
+                        nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+                        nativeSpendingCoinSNs: serialNumberList,
+                        txType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_7__["TxNormalType"],
+                    });
+                    return [2 /*return*/, history];
             }
         });
     });
@@ -67051,6 +67160,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_services_coin__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @src/services/coin */ "./src/services/coin/index.ts");
 /* harmony import */ var _src_models_txHistory__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @src/models/txHistory */ "./src/models/txHistory.ts");
 /* harmony import */ var _src_services_wallet_constants__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @src/services/wallet/constants */ "./src/services/wallet/constants.ts");
+/* harmony import */ var _cache_txHistory__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../cache/txHistory */ "./src/services/cache/txHistory.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -67087,6 +67197,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 
@@ -67298,7 +67409,7 @@ function getCoinInfoForCache(coins) {
 }
 function createHistoryInfo(_a) {
     var txId = _a.txId, lockTime = _a.lockTime, nativePaymentInfoList = _a.nativePaymentInfoList, privacyPaymentInfoList = _a.privacyPaymentInfoList, nativePaymentAmount = _a.nativePaymentAmount, privacyPaymentAmount = _a.privacyPaymentAmount, nativeFee = _a.nativeFee, privacyFee = _a.privacyFee, tokenId = _a.tokenId, tokenSymbol = _a.tokenSymbol, tokenName = _a.tokenName, nativeSpendingCoinSNs = _a.nativeSpendingCoinSNs, privacySpendingCoinSNs = _a.privacySpendingCoinSNs, nativeListUTXO = _a.nativeListUTXO, privacyListUTXO = _a.privacyListUTXO, meta = _a.meta, txType = _a.txType, privacyTokenTxType = _a.privacyTokenTxType;
-    return new _src_models_txHistory__WEBPACK_IMPORTED_MODULE_8__["TxHistory"]({
+    var history = new _src_models_txHistory__WEBPACK_IMPORTED_MODULE_8__["TxHistoryModel"]({
         txId: txId,
         txType: txType,
         lockTime: lockTime,
@@ -67325,6 +67436,9 @@ function createHistoryInfo(_a) {
         },
         meta: meta,
     });
+    // TODO: handle cache error
+    Object(_cache_txHistory__WEBPACK_IMPORTED_MODULE_10__["cacheTxHistory"])(history.txId, history);
+    return history;
 }
 
 
@@ -67435,6 +67549,144 @@ var Storage = /** @class */ (function () {
 
 var storage = new Storage();
 /* harmony default export */ __webpack_exports__["default"] = (storage);
+
+
+/***/ }),
+
+/***/ "./src/services/token/index.ts":
+/*!*************************************!*\
+  !*** ./src/services/token/index.ts ***!
+  \*************************************/
+/*! exports provided: getUnspentCoins, getAvailableCoins, getSpendingSerialCoins, getTotalBalance, getAvailableBalance */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUnspentCoins", function() { return getUnspentCoins; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableCoins", function() { return getAvailableCoins; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSpendingSerialCoins", function() { return getSpendingSerialCoins; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTotalBalance", function() { return getTotalBalance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableBalance", function() { return getAvailableBalance; });
+/* harmony import */ var _src_services_coin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/coin */ "./src/services/coin/index.ts");
+/* harmony import */ var _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/rpc */ "./src/services/rpc/index.ts");
+/* harmony import */ var _cache_txHistory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../cache/txHistory */ "./src/services/cache/txHistory.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+/**
+ * Return list of coins that not existed in chain (not use yet)
+ */
+function getUnspentCoins(accountKeySet, tokenId) {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function () {
+        var allCoins, derivedCoins, coins, paymentAddress, serialNumberList, serialNumberStatus;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0: return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getAllOutputCoins"])(accountKeySet, tokenId)];
+                case 1:
+                    allCoins = _c.sent();
+                    return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["deriveSerialNumbers"])(accountKeySet, allCoins)];
+                case 2:
+                    derivedCoins = _c.sent();
+                    coins = derivedCoins.coins;
+                    paymentAddress = accountKeySet.paymentAddressKeySerialized;
+                    serialNumberList = ((_a = coins) === null || _a === void 0 ? void 0 : _a.map(function (coin) { return coin.serialNumber; })) || [];
+                    return [4 /*yield*/, _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__["default"].hasSerialNumber(paymentAddress, serialNumberList, tokenId)];
+                case 3:
+                    serialNumberStatus = _c.sent();
+                    return [2 /*return*/, (_b = coins) === null || _b === void 0 ? void 0 : _b.filter(function (coin, index) { return !serialNumberStatus[index]; })];
+            }
+        });
+    });
+}
+/**
+ * Coins can use to create tx (excluding spent coins, spending coins)
+ */
+function getAvailableCoins(accountKeySet, tokenId, isNativeCoin) {
+    return __awaiter(this, void 0, void 0, function () {
+        var unspentCoins, spendingSerialNumberData, spendingSerialNumbers;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, getUnspentCoins(accountKeySet, tokenId)];
+                case 1:
+                    unspentCoins = _a.sent();
+                    return [4 /*yield*/, getSpendingSerialCoins()];
+                case 2:
+                    spendingSerialNumberData = _a.sent();
+                    spendingSerialNumbers = isNativeCoin ? spendingSerialNumberData.spendingNativeSerialNumbers : spendingSerialNumberData.spendingPrivacySerialNumbers;
+                    return [2 /*return*/, unspentCoins.filter(function (coin) { return !spendingSerialNumbers.includes(coin.serialNumber); })];
+            }
+        });
+    });
+}
+/**
+ * List of serial numbers are being use
+ */
+function getSpendingSerialCoins() {
+    return __awaiter(this, void 0, void 0, function () {
+        var caches, txHistories, spendingNativeSerialNumbers, spendingPrivacySerialNumbers;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Object(_cache_txHistory__WEBPACK_IMPORTED_MODULE_2__["getTxHistoryCache"])()];
+                case 1:
+                    caches = _a.sent();
+                    txHistories = Object.values(caches);
+                    spendingNativeSerialNumbers = [];
+                    spendingPrivacySerialNumbers = [];
+                    txHistories.forEach(function (txHistory) {
+                        spendingNativeSerialNumbers.push.apply(spendingNativeSerialNumbers, txHistory.nativeTokenInfo.spendingCoinSNs || []);
+                        spendingPrivacySerialNumbers.push.apply(spendingPrivacySerialNumbers, txHistory.privacyTokenInfo.spendingCoinSNs || []);
+                    });
+                    return [2 /*return*/, {
+                            spendingNativeSerialNumbers: spendingNativeSerialNumbers,
+                            spendingPrivacySerialNumbers: spendingPrivacySerialNumbers
+                        }];
+            }
+        });
+    });
+}
+function getTotalBalance(unspentCoins) {
+    return Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getValueFromCoins"])(unspentCoins);
+}
+function getAvailableBalance(availableCoins) {
+    return Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getValueFromCoins"])(availableCoins);
+}
 
 
 /***/ }),
@@ -68651,7 +68903,7 @@ var NativeToken = /** @class */ (function (_super) {
         var _b = _a === void 0 ? {} : _a, _c = _b.fee, fee = _c === void 0 ? _src_constants_constants__WEBPACK_IMPORTED_MODULE_3__["DEFAULT_NATIVE_FEE"] : _c, _d = _b.paymentInfoList, paymentInfoList = _d === void 0 ? [
             {
                 paymentAddressStr: '12S1sAiqwpTCaYaftMC9N8ytPiJZCnpeMYXCMrbC7FxQcitn9HMensYhJrFdv7tnkaNYSXRafc1NS6svpy9YUvfe7Dq6yhy5zqBfh9q',
-                amount: 10e9,
+                amount: 1,
                 message: 'Cool'
             }
         ] : _d;
@@ -68807,6 +69059,7 @@ var PrivacyToken = /** @class */ (function (_super) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_services_coin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/coin */ "./src/services/coin/index.ts");
+/* harmony import */ var _src_services_token__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/token */ "./src/services/token/index.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -68844,6 +69097,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
     }
 };
 
+
 ;
 var Token = /** @class */ (function () {
     function Token(_a) {
@@ -68879,27 +69133,15 @@ var Token = /** @class */ (function () {
             });
         });
     };
-    Token.prototype.getUnspentCoins = function (tokenId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var serialData, coins, unspentCoins;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.deriveSerialNumbers(tokenId)];
-                    case 1:
-                        serialData = _a.sent();
-                        coins = (serialData || {}).coins;
-                        return [4 /*yield*/, Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getUnspentCoins"])(this.accountKeySet, coins, tokenId)];
-                    case 2:
-                        unspentCoins = _a.sent();
-                        return [2 /*return*/, unspentCoins];
-                }
-            });
-        });
-    };
-    Token.prototype.getSpendingCoinSerialNumber = function () {
+    /**
+     *
+     * @param tokenId use `null` for native token
+     */
+    Token.prototype.getAvailableCoins = function (tokenId) {
+        if (tokenId === void 0) { tokenId = this.tokenId; }
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, []];
+                return [2 /*return*/, Object(_src_services_token__WEBPACK_IMPORTED_MODULE_1__["getAvailableCoins"])(this.accountKeySet, tokenId, this.isNativeToken)];
             });
         });
     };
@@ -68907,20 +69149,27 @@ var Token = /** @class */ (function () {
     *
     * @param tokenId use `null` for native token
     */
-    Token.prototype.getAvailableCoins = function (tokenId) {
-        if (tokenId === void 0) { tokenId = this.tokenId; }
-        var _a;
+    Token.prototype.getUnspentCoins = function (tokenId) {
         return __awaiter(this, void 0, void 0, function () {
-            var unspentCoins, spendingSerialNumbers;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.getUnspentCoins(tokenId)];
+            return __generator(this, function (_a) {
+                return [2 /*return*/, Object(_src_services_token__WEBPACK_IMPORTED_MODULE_1__["getUnspentCoins"])(this.accountKeySet, tokenId)];
+            });
+        });
+    };
+    /**
+     *
+     * @param tokenId use `null` for native token
+     */
+    Token.prototype.getAvaiableBalance = function (tokenId) {
+        if (tokenId === void 0) { tokenId = this.tokenId; }
+        return __awaiter(this, void 0, void 0, function () {
+            var availableCoins;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getAvailableCoins(tokenId)];
                     case 1:
-                        unspentCoins = _b.sent();
-                        return [4 /*yield*/, this.getSpendingCoinSerialNumber()];
-                    case 2:
-                        spendingSerialNumbers = _b.sent();
-                        return [2 /*return*/, (_a = unspentCoins) === null || _a === void 0 ? void 0 : _a.filter(function (coin) { return !spendingSerialNumbers.includes(coin.serialNumber); })];
+                        availableCoins = _a.sent();
+                        return [2 /*return*/, Object(_src_services_token__WEBPACK_IMPORTED_MODULE_1__["getAvailableBalance"])(availableCoins)];
                 }
             });
         });
@@ -68931,20 +69180,18 @@ var Token = /** @class */ (function () {
      */
     Token.prototype.getTotalBalance = function (tokenId) {
         if (tokenId === void 0) { tokenId = this.tokenId; }
-        var _a;
         return __awaiter(this, void 0, void 0, function () {
             var unspentCoins;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0: return [4 /*yield*/, this.getUnspentCoins(tokenId)];
                     case 1:
-                        unspentCoins = _b.sent();
-                        return [2 /*return*/, ((_a = unspentCoins) === null || _a === void 0 ? void 0 : _a.reduce(function (balance, coin) { return Number.parseInt(coin.value) + balance; }, 0)) || 0];
+                        unspentCoins = _a.sent();
+                        return [2 /*return*/, Object(_src_services_token__WEBPACK_IMPORTED_MODULE_1__["getTotalBalance"])(unspentCoins)];
                 }
             });
         });
     };
-    Token.prototype.getAvaiableBalance = function () { };
     Token.prototype.transfer = function () { };
     return Token;
 }());

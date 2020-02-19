@@ -71,6 +71,12 @@
             window.icoAcc.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
             window.icoAcc.followTokenById('60dcb18876927405343024b133879f980fb4a9ef1266b0de909806054e6529b5');
 
+            window.token = await icoAcc.getFollowingPrivacyToken("30cce7bcc677f4e598f6518657ffa25528b7d20d2f0a394682003a2f9a5b8674");
+            // console.log('XAXA token.getTotalBalance()', (await token.getTotalBalance()).toNumber())
+            // console.log('XAXA token.getAvaiableBalance()', (await token.getAvaiableBalance()).toNumber())
+            // console.log('XAXA icoAcc.nativeToken.getTotalBalance()', (await icoAcc.nativeToken.getTotalBalance()).toNumber())
+            // console.log('XAXA icoAcc.nativeToken.getAvaiableBalance()', (await icoAcc.nativeToken.getAvaiableBalance()).toNumber())
+
             // console.log('Wallet', await wallet.getAccounts());
           });
         } else {

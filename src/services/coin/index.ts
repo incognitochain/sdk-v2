@@ -84,18 +84,6 @@ export async function deriveSerialNumbers(accountKeySet: AccountKeySetModel, coi
   };
 }
 
-export async function getUnspentCoins(accountKeySet: AccountKeySetModel, coins: CoinModel[], tokenId: string): Promise<CoinModel[]> {
-  const paymentAddress = accountKeySet.paymentAddressKeySerialized;
-
-  const serialNumberList = coins?.map(coin => coin.serialNumber) || [];
-  const serialNumberStatus =  await rpcClient.hasSerialNumber(paymentAddress, serialNumberList, tokenId);
-  return coins?.filter((coin, index) => !serialNumberStatus[index]);
-}
-
-export async function getSpendingSerialCoins() : Promise<string[]> {
-  return [];
-}
-
 export function getValueFromCoins(coins: CoinModel[]): bn {
   return coins?.reduce((totalAmount, coin) => totalAmount.add(new bn(coin.value)), new bn(0)) || new bn(0);
 }

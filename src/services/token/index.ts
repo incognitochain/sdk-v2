@@ -1,50 +1,60 @@
-import { getAllOutputCoins, getUnspentCoins, deriveSerialNumbers } from '@src/services/coin';
+import { getAllOutputCoins, deriveSerialNumbers, getValueFromCoins } from '@src/services/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
+import rpc from '@src/services/rpc';
+import { getTxHistoryCache } from '../cache/txHistory';
 
-class TokenService {
-  constructor() {}
+/**
+ * Return list of coins that not existed in chain (not use yet)
+ */
+export async function getUnspentCoins(accountKeySet: AccountKeySetModel, tokenId: string) {
+  const allCoins = await getAllOutputCoins(accountKeySet, tokenId);
+  const derivedCoins = await deriveSerialNumbers(accountKeySet, allCoins);
+  const coins = derivedCoins.coins;
+  const paymentAddress = accountKeySet.paymentAddressKeySerialized;
+  const serialNumberList = coins?.map(coin => coin.serialNumber) || [];
+  const serialNumberStatus =  await rpc.hasSerialNumber(paymentAddress, serialNumberList, tokenId);
 
-  /**
-   * Result coins will not have their serial number, need to derive Serial Number to get it
-   */
-  async getAllOutputCoins(accountKeySet: AccountKeySetModel, tokenId: string) {
-    return await getAllOutputCoins(accountKeySet, tokenId);
-  }
+  return coins?.filter((coin, index) => !serialNumberStatus[index]);
 
-  /**
-   * Get serial number for coins
-   */
-  async deriveSerialNumberForCoins(accountKeySet: AccountKeySetModel, coinsToDerive: CoinModel[]) {
-    return await deriveSerialNumbers(accountKeySet, coinsToDerive);
-  }
-
-  async getUnspentCoins(accountKeySet: AccountKeySetModel, derivedCoins: CoinModel[], tokenId: string) {
-    const unspentCoins = await getUnspentCoins(accountKeySet, derivedCoins, tokenId);
-
-    return unspentCoins;
-  }
-
-  async getSpendingCoinSerialNumber() : Promise<string[]> {
-    return [];
-  }
-
-  /**
-   * Coins can use to create tx (excluding spent coins, spending coins)
-   */
-  async getAvailableCoins(accountKeySet: AccountKeySetModel, tokenId: string) {
-    const allCoins = await this.getAllOutputCoins(accountKeySet, tokenId);
-    const derivedCoins = await this.deriveSerialNumberForCoins(accountKeySet, allCoins);
-    const unspentCoins = this.getUnspentCoins(accountKeySet, derivedCoins.coins, tokenId);
-
-    //TODO: need to filter spending coins
-
-    return unspentCoins;
-  }
-
-  async getTotalBalance(unspentCoins: CoinModel[]) {
-    return unspentCoins?.reduce((balance, coin) => Number.parseInt(coin.value) + balance, 0) || 0;
-  }
 }
 
-export default TokenService;
+/**
+ * Coins can use to create tx (excluding spent coins, spending coins)
+ */
+export async function getAvailableCoins(accountKeySet: AccountKeySetModel, tokenId: string, isNativeCoin: boolean) {
+  const unspentCoins = await getUnspentCoins(accountKeySet, tokenId);
+  const spendingSerialNumberData = await getSpendingSerialCoins();
+  const spendingSerialNumbers = isNativeCoin ? spendingSerialNumberData.spendingNativeSerialNumbers : spendingSerialNumberData.spendingPrivacySerialNumbers;
+  
+  return unspentCoins.filter(coin => !spendingSerialNumbers.includes(coin.serialNumber));
+}
+
+/**
+ * List of serial numbers are being use
+ */
+export async function getSpendingSerialCoins() : Promise<{spendingNativeSerialNumbers: string[], spendingPrivacySerialNumbers: string[]}> {
+  const caches = await getTxHistoryCache();
+  const txHistories = Object.values(caches);
+
+  const spendingNativeSerialNumbers: string[] = [];
+  const spendingPrivacySerialNumbers: string[] = [];
+
+  txHistories.forEach(txHistory => {
+    spendingNativeSerialNumbers.push(...txHistory.nativeTokenInfo.spendingCoinSNs || []);
+    spendingPrivacySerialNumbers.push(...txHistory.privacyTokenInfo.spendingCoinSNs || []);
+  });
+
+  return {
+    spendingNativeSerialNumbers,
+    spendingPrivacySerialNumbers
+  };
+}
+
+export function getTotalBalance(unspentCoins: CoinModel[]) {
+  return getValueFromCoins(unspentCoins);
+}
+
+export function getAvailableBalance(availableCoins: CoinModel[]) {
+  return getValueFromCoins(availableCoins);
+}

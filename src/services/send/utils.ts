@@ -9,8 +9,9 @@ import { getValueFromCoins, chooseBestCoinToSpent } from '@src/services/coin';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import CoinModel from '@src/models/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
-import { TxHistory } from '@src/models/txHistory';
+import { TxHistoryModel } from '@src/models/txHistory';
 import { SuccessTx } from '@src/services/wallet/constants';
+import { cacheTxHistory } from '../cache/txHistory';
 
 export interface TxInputType {
   inputCoinStrs: CoinModel[],
@@ -255,7 +256,7 @@ export function createHistoryInfo({
   txType,
   privacyTokenTxType
 }: CreateHistoryParam) {
-  return new TxHistory({
+  const history = new TxHistoryModel({
     txId,
     txType,
     lockTime,
@@ -282,4 +283,10 @@ export function createHistoryInfo({
     },
     meta,
   });
+
+
+  // TODO: handle cache error
+  cacheTxHistory(history.txId, history);
+
+  return history;
 }

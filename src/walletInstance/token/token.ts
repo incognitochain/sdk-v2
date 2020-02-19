@@ -1,7 +1,7 @@
-import { getAllOutputCoins, getUnspentCoins, deriveSerialNumbers } from '@src/services/coin';
+import { getAllOutputCoins, deriveSerialNumbers } from '@src/services/coin';
 import BaseTokenModel from '@src/models/token/baseToken';
-import AccountModel from '@src/models/account/account';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
+import { getTotalBalance, getUnspentCoins, getAvailableCoins, getAvailableBalance } from '@src/services/token';
 
 interface NativeTokenParam {
   tokenId: string,
@@ -16,6 +16,8 @@ class Token implements BaseTokenModel {
   name: string;
   symbol: string;
   accountKeySet: AccountKeySetModel;
+  isNativeToken: boolean;
+  isPrivacyToken: boolean;
 
   constructor({ accountKeySet, tokenId, name, symbol }: NativeTokenParam) {
     this.accountKeySet = accountKeySet;
@@ -35,29 +37,29 @@ class Token implements BaseTokenModel {
     return await deriveSerialNumbers(this.accountKeySet, allCoins);
   }
 
-  async getUnspentCoins(tokenId: TokenIdType) {
-    const serialData = await this.deriveSerialNumbers(tokenId);
-
-    const { coins } = serialData || {};
-
-    const unspentCoins = await getUnspentCoins(this.accountKeySet, coins, tokenId);
-
-    return unspentCoins;
-  }
-
-  async getSpendingCoinSerialNumber() : Promise<string[]> {
-    return [];
+  /**
+   * 
+   * @param tokenId use `null` for native token
+   */
+  async getAvailableCoins(tokenId: TokenIdType = this.tokenId) {
+    return getAvailableCoins(this.accountKeySet, tokenId, this.isNativeToken);
   }
 
    /**
    * 
    * @param tokenId use `null` for native token
    */
-  async getAvailableCoins(tokenId: TokenIdType = this.tokenId) {
-    const unspentCoins = await this.getUnspentCoins(tokenId);
-    const spendingSerialNumbers = await this.getSpendingCoinSerialNumber();
+  async getUnspentCoins(tokenId: TokenIdType) {
+    return getUnspentCoins(this.accountKeySet, tokenId);
+  }
 
-    return unspentCoins?.filter(coin => !spendingSerialNumbers.includes(coin.serialNumber));
+  /**
+   * 
+   * @param tokenId use `null` for native token
+   */
+  async getAvaiableBalance(tokenId: TokenIdType = this.tokenId) {
+    const availableCoins = await this.getAvailableCoins(tokenId);
+    return getAvailableBalance(availableCoins);
   }
 
   /**
@@ -66,11 +68,8 @@ class Token implements BaseTokenModel {
    */
   async getTotalBalance(tokenId: TokenIdType = this.tokenId) {
     const unspentCoins = await this.getUnspentCoins(tokenId);
-
-    return unspentCoins?.reduce((balance, coin) => Number.parseInt(coin.value) + balance, 0) || 0;
+    return getTotalBalance(unspentCoins);
   }
-
-  getAvaiableBalance() {}
 
   transfer() {}
 }
