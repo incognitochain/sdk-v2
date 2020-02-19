@@ -4,7 +4,7 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 export = sjcl;
-export as namespace sjcl;
+// export as namespace sjcl;
 
 declare namespace sjcl {
     export var arrayBuffer: SjclArrayBufferModes;
