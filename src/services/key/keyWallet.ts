@@ -17,9 +17,10 @@ import { ENCODE_VERSION, ED25519_KEY_SIZE } from '@src/constants/constants';
 import PrivateKeyModel from '@src/models/key//privateKey';
 import PaymentAddressKeyModel from '@src/models/key/paymentAddress';
 import ViewingKeyModel from '@src/models/key//viewingKey';
-import { generateKeySet } from '@src/services/key/accountKeySet';
+import { generateKeySet, getBackupData as getBackupDataKeySet, restoreKeySetFromBackupData } from '@src/services/key/accountKeySet';
 import CryptoJS from 'crypto-js';
 import { wordArrayToByteArray, byteArrayToWordArray } from '@src/services/key/utils';
+import KeyWalletModel from '@src/models/key/keyWallet';
 
 type AllKeyModelType = PrivateKeyModel | PaymentAddressKeyModel | ViewingKeyModel;
 type KeyTypeString = 'PRIVATE_KEY' | 'PAYMENT_ADDRESS' | 'PUBLIC_KEY' | 'VIEWING_KEY';
@@ -215,7 +216,7 @@ export function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWall
   const keySet = generateKeySet(newSeed);
 
   const childNumber: KeyWalletChildNumber = Uint8Array.from((new bn(childIndex)).toArray('be', ChildNumberSize));
-  const chainCode: KeyWalletChainCode = intermediary.slice(ChainCodeSize);
+  const chainCode: KeyWalletChainCode = Uint8Array.from(intermediary.slice(ChainCodeSize));
 
   return {
     childNumber,
@@ -225,3 +226,25 @@ export function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWall
   };
 }
 
+export function getBackupData(keyWallet: KeyWalletModel) {
+  const data = {
+    chainCode: Array.from(keyWallet.chainCode),
+    childNumber: Array.from(keyWallet.childNumber),
+    depth: keyWallet.depth,
+    keySet: getBackupDataKeySet(keyWallet.keySet)
+  };
+
+  return data;
+}
+
+export function restoreKeyWalletFromBackupData(data: any) {
+  const { chainCode, childNumber, depth, keySet } = data;
+  const keyWallet = new KeyWalletModel();
+
+  keyWallet.chainCode = Uint8Array.from(chainCode);
+  keyWallet.childNumber = Uint8Array.from(childNumber);
+  keyWallet.depth = depth;
+  keyWallet.keySet = restoreKeySetFromBackupData(keySet);
+
+  return keyWallet;
+}

@@ -119,7 +119,7 @@ export function generateMasterKey(seed: Uint8Array) {
 
   // Split it into our PubKey and chain code
   let keyBytes = intermediary.slice(0, 32);  // use to create master private/public keypair
-  let chainCode = intermediary.slice(32); // be used with public PubKey (in keypair) for new child keys 
+  let chainCode = Uint8Array.from(intermediary.slice(32)); // be used with public PubKey (in keypair) for new child keys 
   
   let keyWallet = new KeyWalletModel();
   keyWallet.chainCode = chainCode;

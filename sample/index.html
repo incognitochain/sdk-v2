@@ -22,7 +22,8 @@
       }
 
       function initWallet(incognito) {
-        const wallet = new incognito.Wallet('pass');
+        const wallet = new incognito.Wallet();
+        wallet.init('pass');
 
         return wallet;
       }

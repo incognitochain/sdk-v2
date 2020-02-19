@@ -25,3 +25,34 @@ export function generateKeySet(seed: string) {
   const privateKey = generatePrivateKey(seed);
   return getKeySetFromPrivateKeyBytes(privateKey);
 }
+
+export function getBackupData(keySet: AccountKeySetModel) {
+  const data = {
+    publicKeyBytes: Array.from(keySet.paymentAddress.publicKeyBytes),
+    transmissionKeyBytes: Array.from(keySet.paymentAddress.transmissionKeyBytes),
+    privateKeyBytes: Array.from(keySet.privateKey.privateKeyBytes),
+    receivingKeyBytes: Array.from(keySet.viewingKey.receivingKeyBytes),
+  };
+
+  return data;
+}
+
+export function restoreKeySetFromBackupData(data: any) {
+  const { publicKeyBytes, transmissionKeyBytes, privateKeyBytes, receivingKeyBytes } = data;
+  const privateKey = new PrivateKeyModel(Uint8Array.from(privateKeyBytes));
+  const paymentAddress = new PaymentAddressKeyModel();
+  const viewingKey = new ViewingKeyModel();
+
+  paymentAddress.publicKeyBytes = Uint8Array.from(publicKeyBytes);
+  paymentAddress.transmissionKeyBytes = Uint8Array.from(transmissionKeyBytes);
+  viewingKey.publicKeyBytes = Uint8Array.from(publicKeyBytes);
+  viewingKey.receivingKeyBytes = Uint8Array.from(receivingKeyBytes);
+
+  const keySet = new AccountKeySetModel({
+    privateKey,
+    paymentAddress,
+    viewingKey
+  });
+
+  return keySet;
+}

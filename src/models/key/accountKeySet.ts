@@ -48,10 +48,6 @@ class AccountKeySetModel extends BaseModel {
   get validatorKey(): string {
     return checkEncode(hashSha3BytesToBytes(hashSha3BytesToBytes(this.privateKey.privateKeyBytes)), ENCODE_VERSION);
   }
-
-  get publicKeyBytes(): string {
-    return this.paymentAddress.publicKeyBytes.toString();
-  }
 }
 
 export default AccountKeySetModel;

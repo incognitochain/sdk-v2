@@ -61055,13 +61055,6 @@ var AccountKeySetModel = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(AccountKeySetModel.prototype, "publicKeyBytes", {
-        get: function () {
-            return this.paymentAddress.publicKeyBytes.toString();
-        },
-        enumerable: true,
-        configurable: true
-    });
     return AccountKeySetModel;
 }(_baseModel__WEBPACK_IMPORTED_MODULE_0__["default"]));
 /* harmony default export */ __webpack_exports__["default"] = (AccountKeySetModel);
@@ -65013,13 +65006,15 @@ var RPCHttpService = /** @class */ (function () {
 /*!*******************************************!*\
   !*** ./src/services/key/accountKeySet.ts ***!
   \*******************************************/
-/*! exports provided: getKeySetFromPrivateKeyBytes, generateKeySet */
+/*! exports provided: getKeySetFromPrivateKeyBytes, generateKeySet, getBackupData, restoreKeySetFromBackupData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getKeySetFromPrivateKeyBytes", function() { return getKeySetFromPrivateKeyBytes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateKeySet", function() { return generateKeySet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBackupData", function() { return getBackupData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "restoreKeySetFromBackupData", function() { return restoreKeySetFromBackupData; });
 /* harmony import */ var _src_services_key_generator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/key/generator */ "./src/services/key/generator.ts");
 /* harmony import */ var _src_models_key_paymentAddress__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/models/key/paymentAddress */ "./src/models/key/paymentAddress.ts");
 /* harmony import */ var _src_models_key_viewingKey__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/models/key/viewingKey */ "./src/models/key/viewingKey.ts");
@@ -65046,6 +65041,31 @@ function getKeySetFromPrivateKeyBytes(privateKeyBytes) {
 function generateKeySet(seed) {
     var privateKey = Object(_src_services_key_generator__WEBPACK_IMPORTED_MODULE_0__["generatePrivateKey"])(seed);
     return getKeySetFromPrivateKeyBytes(privateKey);
+}
+function getBackupData(keySet) {
+    var data = {
+        publicKeyBytes: Array.from(keySet.paymentAddress.publicKeyBytes),
+        transmissionKeyBytes: Array.from(keySet.paymentAddress.transmissionKeyBytes),
+        privateKeyBytes: Array.from(keySet.privateKey.privateKeyBytes),
+        receivingKeyBytes: Array.from(keySet.viewingKey.receivingKeyBytes),
+    };
+    return data;
+}
+function restoreKeySetFromBackupData(data) {
+    var publicKeyBytes = data.publicKeyBytes, transmissionKeyBytes = data.transmissionKeyBytes, privateKeyBytes = data.privateKeyBytes, receivingKeyBytes = data.receivingKeyBytes;
+    var privateKey = new _src_models_key_privateKey__WEBPACK_IMPORTED_MODULE_3__["default"](Uint8Array.from(privateKeyBytes));
+    var paymentAddress = new _src_models_key_paymentAddress__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    var viewingKey = new _src_models_key_viewingKey__WEBPACK_IMPORTED_MODULE_2__["default"]();
+    paymentAddress.publicKeyBytes = Uint8Array.from(publicKeyBytes);
+    paymentAddress.transmissionKeyBytes = Uint8Array.from(transmissionKeyBytes);
+    viewingKey.publicKeyBytes = Uint8Array.from(publicKeyBytes);
+    viewingKey.receivingKeyBytes = Uint8Array.from(receivingKeyBytes);
+    var keySet = new _src_models_key_accountKeySet__WEBPACK_IMPORTED_MODULE_4__["default"]({
+        privateKey: privateKey,
+        paymentAddress: paymentAddress,
+        viewingKey: viewingKey
+    });
+    return keySet;
 }
 
 
@@ -65216,7 +65236,7 @@ function generateMasterKey(seed) {
     var intermediary = Object(_utils__WEBPACK_IMPORTED_MODULE_6__["wordArrayToByteArray"])(hmac);
     // Split it into our PubKey and chain code
     var keyBytes = intermediary.slice(0, 32); // use to create master private/public keypair
-    var chainCode = intermediary.slice(32); // be used with public PubKey (in keypair) for new child keys 
+    var chainCode = Uint8Array.from(intermediary.slice(32)); // be used with public PubKey (in keypair) for new child keys 
     var keyWallet = new _src_models_key_keyWallet__WEBPACK_IMPORTED_MODULE_8__["default"]();
     keyWallet.chainCode = chainCode;
     keyWallet.depth = 0;
@@ -65232,7 +65252,7 @@ function generateMasterKey(seed) {
 /*!***************************************!*\
   !*** ./src/services/key/keyWallet.ts ***!
   \***************************************/
-/*! exports provided: serializeKey, deserializePrivateKeyBytes, deserializePaymentAddressKeyBytes, deserializeViewingKeyBytes, deserializePublicKeyBytes, base58CheckSerialize, getKeyTypeFromKeyBytes, base58CheckDeserialize, getIntermediary, generateChildKeyData */
+/*! exports provided: serializeKey, deserializePrivateKeyBytes, deserializePaymentAddressKeyBytes, deserializeViewingKeyBytes, deserializePublicKeyBytes, base58CheckSerialize, getKeyTypeFromKeyBytes, base58CheckDeserialize, getIntermediary, generateChildKeyData, getBackupData, restoreKeyWalletFromBackupData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65247,6 +65267,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "base58CheckDeserialize", function() { return base58CheckDeserialize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getIntermediary", function() { return getIntermediary; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateChildKeyData", function() { return generateChildKeyData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBackupData", function() { return getBackupData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "restoreKeyWalletFromBackupData", function() { return restoreKeyWalletFromBackupData; });
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bn.js */ "./node_modules/bn.js/lib/bn.js");
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bn_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _src_services_wallet_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/wallet/constants */ "./src/services/wallet/constants.ts");
@@ -65259,6 +65281,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_services_key_accountKeySet__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @src/services/key/accountKeySet */ "./src/services/key/accountKeySet.ts");
 /* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
 /* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(crypto_js__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _src_models_key_keyWallet__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @src/models/key/keyWallet */ "./src/models/key/keyWallet.ts");
+
 
 
 
@@ -65418,13 +65442,31 @@ function generateChildKeyData(childIndex, keyWalletDepth, keyWalletChainCode) {
     var newSeed = intermediary.slice(0, 32);
     var keySet = Object(_src_services_key_accountKeySet__WEBPACK_IMPORTED_MODULE_8__["generateKeySet"])(newSeed);
     var childNumber = Uint8Array.from((new bn_js__WEBPACK_IMPORTED_MODULE_0___default.a(childIndex)).toArray('be', _src_services_wallet_constants__WEBPACK_IMPORTED_MODULE_1__["ChildNumberSize"]));
-    var chainCode = intermediary.slice(_src_services_wallet_constants__WEBPACK_IMPORTED_MODULE_1__["ChainCodeSize"]);
+    var chainCode = Uint8Array.from(intermediary.slice(_src_services_wallet_constants__WEBPACK_IMPORTED_MODULE_1__["ChainCodeSize"]));
     return {
         childNumber: childNumber,
         chainCode: chainCode,
         depth: keyWalletDepth + 1,
         keySet: keySet
     };
+}
+function getBackupData(keyWallet) {
+    var data = {
+        chainCode: Array.from(keyWallet.chainCode),
+        childNumber: Array.from(keyWallet.childNumber),
+        depth: keyWallet.depth,
+        keySet: Object(_src_services_key_accountKeySet__WEBPACK_IMPORTED_MODULE_8__["getBackupData"])(keyWallet.keySet)
+    };
+    return data;
+}
+function restoreKeyWalletFromBackupData(data) {
+    var chainCode = data.chainCode, childNumber = data.childNumber, depth = data.depth, keySet = data.keySet;
+    var keyWallet = new _src_models_key_keyWallet__WEBPACK_IMPORTED_MODULE_10__["default"]();
+    keyWallet.chainCode = Uint8Array.from(chainCode);
+    keyWallet.childNumber = Uint8Array.from(childNumber);
+    keyWallet.depth = depth;
+    keyWallet.keySet = Object(_src_services_key_accountKeySet__WEBPACK_IMPORTED_MODULE_8__["restoreKeySetFromBackupData"])(keySet);
+    return keyWallet;
 }
 
 
@@ -67501,17 +67543,19 @@ var ShardNumber = 8;
 /*!**************************************!*\
   !*** ./src/services/wallet/index.ts ***!
   \**************************************/
-/*! exports provided: setPrivacyUtilRandomBytesFunc, initWalletData, encryptWallet, decryptWallet */
+/*! exports provided: setPrivacyUtilRandomBytesFunc, initWalletData, encryptWalletData, decryptWalletData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setPrivacyUtilRandomBytesFunc", function() { return setPrivacyUtilRandomBytesFunc; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initWalletData", function() { return initWalletData; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "encryptWallet", function() { return encryptWallet; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "decryptWallet", function() { return decryptWallet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "encryptWalletData", function() { return encryptWalletData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "decryptWalletData", function() { return decryptWalletData; });
 /* harmony import */ var _mnemonic__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mnemonic */ "./src/services/wallet/mnemonic.ts");
 /* harmony import */ var _src_privacy_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/privacy/utils */ "./src/privacy/utils.ts");
+/* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
+/* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(crypto_js__WEBPACK_IMPORTED_MODULE_2__);
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -67550,6 +67594,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 };
 
 
+
 function setPrivacyUtilRandomBytesFunc(f) {
     Object(_src_privacy_utils__WEBPACK_IMPORTED_MODULE_1__["setRandBytesFunc"])(f);
 }
@@ -67572,44 +67617,16 @@ function initWalletData(randomBytesFunction, passPhrase) {
   * Backup the wallet, encrypt with `password` (if not provided, use passPhrase instead), return a encrypted text
   * @param {string} password
   */
-function encryptWallet(walelt, password) {
-    // try {
-    //   new Validator('backup password', password).required().string();
-    //   const accounts = [...walelt.masterAccount.child];
-    //   const masterKey = { ...walelt.masterAccount?.key || {} };
-    //   // parse to byte[]
-    //   for (let i = 0; i < accounts.length; i++) {
-    //     const account = accounts[i];
-    //     if (account) {
-    //       account.key.ChainCode = Array.from(account.key.ChainCode);
-    //       account.key.ChildNumber = Array.from(account.key.ChildNumber);
-    //       account.key.KeySet.PrivateKey = Array.from(account.key.KeySet.PrivateKey);
-    //       account.key.KeySet.PaymentAddress.Pk = Array.from(account.key.KeySet.PaymentAddress.Pk);
-    //       account.key.KeySet.PaymentAddress.Tk = Array.from(account.key.KeySet.PaymentAddress.Tk);
-    //       account.key.KeySet.ReadonlyKey.Pk = Array.from(account.key.KeySet.ReadonlyKey.Pk);
-    //       account.key.KeySet.ReadonlyKey.Rk = Array.from(account.key.KeySet.ReadonlyKey.Rk);
-    //     }
-    //   }
-    //   masterKey.ChainCode = Array.from(masterKey?.ChainCode);
-    //   masterKey.ChildNumber = Array.from(masterKey?.ChildNumber);
-    //   masterKey.KeySet.PrivateKey = Array.from(masterKey?.KeySet?.PrivateKey);
-    //   masterKey.KeySet.PaymentAddress.Pk = Array.from(masterKey?.KeySet?.PaymentAddress.Pk);
-    //   masterKey.KeySet.PaymentAddress.Tk = Array.from(masterKey?.KeySet?.PaymentAddress.Tk);
-    //   masterKey.KeySet.ReadonlyKey.Pk = Array.from(masterKey?.KeySet?.ReadonlyKey?.Pk);
-    //   masterKey.KeySet.ReadonlyKey.Rk = Array.from(masterKey?.KeySet?.ReadonlyKey?.Rk);
-    //   walelt.masterAccount.child = accounts;
-    //   let data = JSON.stringify(walelt);
-    //   // encrypt
-    //   let cipherText = CryptoJS.AES.encrypt(data, password);
-    //   return cipherText?.toString();
-    // } catch (e) {
-    //   throw new Error('Encrypt wallet to string failed');
-    // }
+function encryptWalletData(walletData, password) {
+    return crypto_js__WEBPACK_IMPORTED_MODULE_2___default.a.AES.encrypt(JSON.stringify(walletData), password).toString();
 }
-function decryptWallet(encryptString, password) {
+function decryptWalletData(encryptString, password) {
     return __awaiter(this, void 0, void 0, function () {
+        var decryptedData, data;
         return __generator(this, function (_a) {
-            return [2 /*return*/];
+            decryptedData = crypto_js__WEBPACK_IMPORTED_MODULE_2___default.a.AES.decrypt(encryptString, password);
+            data = JSON.parse(decryptedData.toString(crypto_js__WEBPACK_IMPORTED_MODULE_2___default.a.enc.Utf8));
+            return [2 /*return*/, data];
         });
     });
 }
@@ -68174,7 +68191,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _token__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../token */ "./src/walletInstance/token/index.ts");
 /* harmony import */ var _src_services_rpc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/services/rpc */ "./src/services/rpc/index.ts");
 /* harmony import */ var _src_services_send_initPrivacyToken__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @src/services/send/initPrivacyToken */ "./src/services/send/initPrivacyToken.ts");
-/* harmony import */ var _src_constants_constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @src/constants/constants */ "./src/constants/constants.ts");
+/* harmony import */ var _src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @src/services/key/keyWallet */ "./src/services/key/keyWallet.ts");
+/* harmony import */ var _src_constants_constants__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @src/constants/constants */ "./src/constants/constants.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -68188,6 +68206,17 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -68230,6 +68259,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
 ;
 ;
 var Account = /** @class */ (function (_super) {
@@ -68243,6 +68273,13 @@ var Account = /** @class */ (function (_super) {
         _this.init();
         return _this;
     }
+    Account.restoreFromBackupData = function (data) {
+        var name = data.name, key = data.key, privacyTokenIds = data.privacyTokenIds, isImport = data.isImport;
+        var keyWallet = Object(_src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_5__["restoreKeyWalletFromBackupData"])(key);
+        var account = new Account(name, keyWallet, isImport);
+        account.privacyTokenIds = privacyTokenIds;
+        return account;
+    };
     Account.prototype.init = function () {
         this.serializeKeys();
     };
@@ -68255,7 +68292,7 @@ var Account = /** @class */ (function (_super) {
         lodash__WEBPACK_IMPORTED_MODULE_0___default.a.remove(this.privacyTokenIds, function (id) { return id === tokenId; });
     };
     Account.prototype.issuePrivacyToken = function (_a) {
-        var tokenName = _a.tokenName, tokenSymbol = _a.tokenSymbol, supplyAmount = _a.supplyAmount, _b = _a.nativeTokenFee, nativeTokenFee = _b === void 0 ? _src_constants_constants__WEBPACK_IMPORTED_MODULE_5__["DEFAULT_NATIVE_FEE"] : _b;
+        var tokenName = _a.tokenName, tokenSymbol = _a.tokenSymbol, supplyAmount = _a.supplyAmount, _b = _a.nativeTokenFee, nativeTokenFee = _b === void 0 ? _src_constants_constants__WEBPACK_IMPORTED_MODULE_6__["DEFAULT_NATIVE_FEE"] : _b;
         return __awaiter(this, void 0, void 0, function () {
             var availableCoins;
             return __generator(this, function (_c) {
@@ -68309,6 +68346,10 @@ var Account = /** @class */ (function (_super) {
             });
         });
     };
+    Account.prototype.getBackupData = function () {
+        var data = _super.prototype.getBackupData.call(this);
+        return __assign({ privacyTokenIds: this.privacyTokenIds, isImport: this.isImport }, data);
+    };
     return Account;
 }(_baseAccount__WEBPACK_IMPORTED_MODULE_1__["default"]));
 /* harmony default export */ __webpack_exports__["default"] = (Account);
@@ -68337,6 +68378,12 @@ var BaseAccount = /** @class */ (function () {
         this.key.keySet.privateKeySerialized = Object(_src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_0__["base58CheckSerialize"])(this.key.keySet.privateKey, this.key.depth, this.key.childNumber, this.key.chainCode);
         this.key.keySet.paymentAddressKeySerialized = Object(_src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_0__["base58CheckSerialize"])(this.key.keySet.paymentAddress, this.key.depth, this.key.childNumber, this.key.chainCode);
         this.key.keySet.viewingKeySerialized = Object(_src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_0__["base58CheckSerialize"])(this.key.keySet.viewingKey, this.key.depth, this.key.childNumber, this.key.chainCode);
+    };
+    BaseAccount.prototype.getBackupData = function () {
+        return {
+            name: this.name,
+            key: Object(_src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_0__["getBackupData"])(this.key),
+        };
     };
     return BaseAccount;
 }());
@@ -68403,6 +68450,17 @@ var __extends = (undefined && undefined.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (undefined && undefined.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 
 
@@ -68416,18 +68474,26 @@ var DEFAULT_MASTER_ACCOUNT_NAME = 'MASTER_ACCOUNT';
 ;
 var MasterAccount = /** @class */ (function (_super) {
     __extends(MasterAccount, _super);
-    function MasterAccount(walletSeed, name) {
+    function MasterAccount(name) {
         if (name === void 0) { name = DEFAULT_MASTER_ACCOUNT_NAME; }
         var _this = _super.call(this, name) || this;
         _this.child = [];
         _this.key = null;
-        _this.init(walletSeed);
         return _this;
     }
+    MasterAccount.restoreFromBackupData = function (data) {
+        var name = data.name, key = data.key, child = data.child;
+        var keyWallet = Object(_src_services_key_keyWallet__WEBPACK_IMPORTED_MODULE_4__["restoreKeyWalletFromBackupData"])(key);
+        var account = new MasterAccount(name);
+        account.key = keyWallet;
+        account.child = child.map(function (accountData) { return _account__WEBPACK_IMPORTED_MODULE_7__["default"].restoreFromBackupData(accountData); });
+        account.serializeKeys();
+        return account;
+    };
     MasterAccount.prototype.init = function (walletSeed) {
         this.key = Object(_src_services_key_generator__WEBPACK_IMPORTED_MODULE_1__["generateMasterKey"])(walletSeed);
-        this.serializeKeys();
         this.addAccount('Account 0');
+        return this;
     };
     MasterAccount.prototype.addAccount = function (name, shardId) {
         var lastChildAccountIndex = lodash__WEBPACK_IMPORTED_MODULE_0___default.a.findLastIndex(this.child, function (account) { return !account.isImport && !!account.key.childNumber; });
@@ -68472,6 +68538,10 @@ var MasterAccount = /** @class */ (function (_super) {
         else {
             throw new Error('Import account failed, private key is invalid');
         }
+    };
+    MasterAccount.prototype.getBackupData = function () {
+        var data = _super.prototype.getBackupData.call(this);
+        return __assign({ child: this.child.map(function (account) { return account.getBackupData(); }) }, data);
     };
     return MasterAccount;
 }(_baseAccount__WEBPACK_IMPORTED_MODULE_3__["default"]));
@@ -68894,25 +68964,98 @@ var Token = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _account__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./account */ "./src/walletInstance/account/index.ts");
 /* harmony import */ var _src_services_wallet__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/wallet */ "./src/services/wallet/index.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 
 
 var DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
 var Wallet = /** @class */ (function () {
-    function Wallet(passPhrase, name) {
+    function Wallet() {
         this.seed = null;
         this.entropy = null;
-        this.passPhrase = passPhrase;
+        this.passPhrase = null;
         this.mnemonic = null;
         this.masterAccount = null;
-        this.name = name || DEFAULT_WALLET_NAME;
-        this.init();
+        this.name = DEFAULT_WALLET_NAME;
     }
-    Wallet.prototype.init = function () {
-        var _a = Object(_src_services_wallet__WEBPACK_IMPORTED_MODULE_1__["initWalletData"])(null, this.passPhrase), entropy = _a.entropy, mnemonic = _a.mnemonic, seed = _a.seed;
+    Wallet.restore = function (encryptedWallet, password) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, masterAccount, name, mnemonic, seed, entropy, passPhrase, wallet;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Object(_src_services_wallet__WEBPACK_IMPORTED_MODULE_1__["decryptWalletData"])(encryptedWallet, password)];
+                    case 1:
+                        data = _a.sent();
+                        masterAccount = data.masterAccount, name = data.name, mnemonic = data.mnemonic, seed = data.seed, entropy = data.entropy, passPhrase = data.passPhrase;
+                        wallet = new Wallet();
+                        wallet.import(name, passPhrase, mnemonic, entropy, Uint8Array.from(seed), _account__WEBPACK_IMPORTED_MODULE_0__["MasterAccount"].restoreFromBackupData(masterAccount));
+                        return [2 /*return*/, wallet];
+                }
+            });
+        });
+    };
+    Wallet.prototype.init = function (passPhrase, name) {
+        var _a = Object(_src_services_wallet__WEBPACK_IMPORTED_MODULE_1__["initWalletData"])(null, passPhrase), entropy = _a.entropy, mnemonic = _a.mnemonic, seed = _a.seed;
+        this.passPhrase = passPhrase;
+        this.name = name || this.name;
         this.seed = seed;
         this.mnemonic = mnemonic;
         this.entropy = entropy;
-        this.masterAccount = new _account__WEBPACK_IMPORTED_MODULE_0__["MasterAccount"](this.seed);
+        this.masterAccount = new _account__WEBPACK_IMPORTED_MODULE_0__["MasterAccount"]('MASTER').init(seed);
+        return this;
+    };
+    Wallet.prototype.import = function (name, passPhrase, mnemonic, entropy, seed, masterAccount) {
+        this.name = name;
+        this.seed = seed;
+        this.entropy = entropy;
+        this.passPhrase = passPhrase;
+        this.mnemonic = mnemonic;
+        this.masterAccount = masterAccount;
+    };
+    Wallet.prototype.backup = function (password) {
+        var data = {
+            masterAccount: this.masterAccount.getBackupData(),
+            name: this.name,
+            mnemonic: this.mnemonic,
+            passPhrase: this.passPhrase,
+            entropy: this.entropy,
+            seed: Array.from(this.seed)
+        };
+        return Object(_src_services_wallet__WEBPACK_IMPORTED_MODULE_1__["encryptWalletData"])(data, password);
     };
     return Wallet;
 }());

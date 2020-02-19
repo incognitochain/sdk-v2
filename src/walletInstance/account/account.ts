@@ -5,7 +5,7 @@ import AccountModel from '@src/models/account/account';
 import KeyWalletModel from '@src/models/key/keyWallet';
 import rpc from '@src/services/rpc';
 import initPrivacyToken from '@src/services/send/initPrivacyToken';
-import { getUnspentCoins } from '@src/services/coin';
+import { restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface AccountModelInterface extends AccountModel {
@@ -34,6 +34,16 @@ class Account extends BaseAccount implements AccountModelInterface {
     this.key = key;
 
     this.init();
+  }
+
+  static restoreFromBackupData(data: any) {
+    const { name, key, privacyTokenIds, isImport } = data;
+    const keyWallet = restoreKeyWalletFromBackupData(key);
+
+    const account = new Account(name, keyWallet, isImport);
+    account.privacyTokenIds = privacyTokenIds
+
+    return account;
   }
 
   init() {
@@ -87,6 +97,16 @@ class Account extends BaseAccount implements AccountModelInterface {
     }
 
     return null;
+  }
+
+  getBackupData() {
+    const data = super.getBackupData();
+
+    return {
+      privacyTokenIds: this.privacyTokenIds,
+      isImport: this.isImport,
+      ...data
+    };
   }
 }
 

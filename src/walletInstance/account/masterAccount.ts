@@ -4,11 +4,10 @@ import bn from 'bn.js';
 import BaseAccount from './baseAccount';
 import AccountModel from '@src/models/account/account';
 import MasterAccountModel from '@src/models/account/masterAccount';
-import { generateChildKeyData, deserializePrivateKeyBytes, base58CheckDeserialize } from '@src/services/key/keyWallet';
+import { generateChildKeyData, base58CheckDeserialize, restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
 import KeyWalletModel from '@src/models/key/keyWallet';
 import { getShardIDFromLastByte } from '@src/utils/common';
 import Account from './account';
-import AccountKeySetModel from '@src/models/key/accountKeySet';
 import { getKeySetFromPrivateKeyBytes } from '@src/services/key/accountKeySet';
 import PrivateKeyModel from '@src/models/key/privateKey';
 
@@ -17,21 +16,32 @@ const DEFAULT_MASTER_ACCOUNT_NAME = 'MASTER_ACCOUNT';
 interface MasterAccountInterface extends MasterAccountModel {};
 
 class MasterAccount extends BaseAccount implements MasterAccountInterface {
-  child: AccountModel[];
+  child: Account[];
 
-  constructor(walletSeed: Uint8Array, name: string = DEFAULT_MASTER_ACCOUNT_NAME) {
+  constructor(name: string = DEFAULT_MASTER_ACCOUNT_NAME) {
     super(name);
 
     this.child = [];
     this.key = null;
+  }
 
-    this.init(walletSeed);
+  static restoreFromBackupData(data: any) {
+    const { name, key, child } = data;
+    const keyWallet = restoreKeyWalletFromBackupData(key);
+    const account = new MasterAccount(name);
+    account.key = keyWallet;
+    account.child = child.map((accountData: any) => Account.restoreFromBackupData(accountData));
+    account.serializeKeys();
+    
+    return account;
   }
 
   init(walletSeed: Uint8Array) {
     this.key = generateMasterKey(walletSeed);
-    this.serializeKeys();
+    
     this.addAccount('Account 0');
+
+    return this;
   }
 
   addAccount(name: string, shardId?: number) {
@@ -88,6 +98,15 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     } else {
       throw new Error('Import account failed, private key is invalid');
     }
+  }
+
+  getBackupData() {
+    const data = super.getBackupData();
+
+    return {
+      child: this.child.map(account => account.getBackupData()),
+      ...data
+    };
   }
 }
 
