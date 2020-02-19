@@ -1,7 +1,7 @@
 import Token from './token';
 import PrivacyTokenModel from '@src/models/token/privacyToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
-import sendPrivacyToken from '@src/services/send/sendPrivacyToken';
+import sendPrivacyToken from '@src/services/tx/sendPrivacyToken';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface PrivacyTokenParam {

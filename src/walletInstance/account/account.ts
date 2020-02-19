@@ -4,7 +4,7 @@ import { NativeToken, PrivacyToken } from '../token';
 import AccountModel from '@src/models/account/account';
 import KeyWalletModel from '@src/models/key/keyWallet';
 import rpc from '@src/services/rpc';
-import initPrivacyToken from '@src/services/send/initPrivacyToken';
+import initPrivacyToken from '@src/services/tx/initPrivacyToken';
 import { restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
@@ -51,6 +51,7 @@ class Account extends BaseAccount implements AccountModelInterface {
   }
 
   followTokenById(tokenId: TokenIdType) {
+    // TODO verify token id
     if (!this.privacyTokenIds.includes(tokenId)) {
       this.privacyTokenIds.push(tokenId);
     }
@@ -78,6 +79,7 @@ class Account extends BaseAccount implements AccountModelInterface {
    * @param {*} tokenId 
    */
   async getFollowingPrivacyToken(tokenId: TokenIdType) {
+    // TODO filter invalid token
     const tokens = await rpc.listPrivacyCustomTokens();
     const privacyTokens = (tokenId ? [tokenId] : this.privacyTokenIds).map(id => {
       const token = tokens.find((token: { [key: string]: any }) => token.ID === id);

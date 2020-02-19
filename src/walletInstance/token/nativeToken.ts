@@ -2,7 +2,7 @@ import { TokenInfo } from '@src/constants';
 import Token from './token';
 import NativeTokenModel from '@src/models/token/nativeToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
-import sendNativeToken from '@src/services/send/sendNativeToken';
+import sendNativeToken from '@src/services/tx/sendNativeToken';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 class NativeToken extends Token implements NativeTokenModel {
