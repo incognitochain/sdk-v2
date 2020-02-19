@@ -2,6 +2,7 @@ import { getAllOutputCoins, deriveSerialNumbers } from '@src/services/coin';
 import BaseTokenModel from '@src/models/token/baseToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import { getTotalBalance, getUnspentCoins, getAvailableCoins, getAvailableBalance } from '@src/services/token';
+import { getTxHistoryByPublicKey } from '@src/services/history/txHistory';
 
 interface NativeTokenParam {
   tokenId: string,
@@ -69,6 +70,11 @@ class Token implements BaseTokenModel {
   async getTotalBalance(tokenId: TokenIdType = this.tokenId) {
     const unspentCoins = await this.getUnspentCoins(tokenId);
     return getTotalBalance(unspentCoins);
+  }
+
+  async getTxHistories() {
+    const sentTx = await getTxHistoryByPublicKey(this.accountKeySet.publicKeySerialized, this.isPrivacyToken ? this.tokenId : null);
+    return sentTx;
   }
 
   transfer() {}

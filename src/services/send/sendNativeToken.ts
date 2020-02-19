@@ -92,6 +92,7 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     nativePaymentAmount: nativePaymentAmountBN.toNumber(),
     nativeSpendingCoinSNs: serialNumberList,
     txType: TxNormalType,
+    accountPublicKeySerialized: accountKeySet.publicKeySerialized
   });
 
   return history;

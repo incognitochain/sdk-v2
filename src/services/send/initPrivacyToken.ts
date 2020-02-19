@@ -86,6 +86,7 @@ export default async function inPrivacyToken({
     txType: TxCustomTokenPrivacyType,
     privacyTokenTxType: CustomTokenInit,
     privacyPaymentInfoList,
-    privacyPaymentAmount: supplyAmount
+    privacyPaymentAmount: supplyAmount,
+    accountPublicKeySerialized: accountKeySet.publicKeySerialized
   });
 }

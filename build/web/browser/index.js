@@ -114,17 +114,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_services_storage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @src/services/storage */ "./src/services/storage/index.ts");
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! bn.js */ "./node_modules/bn.js/lib/bn.js");
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(bn_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _src_services_history_txHistory__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @src/services/history/txHistory */ "./src/services/history/txHistory.ts");
 
 
 
 
 
 
+
+var historyService = {
+    checkCachedHistories: _src_services_history_txHistory__WEBPACK_IMPORTED_MODULE_6__["checkCachedHistories"],
+    getTxHistoryByPublicKey: _src_services_history_txHistory__WEBPACK_IMPORTED_MODULE_6__["getTxHistoryByPublicKey"]
+};
 /* harmony default export */ __webpack_exports__["default"] = ({
     loadWASM: _src_wasm__WEBPACK_IMPORTED_MODULE_2__["loadWASM"],
     storage: _src_services_storage__WEBPACK_IMPORTED_MODULE_4__["default"],
     bn: bn_js__WEBPACK_IMPORTED_MODULE_5___default.a,
     Wallet: _src_walletInstance_wallet__WEBPACK_IMPORTED_MODULE_3__["default"],
+    historyService: historyService
 });
 
 
@@ -61359,7 +61366,7 @@ __webpack_require__.r(__webpack_exports__);
 ;
 var TxHistoryModel = /** @class */ (function () {
     function TxHistoryModel(_a) {
-        var txId = _a.txId, txType = _a.txType, lockTime = _a.lockTime, status = _a.status, nativeTokenInfo = _a.nativeTokenInfo, privacyTokenInfo = _a.privacyTokenInfo, meta = _a.meta;
+        var txId = _a.txId, txType = _a.txType, lockTime = _a.lockTime, status = _a.status, nativeTokenInfo = _a.nativeTokenInfo, privacyTokenInfo = _a.privacyTokenInfo, meta = _a.meta, accountPublicKeySerialized = _a.accountPublicKeySerialized;
         this.txId = txId;
         this.txType = txType;
         this.lockTime = lockTime;
@@ -61367,6 +61374,7 @@ var TxHistoryModel = /** @class */ (function () {
         this.nativeTokenInfo = nativeTokenInfo;
         this.privacyTokenInfo = privacyTokenInfo;
         this.meta = meta;
+        this.accountPublicKeySerialized = accountPublicKeySerialized;
     }
     TxHistoryModel.prototype.toJson = function () {
         return {
@@ -61376,7 +61384,8 @@ var TxHistoryModel = /** @class */ (function () {
             status: this.status,
             nativeTokenInfo: this.nativeTokenInfo,
             privacyTokenInfo: this.privacyTokenInfo,
-            meta: this.meta
+            meta: this.meta,
+            accountPublicKeySerialized: this.accountPublicKeySerialized
         };
     };
     return TxHistoryModel;
@@ -64767,6 +64776,7 @@ function getTxHistoryCache() {
                             nativeTokenInfo: historyData.nativeTokenInfo,
                             privacyTokenInfo: historyData.privacyTokenInfo,
                             meta: historyData.meta,
+                            accountPublicKeySerialized: historyData.accountPublicKeySerialized
                         });
                     });
                     return [2 /*return*/, data];
@@ -65021,6 +65031,145 @@ function chooseBestCoinToSpent(coins, amountBN) {
     }
 }
 ;
+
+
+/***/ }),
+
+/***/ "./src/services/history/txHistory.ts":
+/*!*******************************************!*\
+  !*** ./src/services/history/txHistory.ts ***!
+  \*******************************************/
+/*! exports provided: updateTxHistory, checkCachedHistories, getTxHistoryByPublicKey */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateTxHistory", function() { return updateTxHistory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkCachedHistories", function() { return checkCachedHistories; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTxHistoryByPublicKey", function() { return getTxHistoryByPublicKey; });
+/* harmony import */ var _rpc__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../rpc */ "./src/services/rpc/index.ts");
+/* harmony import */ var _wallet_constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../wallet/constants */ "./src/services/wallet/constants.ts");
+/* harmony import */ var _cache_txHistory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../cache/txHistory */ "./src/services/cache/txHistory.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+function updateTxHistory(txHistory) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function () {
+        var txInfo;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, _rpc__WEBPACK_IMPORTED_MODULE_0__["default"].getTransactionByHash(txHistory.txId)];
+                case 1:
+                    txInfo = _b.sent();
+                    if ((_a = txInfo) === null || _a === void 0 ? void 0 : _a.isInBlock) {
+                        // tx completed
+                        txHistory.status = _wallet_constants__WEBPACK_IMPORTED_MODULE_1__["ConfirmedTx"];
+                    }
+                    else if (!txInfo.isInBlock && !txInfo.isInMempool && txInfo.err !== null) {
+                        // tx failed
+                        txHistory.status = _wallet_constants__WEBPACK_IMPORTED_MODULE_1__["FailedTx"];
+                    }
+                    return [2 /*return*/, txHistory];
+            }
+        });
+    });
+}
+function checkCachedHistories() {
+    return __awaiter(this, void 0, void 0, function () {
+        var cached, txIds, tasks;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Object(_cache_txHistory__WEBPACK_IMPORTED_MODULE_2__["getTxHistoryCache"])()];
+                case 1:
+                    cached = _a.sent();
+                    txIds = Object.keys(cached);
+                    tasks = txIds.map(function (txId) { return __awaiter(_this, void 0, void 0, function () {
+                        var txHistory, updatedTxHistory;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    txHistory = cached[txId];
+                                    return [4 /*yield*/, updateTxHistory(txHistory)];
+                                case 1:
+                                    updatedTxHistory = _a.sent();
+                                    return [2 /*return*/, Object(_cache_txHistory__WEBPACK_IMPORTED_MODULE_2__["cacheTxHistory"])(txId, updatedTxHistory).catch(null)];
+                            }
+                        });
+                    }); });
+                    return [2 /*return*/, Promise.all(tasks).then(function () { return true; })];
+            }
+        });
+    });
+}
+/**
+ *
+ * @param tokenId Use `null` for native token
+ */
+function getTxHistoryByPublicKey(accountPublicKeySerialized, tokenId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var cached;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, Object(_cache_txHistory__WEBPACK_IMPORTED_MODULE_2__["getTxHistoryCache"])()];
+                case 1:
+                    cached = _a.sent();
+                    return [2 /*return*/, Object.values(cached).filter(function (txHistory) {
+                            var matchPublicKey = txHistory.accountPublicKeySerialized === accountPublicKeySerialized;
+                            if (matchPublicKey) {
+                                var txTokenId = txHistory.privacyTokenInfo.tokenId;
+                                // search for privacy token history
+                                if (tokenId) {
+                                    var matchTokenId = txTokenId === tokenId;
+                                    return matchTokenId ? true : false;
+                                }
+                                else { // search for native token history
+                                    return txTokenId ? false : true;
+                                }
+                            }
+                            return false;
+                        }) || []];
+            }
+        });
+    });
+}
 
 
 /***/ }),
@@ -66776,7 +66925,8 @@ function inPrivacyToken(_a) {
                             txType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_3__["TxCustomTokenPrivacyType"],
                             privacyTokenTxType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_3__["CustomTokenInit"],
                             privacyPaymentInfoList: privacyPaymentInfoList,
-                            privacyPaymentAmount: supplyAmount
+                            privacyPaymentAmount: supplyAmount,
+                            accountPublicKeySerialized: accountKeySet.publicKeySerialized
                         })];
             }
         });
@@ -66921,6 +67071,7 @@ function sendNativeToken(_a) {
                         nativePaymentAmount: nativePaymentAmountBN.toNumber(),
                         nativeSpendingCoinSNs: serialNumberList,
                         txType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_7__["TxNormalType"],
+                        accountPublicKeySerialized: accountKeySet.publicKeySerialized
                     });
                     return [2 /*return*/, history];
             }
@@ -67121,6 +67272,7 @@ function sendPrivacyToken(_a) {
                             privacySpendingCoinSNs: privacySpendingCoinSNs,
                             txType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_8__["TxCustomTokenPrivacyType"],
                             privacyTokenTxType: _src_tx_constants__WEBPACK_IMPORTED_MODULE_8__["CustomTokenTransfer"],
+                            accountPublicKeySerialized: accountKeySet.publicKeySerialized
                         })];
             }
         });
@@ -67408,7 +67560,7 @@ function getCoinInfoForCache(coins) {
     };
 }
 function createHistoryInfo(_a) {
-    var txId = _a.txId, lockTime = _a.lockTime, nativePaymentInfoList = _a.nativePaymentInfoList, privacyPaymentInfoList = _a.privacyPaymentInfoList, nativePaymentAmount = _a.nativePaymentAmount, privacyPaymentAmount = _a.privacyPaymentAmount, nativeFee = _a.nativeFee, privacyFee = _a.privacyFee, tokenId = _a.tokenId, tokenSymbol = _a.tokenSymbol, tokenName = _a.tokenName, nativeSpendingCoinSNs = _a.nativeSpendingCoinSNs, privacySpendingCoinSNs = _a.privacySpendingCoinSNs, nativeListUTXO = _a.nativeListUTXO, privacyListUTXO = _a.privacyListUTXO, meta = _a.meta, txType = _a.txType, privacyTokenTxType = _a.privacyTokenTxType;
+    var txId = _a.txId, lockTime = _a.lockTime, nativePaymentInfoList = _a.nativePaymentInfoList, privacyPaymentInfoList = _a.privacyPaymentInfoList, nativePaymentAmount = _a.nativePaymentAmount, privacyPaymentAmount = _a.privacyPaymentAmount, nativeFee = _a.nativeFee, privacyFee = _a.privacyFee, tokenId = _a.tokenId, tokenSymbol = _a.tokenSymbol, tokenName = _a.tokenName, nativeSpendingCoinSNs = _a.nativeSpendingCoinSNs, privacySpendingCoinSNs = _a.privacySpendingCoinSNs, nativeListUTXO = _a.nativeListUTXO, privacyListUTXO = _a.privacyListUTXO, meta = _a.meta, txType = _a.txType, privacyTokenTxType = _a.privacyTokenTxType, accountPublicKeySerialized = _a.accountPublicKeySerialized;
     var history = new _src_models_txHistory__WEBPACK_IMPORTED_MODULE_8__["TxHistoryModel"]({
         txId: txId,
         txType: txType,
@@ -67435,6 +67587,7 @@ function createHistoryInfo(_a) {
             privacyTokenTxType: privacyTokenTxType
         },
         meta: meta,
+        accountPublicKeySerialized: accountPublicKeySerialized
     });
     // TODO: handle cache error
     Object(_cache_txHistory__WEBPACK_IMPORTED_MODULE_10__["cacheTxHistory"])(history.txId, history);
@@ -67570,6 +67723,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_services_coin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/coin */ "./src/services/coin/index.ts");
 /* harmony import */ var _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/rpc */ "./src/services/rpc/index.ts");
 /* harmony import */ var _cache_txHistory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../cache/txHistory */ "./src/services/cache/txHistory.ts");
+/* harmony import */ var _wallet_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../wallet/constants */ "./src/services/wallet/constants.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -67606,6 +67760,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 
@@ -67670,8 +67825,10 @@ function getSpendingSerialCoins() {
                     spendingNativeSerialNumbers = [];
                     spendingPrivacySerialNumbers = [];
                     txHistories.forEach(function (txHistory) {
-                        spendingNativeSerialNumbers.push.apply(spendingNativeSerialNumbers, txHistory.nativeTokenInfo.spendingCoinSNs || []);
-                        spendingPrivacySerialNumbers.push.apply(spendingPrivacySerialNumbers, txHistory.privacyTokenInfo.spendingCoinSNs || []);
+                        if (txHistory.status !== _wallet_constants__WEBPACK_IMPORTED_MODULE_3__["ConfirmedTx"] && txHistory.status !== _wallet_constants__WEBPACK_IMPORTED_MODULE_3__["FailedTx"]) {
+                            spendingNativeSerialNumbers.push.apply(spendingNativeSerialNumbers, txHistory.nativeTokenInfo.spendingCoinSNs || []);
+                            spendingPrivacySerialNumbers.push.apply(spendingPrivacySerialNumbers, txHistory.privacyTokenInfo.spendingCoinSNs || []);
+                        }
                     });
                     return [2 /*return*/, {
                             spendingNativeSerialNumbers: spendingNativeSerialNumbers,
@@ -69060,6 +69217,7 @@ var PrivacyToken = /** @class */ (function (_super) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_services_coin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/coin */ "./src/services/coin/index.ts");
 /* harmony import */ var _src_services_token__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/token */ "./src/services/token/index.ts");
+/* harmony import */ var _src_services_history_txHistory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/services/history/txHistory */ "./src/services/history/txHistory.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -69096,6 +69254,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 ;
@@ -69188,6 +69347,19 @@ var Token = /** @class */ (function () {
                     case 1:
                         unspentCoins = _a.sent();
                         return [2 /*return*/, Object(_src_services_token__WEBPACK_IMPORTED_MODULE_1__["getTotalBalance"])(unspentCoins)];
+                }
+            });
+        });
+    };
+    Token.prototype.getTxHistories = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var sentTx;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Object(_src_services_history_txHistory__WEBPACK_IMPORTED_MODULE_2__["getTxHistoryByPublicKey"])(this.accountKeySet.publicKeySerialized, this.isPrivacyToken ? this.tokenId : null)];
+                    case 1:
+                        sentTx = _a.sent();
+                        return [2 /*return*/, sentTx];
                 }
             });
         });

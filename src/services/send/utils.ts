@@ -40,6 +40,7 @@ export interface CreateHistoryParam {
   meta?: any,
   txType?: any,
   privacyTokenTxType?: any,
+  accountPublicKeySerialized: string
 };
 
 /**
@@ -254,7 +255,8 @@ export function createHistoryInfo({
   privacyListUTXO,
   meta,
   txType,
-  privacyTokenTxType
+  privacyTokenTxType,
+  accountPublicKeySerialized
 }: CreateHistoryParam) {
   const history = new TxHistoryModel({
     txId,
@@ -282,6 +284,7 @@ export function createHistoryInfo({
       privacyTokenTxType
     },
     meta,
+    accountPublicKeySerialized
   });
 
 

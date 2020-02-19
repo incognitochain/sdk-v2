@@ -180,5 +180,6 @@ export default async function sendPrivacyToken({
     privacySpendingCoinSNs,
     txType: TxCustomTokenPrivacyType,
     privacyTokenTxType: CustomTokenTransfer,
+    accountPublicKeySerialized: accountKeySet.publicKeySerialized
   });
 }

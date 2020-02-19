@@ -34,7 +34,8 @@ interface TxHistoryModelParam {
   status: number,
   nativeTokenInfo: NativeTokenHistoryInfo,
   privacyTokenInfo?: PrivacyTokenHistoryInfo,
-  meta?: any
+  meta?: any,
+  accountPublicKeySerialized: string
 };
 
 export class TxHistoryModel {
@@ -45,8 +46,9 @@ export class TxHistoryModel {
   nativeTokenInfo: NativeTokenHistoryInfo;
   privacyTokenInfo: PrivacyTokenHistoryInfo;
   meta: any;
+  accountPublicKeySerialized: string;
 
-  constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta } : TxHistoryModelParam) {
+  constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized } : TxHistoryModelParam) {
     this.txId = txId;
     this.txType = txType;
     this.lockTime = lockTime;
@@ -54,6 +56,7 @@ export class TxHistoryModel {
     this.nativeTokenInfo = nativeTokenInfo;
     this.privacyTokenInfo = privacyTokenInfo;
     this.meta = meta;
+    this.accountPublicKeySerialized = accountPublicKeySerialized;
   }
 
   toJson() {
@@ -64,7 +67,8 @@ export class TxHistoryModel {
       status: this.status,
       nativeTokenInfo: this.nativeTokenInfo,
       privacyTokenInfo: this.privacyTokenInfo,
-      meta: this.meta
+      meta: this.meta,
+      accountPublicKeySerialized: this.accountPublicKeySerialized
     };
   }
 }
