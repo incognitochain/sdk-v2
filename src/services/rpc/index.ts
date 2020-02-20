@@ -797,6 +797,30 @@ class RpcClient {
 
       return response.data.Result && response.data.Result.ListCustomTokenBalance || [];
     }
+
+    getBurningAddress = async (beaconHeight: number = 0) => {
+      const data = {
+          "jsonrpc": "1.0",
+          "method": "getburningaddress",
+          "params": [beaconHeight],
+          "id": 1
+      };
+
+      let response;
+      try {
+          response = await this.rpcHttpService.postRequest(data);
+      } catch (e) {
+          throw e;
+      }
+
+      if (response.status !== 200) {
+          throw new Error("Can't request API get burning address");
+      } else if (response.data.Error) {
+          throw response.data.Error;
+      }
+
+      return response.data.Result;
+    }
 }
 
 export default new RpcClient();

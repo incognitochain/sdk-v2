@@ -8,7 +8,7 @@ import wasmMethods from '@src/wasm/methods';
 import { convertHashToStr } from '@src/utils/common';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
-import CoinModel from '@src/models/coin';
+import CoinModel, { CoinRawData } from '@src/models/coin';
 import { CustomTokenTransfer, TxCustomTokenPrivacyType } from '@src/tx/constants';
 
 interface TokenInfo {
@@ -37,7 +37,22 @@ interface CreateTxParam  extends TokenInfo {
   privateKeySerialized: string,
   nativePaymentAmountBN: bn,
   privacyPaymentAmountBN: bn,
-  privacyTokenParamAdditional?: object
+  privacyTokenParamAdditional?: PrivacyTokenParam,
+  usePrivacyForNativeToken?: boolean,
+  usePrivacyForPrivacyToken?: boolean,
+  metaData?: any,
+  initTxMethod: Function
+};
+
+interface PrivacyTokenParam {
+  propertyID?: TokenIdType,
+  propertyName?: TokenNameType,
+  propertySymbol?: TokenSymbolType,
+  amount?: number,
+  tokenTxType?: TokenTxType,
+  fee?: number,
+  paymentInfoForPToken?: PaymentInfoModel[],
+  tokenInputs?: CoinRawData[]
 };
 
 export async function createTx({
@@ -54,6 +69,10 @@ export async function createTx({
   tokenName,
   tokenSymbol,
   privacyTokenParamAdditional,
+  usePrivacyForNativeToken = true,
+  usePrivacyForPrivacyToken = true,
+  metaData,
+  initTxMethod,
 } : CreateTxParam) {
   const nativeOutputCoins = createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
   const privacyOutputCoins = createOutputCoin(privacyPaymentAmountBN.add(privacyTokenFeeBN), privacyTxInput.totalValueInputBN, privacyPaymentInfoList);
@@ -61,7 +80,7 @@ export async function createTx({
   console.log('nativeOutputCoins', nativeOutputCoins);
   console.log('privacyOutputCoins', privacyOutputCoins);
 
-  const privacyTokenParam = {
+  const privacyTokenParam: PrivacyTokenParam = {
     propertyID: tokenId,
     propertyName: tokenName,
     propertySymbol: tokenSymbol,
@@ -79,9 +98,9 @@ export async function createTx({
     paramPaymentInfos: nativePaymentInfoList,
     inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
     fee: nativeTokenFeeBN.toNumber(),
-    isPrivacy: true,
-    isPrivacyForPToken: true,
-    metaData: <any>null,
+    isPrivacy: usePrivacyForNativeToken,
+    isPrivacyForPToken: usePrivacyForPrivacyToken,
+    metaData,
     info: '',
     commitmentIndicesForNativeToken: nativeTxInput.commitmentIndices,
     myCommitmentIndicesForNativeToken: nativeTxInput.myCommitmentIndices,
@@ -95,7 +114,7 @@ export async function createTx({
 
   console.log('paramInitTx: ', paramInitTx);
 
-  const resInitTx = await initTx(wasmMethods.initPrivacyTokenTx, paramInitTx);
+  const resInitTx = await initTx(initTxMethod, paramInitTx);
   console.log('createAndSendNativeToken resInitTx: ', resInitTx);
 
   //base64 decode txjson
@@ -130,14 +149,16 @@ export default async function sendPrivacyToken({
   tokenSymbol,
   tokenName
 } : SendParam) {
+  const usePrivacyForPrivacyToken = true;
+  const usePrivacyForNativeToken = true;
   const nativeTokenFeeBN = toBNAmount(nativeFee);
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const privacyTokenFeeBN = toBNAmount(privacyFee);
   const privacyPaymentAmountBN = getTotalAmountFromPaymentList(privacyPaymentInfoList);
-  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, nativeAvailableCoins, nativePaymentAmountBN, nativeTokenFeeBN);
+  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, nativeAvailableCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
   console.log('nativeTxInput', nativeTxInput);
 
-  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN);
+  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN, usePrivacyForPrivacyToken);
   console.log('privacyTxInput', privacyTxInput);
 
   const txInfo = await createTx({
@@ -152,7 +173,8 @@ export default async function sendPrivacyToken({
     privateKeySerialized: accountKeySet.privateKeySerialized,
     tokenId,
     tokenSymbol,
-    tokenName
+    tokenName,
+    initTxMethod: wasmMethods.initPrivacyTokenTx
   });
 
   console.log('txInfo', txInfo);
@@ -180,6 +202,8 @@ export default async function sendPrivacyToken({
     privacySpendingCoinSNs,
     txType: TxCustomTokenPrivacyType,
     privacyTokenTxType: CustomTokenTransfer,
-    accountPublicKeySerialized: accountKeySet.publicKeySerialized
+    accountPublicKeySerialized: accountKeySet.publicKeySerialized,
+    usePrivacyForPrivacyToken,
+    usePrivacyForNativeToken
   });
 }

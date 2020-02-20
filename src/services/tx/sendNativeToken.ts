@@ -68,10 +68,11 @@ async function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput
 }
 
 export default async function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins } : SendParam) {
+  const usePrivacyForNativeToken = true;
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTokenFeeBN = toBNAmount(nativeFee);
 
-  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableCoins, nativePaymentAmountBN, nativeTokenFeeBN);
+  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
   console.log('txInput', nativeTxInput);
 
   const txInfo = await createTx({ nativeTxInput, nativePaymentAmountBN, nativeTokenFeeBN, privateKeySerialized: accountKeySet.privateKeySerialized, nativePaymentInfoList });
@@ -92,7 +93,8 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     nativePaymentAmount: nativePaymentAmountBN.toNumber(),
     nativeSpendingCoinSNs: serialNumberList,
     txType: TxNormalType,
-    accountPublicKeySerialized: accountKeySet.publicKeySerialized
+    accountPublicKeySerialized: accountKeySet.publicKeySerialized,
+    usePrivacyForNativeToken,
   });
 
   return history;

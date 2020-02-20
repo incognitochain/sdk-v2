@@ -40,7 +40,10 @@ export interface CreateHistoryParam {
   meta?: any,
   txType?: any,
   privacyTokenTxType?: any,
-  accountPublicKeySerialized: string
+  accountPublicKeySerialized: string,
+  devInfo?: any,
+  usePrivacyForPrivacyToken?: boolean,
+  usePrivacyForNativeToken: boolean
 };
 
 /**
@@ -59,6 +62,34 @@ export function getTotalAmountFromPaymentList(paymentInfoList: PaymentInfoModel[
   return paymentInfoList.reduce((totalAmount: bn, paymentInfo: PaymentInfoModel) => totalAmount.add(new bn(paymentInfo.amount)), new bn(0));
 }
 
+async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinModel[], usePrivacy: boolean, tokenId?: TokenIdType) {
+  let commitmentIndices = [];
+  let myCommitmentIndices = [];
+  let commitmentStrs = [];
+
+  if (usePrivacy) {
+    const randomCommitmentData = await rpc.randomCommitmentsProcess(paymentAddress, coinsToSpend, tokenId);
+
+    commitmentIndices = randomCommitmentData.commitmentIndices;
+    myCommitmentIndices = randomCommitmentData.myCommitmentIndices;
+    commitmentStrs = randomCommitmentData.commitmentStrs;
+
+    // Check number of list of random commitments, list of random commitment indices
+    if (commitmentIndices.length !== coinsToSpend.length * CM_RING_SIZE) {
+      throw new Error('Invalid random commitments');
+    }
+    if (myCommitmentIndices.length !== coinsToSpend.length) {
+      throw new Error('Number of list my commitment indices must be equal to number of input coins');
+    }
+  }
+
+  return {
+    commitmentIndices,
+    myCommitmentIndices,
+    commitmentStrs
+  };
+}
+
 /**
  * Prepare data for sending native token
  * 
@@ -67,26 +98,18 @@ export function getTotalAmountFromPaymentList(paymentInfoList: PaymentInfoModel[
  * @param nativePaymentAmountBN Amount to send
  * @param nativeTokenFeeBN Fee to send (native fee)
  */
-export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, availableNativeCoins: CoinModel[], nativePaymentAmountBN: bn, nativeTokenFeeBN: bn) : Promise<TxInputType> {
+export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, availableNativeCoins: CoinModel[], nativePaymentAmountBN: bn, nativeTokenFeeBN: bn, usePrivacy: boolean = true) : Promise<TxInputType> {
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const totalAmountBN = nativePaymentAmountBN.add(nativeTokenFeeBN);
   const bestCoins = chooseBestCoinToSpent(availableNativeCoins, totalAmountBN);
   const coinsToSpend: CoinModel[] = bestCoins.resultInputCoins;
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
-
+  
   if (totalAmountBN.cmp(totalValueToSpendBN) === 1) {
     throw new Error('Not enough coin');
   }
 
-  const { commitmentIndices, commitmentStrs, myCommitmentIndices } = await rpc.randomCommitmentsProcess(paymentAddress, coinsToSpend);
-
-  // Check number of list of random commitments, list of random commitment indices
-  if (commitmentIndices.length !== coinsToSpend.length * CM_RING_SIZE) {
-    throw new Error('Invalid random commitments');
-  }
-  if (myCommitmentIndices.length !== coinsToSpend.length) {
-    throw new Error('Number of list my commitment indices must be equal to number of input coins');
-  }
+  const { commitmentIndices, myCommitmentIndices, commitmentStrs } = await getRandomCommitments(paymentAddress, coinsToSpend, usePrivacy);
 
   for (let i = 0; i < coinsToSpend.length; i++) {
     // set info for input coin is null
@@ -96,9 +119,9 @@ export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, a
   return {
     inputCoinStrs: coinsToSpend,
     totalValueInputBN: totalValueToSpendBN,
-    commitmentIndices: commitmentIndices,
-    myCommitmentIndices: myCommitmentIndices,
-    commitmentStrs: commitmentStrs,
+    commitmentIndices,
+    myCommitmentIndices,
+    commitmentStrs,
   };
 }
 
@@ -111,7 +134,8 @@ export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, a
  * @param privacyPaymentAmountBN Amount to send
  * @param privacyTokenFeeBN Fee to send (privacy token fee)
  */
-export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, privacyAvailableCoins: CoinModel[], tokenId: TokenIdType, privacyPaymentAmountBN: bn, privacyTokenFeeBN: bn) : Promise<TxInputType> {
+export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, privacyAvailableCoins: CoinModel[], tokenId: TokenIdType, privacyPaymentAmountBN: bn, privacyTokenFeeBN: bn, usePrivacy: boolean = true) : Promise<TxInputType> {
+  const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   let coinsToSpend: CoinModel[] = [];
   let totalValueToSpentBN = new bn(0);
   let commitmentIndices = [];
@@ -119,7 +143,6 @@ export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, 
   let commitmentStrs = [];
 
   if (tokenId) {
-    const paymentAddress = accountKeySet.paymentAddressKeySerialized;
     const totalAmountBN = privacyPaymentAmountBN.add(privacyTokenFeeBN);
     const bestCoins = chooseBestCoinToSpent(privacyAvailableCoins, totalAmountBN);
 
@@ -130,18 +153,10 @@ export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, 
       throw new Error('Not enough coin');
     }
 
-    const commitmentData = await rpc.randomCommitmentsProcess(paymentAddress, coinsToSpend, tokenId);
-    commitmentIndices = commitmentData.commitmentIndices;
-    myCommitmentIndices = commitmentData.myCommitmentIndices;
-    commitmentStrs = commitmentData.commitmentStrs;
-
-    // Check number of list of random commitments, list of random commitment indices
-    if (commitmentIndices.length !== coinsToSpend.length * CM_RING_SIZE) {
-      throw new Error('Invalid random commitments');
-    }
-    if (myCommitmentIndices.length !== coinsToSpend.length) {
-      throw new Error('Number of list my commitment indices must be equal to number of input coins');
-    }
+    const RandomCommitmentData = await getRandomCommitments(paymentAddress, coinsToSpend, usePrivacy, tokenId);
+    commitmentIndices = RandomCommitmentData.commitmentIndices;
+    myCommitmentIndices = RandomCommitmentData.myCommitmentIndices;
+    commitmentStrs = RandomCommitmentData.commitmentStrs;
 
     for (let i = 0; i < coinsToSpend.length; i++) {
       // set info for input coin is null
@@ -152,9 +167,9 @@ export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, 
   return {
     inputCoinStrs: coinsToSpend,
     totalValueInputBN: totalValueToSpentBN,
-    commitmentIndices: commitmentIndices,
-    myCommitmentIndices: myCommitmentIndices,
-    commitmentStrs: commitmentStrs,
+    commitmentIndices,
+    myCommitmentIndices,
+    commitmentStrs,
   };
 }
 
@@ -256,7 +271,10 @@ export function createHistoryInfo({
   meta,
   txType,
   privacyTokenTxType,
-  accountPublicKeySerialized
+  accountPublicKeySerialized,
+  devInfo,
+  usePrivacyForPrivacyToken,
+  usePrivacyForNativeToken
 }: CreateHistoryParam) {
   const history = new TxHistoryModel({
     txId,
@@ -269,7 +287,7 @@ export function createHistoryInfo({
       fee: nativeFee,
       amount: nativePaymentAmount,
       paymentInfoList: nativePaymentInfoList,
-      usePrivacy: true
+      usePrivacy: usePrivacyForNativeToken
     },
     privacyTokenInfo: {
       spendingCoinSNs: privacySpendingCoinSNs,
@@ -280,11 +298,12 @@ export function createHistoryInfo({
       fee: privacyFee,
       amount: privacyPaymentAmount,
       paymentInfoList: privacyPaymentInfoList,
-      usePrivacy: true,
+      usePrivacy: usePrivacyForPrivacyToken,
       privacyTokenTxType
     },
     meta,
-    accountPublicKeySerialized
+    accountPublicKeySerialized,
+    devInfo,
   });
 
 

@@ -3,6 +3,7 @@ import BaseTokenModel from '@src/models/token/baseToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import { getTotalBalance, getUnspentCoins, getAvailableCoins, getAvailableBalance } from '@src/services/token';
 import { getTxHistoryByPublicKey } from '@src/services/history/txHistory';
+import PaymentInfoModel from '@src/models/paymentInfo';
 
 interface NativeTokenParam {
   tokenId: string,
@@ -77,7 +78,7 @@ class Token implements BaseTokenModel {
     return sentTx;
   }
 
-  transfer() {}
+  transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: number, privacyFee?: number) {}
 }
 
 export default Token;

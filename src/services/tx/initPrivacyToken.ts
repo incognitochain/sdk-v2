@@ -3,6 +3,7 @@ import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
+import wasmMethods from '@src/wasm/methods';
 import { CustomTokenInit, TxCustomTokenPrivacyType } from '@src/tx/constants';
 import { createTx } from './sendPrivacyToken';
 
@@ -18,7 +19,7 @@ interface InitParam extends TokenInfo {
   supplyAmount: number,
 };
 
-export default async function inPrivacyToken({
+export default async function initPrivacyToken({
   accountKeySet,
   availableNativeCoins,
   nativeFee,
@@ -26,6 +27,8 @@ export default async function inPrivacyToken({
   tokenName,
   supplyAmount
 } : InitParam) {
+  const usePrivacyForPrivacyToken = false;
+  const usePrivacyForNativeToken = true;
   const privacyPaymentInfoList = [
     new PaymentInfoModel({
       paymentAddress: accountKeySet.paymentAddressKeySerialized,
@@ -39,12 +42,12 @@ export default async function inPrivacyToken({
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const privacyTokenFeeBN = toBNAmount(0);
   const privacyPaymentAmountBN = toBNAmount(0);
-  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN);
+  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
   const privacyAvailableCoins: CoinModel[] = [];
 
   console.log('nativeTxInput', nativeTxInput);
 
-  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN);
+  const privacyTxInput = await getPrivacyTokenTxInput(accountKeySet, privacyAvailableCoins, tokenId, privacyPaymentAmountBN, privacyTokenFeeBN, usePrivacyForPrivacyToken);
   console.log('privacyTxInput', privacyTxInput);
 
   const txInfo = await createTx({
@@ -60,6 +63,9 @@ export default async function inPrivacyToken({
     tokenId,
     tokenSymbol,
     tokenName,
+    usePrivacyForPrivacyToken,
+    usePrivacyForNativeToken,
+    initTxMethod: wasmMethods.initPrivacyTokenTx,
     privacyTokenParamAdditional: {
       amount: supplyAmount,
       tokenTxType: CustomTokenInit,
@@ -87,6 +93,9 @@ export default async function inPrivacyToken({
     privacyTokenTxType: CustomTokenInit,
     privacyPaymentInfoList,
     privacyPaymentAmount: supplyAmount,
-    accountPublicKeySerialized: accountKeySet.publicKeySerialized
+    accountPublicKeySerialized: accountKeySet.publicKeySerialized,
+    usePrivacyForNativeToken,
+    usePrivacyForPrivacyToken,
+    devInfo: 'issue token'
   });
 }

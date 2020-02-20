@@ -4,6 +4,7 @@ import NativeTokenModel from '@src/models/token/nativeToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import sendNativeToken from '@src/services/tx/sendNativeToken';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
+import PaymentInfoModel from '@src/models/paymentInfo';
 
 class NativeToken extends Token implements NativeTokenModel {
   tokenId: string;
@@ -20,14 +21,8 @@ class NativeToken extends Token implements NativeTokenModel {
     this.isNativeToken = true;
   }
 
-  async transfer({ fee = DEFAULT_NATIVE_FEE, paymentInfoList = [
-    {
-      paymentAddressStr: '12S1sAiqwpTCaYaftMC9N8ytPiJZCnpeMYXCMrbC7FxQcitn9HMensYhJrFdv7tnkaNYSXRafc1NS6svpy9YUvfe7Dq6yhy5zqBfh9q',
-      amount: 1,
-      message: 'Cool'
-    }
-  ]} = {}) {
-    return sendNativeToken({ nativePaymentInfoList: paymentInfoList, nativeFee: fee, accountKeySet: this.accountKeySet, availableCoins: await this.getAvailableCoins() });
+  async transfer(paymentInfoList: PaymentInfoModel[], nativeFee = DEFAULT_NATIVE_FEE) {
+    return sendNativeToken({ nativePaymentInfoList: paymentInfoList, nativeFee: nativeFee, accountKeySet: this.accountKeySet, availableCoins: await this.getAvailableCoins() });
   }
 }
 

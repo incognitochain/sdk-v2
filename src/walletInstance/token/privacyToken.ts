@@ -3,6 +3,8 @@ import PrivacyTokenModel from '@src/models/token/privacyToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import sendPrivacyToken from '@src/services/tx/sendPrivacyToken';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
+import PaymentInfoModel from '@src/models/paymentInfo';
+import sendBurningRequest from '@src/services/tx/sendBurningRequest';
 
 interface PrivacyTokenParam {
   tokenId: string,
@@ -30,13 +32,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel{
     return this.getAvailableCoins(null);
   }
 
-  async transfer({ nativeFee = DEFAULT_NATIVE_FEE, privacyFee = 0, paymentList = [
-    {
-      paymentAddressStr: '12S1sAiqwpTCaYaftMC9N8ytPiJZCnpeMYXCMrbC7FxQcitn9HMensYhJrFdv7tnkaNYSXRafc1NS6svpy9YUvfe7Dq6yhy5zqBfh9q',
-      amount: 1,
-      message: 'Cool'
-    }
-  ]} = {}) {
+  async transfer(paymentList: PaymentInfoModel[], nativeFee: number, privacyFee: number) {
     return sendPrivacyToken({
       accountKeySet: this.accountKeySet,
       nativeAvailableCoins: await this.getNativeAvailableCoins(),
@@ -48,6 +44,21 @@ class PrivacyToken extends Token implements PrivacyTokenModel{
       tokenId: this.tokenId,
       tokenName: this.name,
       tokenSymbol: this.symbol,
+    });
+  }
+
+  async burning(outchainAddress: string, burningAmount: number, nativeFee: number, privacyFee: number) {
+    return sendBurningRequest({
+      accountKeySet: this.accountKeySet,
+      nativeAvailableCoins: await this.getNativeAvailableCoins(),
+      privacyAvailableCoins: await this.getAvailableCoins(),
+      nativeFee,
+      privacyFee,
+      tokenId: this.tokenId,
+      tokenName: this.name,
+      tokenSymbol: this.symbol,
+      outchainAddress,
+      burningAmount
     });
   }
 }

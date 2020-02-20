@@ -1,3 +1,5 @@
+import { CustomTokenTransfer, TxCustomTokenPrivacyType } from '@src/tx/constants';
+
 export {};
 
 interface ENV {
@@ -25,4 +27,5 @@ declare global {
   type TokenIdType = string;
   type TokenSymbolType = string;
   type TokenNameType = string;
+  type TokenTxType = number;
 }
