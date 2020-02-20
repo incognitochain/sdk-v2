@@ -9,7 +9,7 @@ import { convertHashToStr } from '@src/utils/common';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel, { CoinRawData } from '@src/models/coin';
-import { CustomTokenTransfer, TxCustomTokenPrivacyType } from '@src/tx/constants';
+import { CustomTokenTransfer, TxCustomTokenPrivacyType } from '@src/services/tx/constants';
 
 interface TokenInfo {
   tokenId: TokenIdType,

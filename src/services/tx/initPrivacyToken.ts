@@ -4,7 +4,7 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import wasmMethods from '@src/wasm/methods';
-import { CustomTokenInit, TxCustomTokenPrivacyType } from '@src/tx/constants';
+import { CustomTokenInit, TxCustomTokenPrivacyType } from '@src/services/tx/constants';
 import { createTx } from './sendPrivacyToken';
 
 interface TokenInfo {

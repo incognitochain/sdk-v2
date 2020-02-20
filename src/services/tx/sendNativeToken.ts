@@ -8,7 +8,7 @@ import wasmMethods from '@src/wasm/methods';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import { TxNormalType } from '@src/tx/constants';
+import { TxNormalType } from '@src/services/tx/constants';
 
 interface SendParam {
   accountKeySet: AccountKeySetModel,

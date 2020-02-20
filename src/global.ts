@@ -1,5 +1,3 @@
-import { CustomTokenTransfer, TxCustomTokenPrivacyType } from '@src/tx/constants';
-
 export {};
 
 interface ENV {
