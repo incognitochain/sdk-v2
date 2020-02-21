@@ -5,6 +5,7 @@ import sendPrivacyToken from '@src/services/tx/sendPrivacyToken';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendBurningRequest from '@src/services/tx/sendBurningRequest';
+import { hasExchangeRate } from '@src/services/token';
 
 interface PrivacyTokenParam {
   tokenId: string,
@@ -14,7 +15,7 @@ interface PrivacyTokenParam {
   accountKeySet: AccountKeySetModel
 };
 
-class PrivacyToken extends Token implements PrivacyTokenModel{
+class PrivacyToken extends Token implements PrivacyTokenModel {
   tokenId: string;
   name: string;
   symbol: string;
@@ -26,6 +27,10 @@ class PrivacyToken extends Token implements PrivacyTokenModel{
 
     this.totalSupply = totalSupply;
     this.isPrivacyToken = true;
+  }
+
+  async hasExchangeRates() {
+    return await hasExchangeRate(this.tokenId);
   }
 
   async getNativeAvailableCoins() {

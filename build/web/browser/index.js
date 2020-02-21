@@ -67216,7 +67216,7 @@ var storage = new Storage();
 /*!*************************************!*\
   !*** ./src/services/token/index.ts ***!
   \*************************************/
-/*! exports provided: getUnspentCoins, getAvailableCoins, getSpendingSerialCoins, getTotalBalance, getAvailableBalance */
+/*! exports provided: getUnspentCoins, getAvailableCoins, getSpendingSerialCoins, getTotalBalance, getAvailableBalance, hasExchangeRate */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67226,6 +67226,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSpendingSerialCoins", function() { return getSpendingSerialCoins; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getTotalBalance", function() { return getTotalBalance; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAvailableBalance", function() { return getAvailableBalance; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasExchangeRate", function() { return hasExchangeRate; });
 /* harmony import */ var _src_services_coin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/coin */ "./src/services/coin/index.ts");
 /* harmony import */ var _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/rpc */ "./src/services/rpc/index.ts");
 /* harmony import */ var _cache_txHistory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../cache/txHistory */ "./src/services/cache/txHistory.ts");
@@ -67349,6 +67350,16 @@ function getTotalBalance(unspentCoins) {
 }
 function getAvailableBalance(availableCoins) {
     return Object(_src_services_coin__WEBPACK_IMPORTED_MODULE_0__["getValueFromCoins"])(availableCoins);
+}
+function hasExchangeRate(tokenId) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__["default"].isExchangeRatePToken(tokenId).catch(function () { return false; })];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
+    });
 }
 
 
@@ -69809,6 +69820,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _token__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./token */ "./src/walletInstance/token/token.ts");
 /* harmony import */ var _src_services_tx_sendPrivacyToken__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/tx/sendPrivacyToken */ "./src/services/tx/sendPrivacyToken.ts");
 /* harmony import */ var _src_services_tx_sendBurningRequest__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/services/tx/sendBurningRequest */ "./src/services/tx/sendBurningRequest.ts");
+/* harmony import */ var _src_services_token__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/services/token */ "./src/services/token/index.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -69861,6 +69873,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
 ;
 var PrivacyToken = /** @class */ (function (_super) {
     __extends(PrivacyToken, _super);
@@ -69871,6 +69884,16 @@ var PrivacyToken = /** @class */ (function (_super) {
         _this.isPrivacyToken = true;
         return _this;
     }
+    PrivacyToken.prototype.hasExchangeRates = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, Object(_src_services_token__WEBPACK_IMPORTED_MODULE_3__["hasExchangeRate"])(this.tokenId)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     PrivacyToken.prototype.getNativeAvailableCoins = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {

@@ -4,7 +4,7 @@ interface PrivacyTokenModelData {
   tokenId: string,
   name: string,
   symbol: string,
-  totalSupply: number
+  totalSupply: number,
 };
 
 class PrivacyTokenModel extends BaseTokenModel {

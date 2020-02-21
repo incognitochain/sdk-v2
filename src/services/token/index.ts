@@ -61,3 +61,7 @@ export function getTotalBalance(unspentCoins: CoinModel[]) {
 export function getAvailableBalance(availableCoins: CoinModel[]) {
   return getValueFromCoins(availableCoins);
 }
+
+export async function hasExchangeRate(tokenId: string) {
+  return await rpc.isExchangeRatePToken(tokenId).catch(() => false);
+}
