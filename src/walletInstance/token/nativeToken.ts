@@ -6,6 +6,7 @@ import sendNativeToken from '@src/services/tx/sendNativeToken';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendStakingRequest from '@src/services/tx/sendStakingRequest';
+import sendNativeTokenPdeContribution from '@src/services/tx/sendNativeTokenPdeContribution';
 
 class NativeToken extends Token implements NativeTokenModel {
   tokenId: string;
@@ -33,6 +34,17 @@ class NativeToken extends Token implements NativeTokenModel {
       nativeFee,
       rewardReceiverPaymentAddress,
       autoReStaking: true
+    });
+  }
+
+  async pdeContribution(pdeContributionPairID: string, contributedAmount: number, nativeFee: number) {
+    return sendNativeTokenPdeContribution({
+      accountKeySet: this.accountKeySet,
+      availableNativeCoins: await this.getAvailableCoins(),
+      nativeFee,
+      pdeContributionPairID,
+      tokenId: this.tokenId,
+      contributedAmount
     });
   }
 }

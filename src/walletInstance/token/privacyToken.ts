@@ -29,7 +29,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     this.isPrivacyToken = true;
   }
 
-  async hasExchangeRates() {
+  async hasExchangeRate() {
     return await hasExchangeRate(this.tokenId);
   }
 
