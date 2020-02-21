@@ -6,6 +6,7 @@ import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendBurningRequest from '@src/services/tx/sendBurningRequest';
 import { hasExchangeRate } from '@src/services/token';
+import sendPrivacyTokenPdeContribution from '@src/services/tx/sendPrivacyTokenPdeContribution';
 
 interface PrivacyTokenParam {
   tokenId: string,
@@ -64,6 +65,21 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       tokenSymbol: this.symbol,
       outchainAddress,
       burningAmount
+    });
+  }
+
+  async pdeContribution(pdeContributionPairID: string, contributedAmount: number, nativeFee: number, privacyFee: number) {
+    return sendPrivacyTokenPdeContribution({
+      accountKeySet: this.accountKeySet,
+      availableNativeCoins: await this.getNativeAvailableCoins(),
+      privacyAvailableCoins: await this.getAvailableCoins(),
+      nativeFee,
+      pdeContributionPairID,
+      tokenId: this.tokenId,
+      contributedAmount,
+      privacyFee,
+      tokenSymbol: this.symbol,
+      tokenName: this.name
     });
   }
 }

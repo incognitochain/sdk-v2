@@ -4,7 +4,7 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import wasmMethods from '@src/wasm/methods';
-import { CustomTokenInit, TxCustomTokenPrivacyType, STAKING_TYPES } from '@src/services/tx/constants';
+import { TxCustomTokenPrivacyType, STAKING_TYPES } from '@src/services/tx/constants';
 import { createTx } from './sendNativeToken';
 import { checkDecode } from '@src/utils/base58';
 import { generateCommitteeKeyFromHashPrivateKey } from '../key/generator';

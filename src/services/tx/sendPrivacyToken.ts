@@ -41,7 +41,8 @@ interface CreateTxParam  extends TokenInfo {
   usePrivacyForNativeToken?: boolean,
   usePrivacyForPrivacyToken?: boolean,
   metaData?: any,
-  initTxMethod: Function
+  initTxMethod: Function,
+  customExtractInfoFromInitedTxMethod?(resInitTxBytes:Uint8Array): ({ b58CheckEncodeTx: string, lockTime: number, tokenID?: TokenIdType })
 };
 
 interface PrivacyTokenParam {
@@ -54,6 +55,23 @@ interface PrivacyTokenParam {
   paymentInfoForPToken?: PaymentInfoModel[],
   tokenInputs?: CoinRawData[]
 };
+
+export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
+  // get b58 check encode tx json
+  let b58CheckEncodeTx = checkEncode(resInitTxBytes.slice(0, resInitTxBytes.length - 40), ENCODE_VERSION);
+
+  // get lock time tx
+  let lockTimeBytes = resInitTxBytes.slice(resInitTxBytes.length - 40, resInitTxBytes.length - 32);
+  let lockTime = new bn(lockTimeBytes).toNumber();
+  let tokenIDBytes = resInitTxBytes.slice(resInitTxBytes.length - 32);
+  let tokenID = convertHashToStr(tokenIDBytes).toLowerCase();
+
+  return {
+    b58CheckEncodeTx,
+    lockTime,
+    tokenID
+  };
+}
 
 export async function createTx({
   nativeTxInput,
@@ -73,6 +91,7 @@ export async function createTx({
   usePrivacyForPrivacyToken = true,
   metaData,
   initTxMethod,
+  customExtractInfoFromInitedTxMethod,
 } : CreateTxParam) {
   const nativeOutputCoins = createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
   const privacyOutputCoins = createOutputCoin(privacyPaymentAmountBN.add(privacyTokenFeeBN), privacyTxInput.totalValueInputBN, privacyPaymentInfoList);
@@ -114,26 +133,14 @@ export async function createTx({
 
   console.log('paramInitTx: ', paramInitTx);
 
+  
   const resInitTx = await initTx(initTxMethod, paramInitTx);
   console.log('createAndSendNativeToken resInitTx: ', resInitTx);
 
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
 
-  // get b58 check encode tx json
-  let b58CheckEncodeTx = checkEncode(resInitTxBytes.slice(0, resInitTxBytes.length - 40), ENCODE_VERSION);
-
-  // get lock time tx
-  let lockTimeBytes = resInitTxBytes.slice(resInitTxBytes.length - 40, resInitTxBytes.length - 32);
-  let lockTime = new bn(lockTimeBytes).toNumber();
-  let tokenIDBytes = resInitTxBytes.slice(resInitTxBytes.length - 32);
-  let tokenID = convertHashToStr(tokenIDBytes).toLowerCase();
-
-  return {
-    b58CheckEncodeTx,
-    lockTime,
-    tokenID
-  };
+  return (customExtractInfoFromInitedTxMethod ? customExtractInfoFromInitedTxMethod : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
 
@@ -174,7 +181,7 @@ export default async function sendPrivacyToken({
     tokenId,
     tokenSymbol,
     tokenName,
-    initTxMethod: wasmMethods.initPrivacyTokenTx
+    initTxMethod: wasmMethods.initPrivacyTokenTx,
   });
 
   console.log('txInfo', txInfo);

@@ -8,7 +8,7 @@ import { TxNormalType } from '@src/services/tx/constants';
 import { createTx } from './sendNativeToken';
 import { PDEContributionMeta } from '../wallet/constants';
 
-interface WithdrawRewardParam {
+interface ContributionParam {
   accountKeySet: AccountKeySetModel,
   availableNativeCoins: CoinModel[],
   nativeFee: number,
@@ -24,7 +24,7 @@ export default async function sendNativeTokenPdeContribution({
   pdeContributionPairID,
   tokenId,
   contributedAmount,
-} : WithdrawRewardParam) {
+} : ContributionParam) {
   const usePrivacyForNativeToken = false;
   const nativeFeeBN = toBNAmount(nativeFee);
   const contributedAmountBN = toBNAmount(contributedAmount);

@@ -25,8 +25,23 @@ interface CreateNativeTxParam {
   privateKeySerialized: string,
   usePrivacyForNativeToken?: boolean,
   metaData?: any,
-  initTxMethod: Function
+  initTxMethod: Function,
+  customExtractInfoFromInitedTxMethod?(resInitTxBytes:Uint8Array): ({ b58CheckEncodeTx: string, lockTime: number })
 };
+
+export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
+  // get b58 check encode tx json
+  let b58CheckEncodeTx = checkEncode(resInitTxBytes.slice(0, resInitTxBytes.length - 8), ENCODE_VERSION);
+
+  // get lock time tx
+  let lockTimeBytes = resInitTxBytes.slice(resInitTxBytes.length - 8);
+  let lockTime = new bn(lockTimeBytes).toNumber();
+
+  return {
+    b58CheckEncodeTx,
+    lockTime
+  };
+}
 
 export async function createTx({
   nativeTokenFeeBN,
@@ -37,6 +52,7 @@ export async function createTx({
   usePrivacyForNativeToken = true,
   metaData,
   initTxMethod,
+  customExtractInfoFromInitedTxMethod
 } : CreateNativeTxParam) {
   const outputCoins = createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
 
@@ -64,19 +80,9 @@ export async function createTx({
   console.log('resInitTx', resInitTx);
 
   //base64 decode txjson
-  let resInitTxBytes = base64Decode(resInitTx);
+  const resInitTxBytes = base64Decode(resInitTx);
 
-  // get b58 check encode tx json
-  let b58CheckEncodeTx = checkEncode(resInitTxBytes.slice(0, resInitTxBytes.length - 8), ENCODE_VERSION);
-
-  // get lock time tx
-  let lockTimeBytes = resInitTxBytes.slice(resInitTxBytes.length - 8);
-  let lockTime = new bn(lockTimeBytes).toNumber();
-
-  return {
-    b58CheckEncodeTx,
-    lockTime
-  };
+  return (customExtractInfoFromInitedTxMethod ? customExtractInfoFromInitedTxMethod : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
 export default async function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins } : SendParam) {
