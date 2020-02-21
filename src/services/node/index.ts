@@ -6,3 +6,9 @@ export async function getRewardAmount(accountKeySet: AccountKeySetModel) {
   
   return res.rewards;
 }
+
+export async function getStakerStatus(blsPubKeyB58CheckEncode: string) {
+  const res = await rpc.getPublicKeyRole(`bls:${blsPubKeyB58CheckEncode}`);
+
+  return res.status;
+}

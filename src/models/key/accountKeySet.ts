@@ -45,8 +45,12 @@ class AccountKeySetModel extends BaseModel {
     return checkEncode(this.paymentAddress.publicKeyBytes, ENCODE_VERSION);
   }
 
+  get miningSeedKey(): number[] {
+    return hashSha3BytesToBytes(hashSha3BytesToBytes(this.privateKey.privateKeyBytes));
+  }
+
   get validatorKey(): string {
-    return checkEncode(hashSha3BytesToBytes(hashSha3BytesToBytes(this.privateKey.privateKeyBytes)), ENCODE_VERSION);
+    return checkEncode(this.miningSeedKey, ENCODE_VERSION);
   }
 }
 

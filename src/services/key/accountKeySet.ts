@@ -1,4 +1,4 @@
-import { generatePublicKey, generateReceivingKey, generateTransmissionKey, generatePrivateKey } from '@src/services/key/generator';
+import { generatePublicKey, generateReceivingKey, generateTransmissionKey, generatePrivateKey, generateBLSPubKeyB58CheckEncodeFromSeed } from '@src/services/key/generator';
 import PaymentAddressKeyModel from '@src/models/key/paymentAddress';
 import ViewingKeyModel from '@src/models/key/viewingKey';
 import PrivateKeyModel from '@src/models/key/privateKey';
@@ -19,6 +19,10 @@ export function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes) {
   viewingKey.receivingKeyBytes = receivingKeyBytes;
 
   return new AccountKeySetModel({ privateKey, paymentAddress, viewingKey });
+}
+
+export async function getBLSPublicKeyB58CheckEncode(miningSeedKey: number[]){
+  return await generateBLSPubKeyB58CheckEncodeFromSeed(miningSeedKey);
 }
 
 export function generateKeySet(seed: string) {

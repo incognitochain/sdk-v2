@@ -7,6 +7,8 @@ import rpc from '@src/services/rpc';
 import initPrivacyToken from '@src/services/tx/initPrivacyToken';
 import { restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
+import { getBLSPublicKeyB58CheckEncode } from '@src/services/key/accountKeySet';
+import { getRewardAmount, getStakerStatus } from '@src/services/node';
 
 interface AccountModelInterface extends AccountModel {
   nativeToken: NativeToken;
@@ -23,6 +25,7 @@ class Account extends BaseAccount implements AccountModelInterface {
   isImport: boolean;
   nativeToken: NativeToken;
   privacyTokenIds: string[];
+  private _blsPublicKeyB58CheckEncode: string;
   
 
   constructor(name: string, key: KeyWalletModel, isImport: boolean) {
@@ -32,6 +35,7 @@ class Account extends BaseAccount implements AccountModelInterface {
     this.nativeToken = new NativeToken(key.keySet);
     this.privacyTokenIds = [];
     this.key = key;
+    this._blsPublicKeyB58CheckEncode = null;
 
     this.init();
   }
@@ -48,6 +52,15 @@ class Account extends BaseAccount implements AccountModelInterface {
 
   init() {
     this.serializeKeys();
+  }
+
+  async getBLSPublicKeyB58CheckEncode() {
+    // get from cache
+    if (this._blsPublicKeyB58CheckEncode) {
+      return this._blsPublicKeyB58CheckEncode;
+    }
+
+    return this._blsPublicKeyB58CheckEncode = await getBLSPublicKeyB58CheckEncode(this.key.keySet.miningSeedKey);
   }
 
   followTokenById(tokenId: TokenIdType) {
@@ -109,6 +122,14 @@ class Account extends BaseAccount implements AccountModelInterface {
       isImport: this.isImport,
       ...data
     };
+  }
+
+  async getNodeRewards() {
+    return getRewardAmount(this.key.keySet);
+  }
+
+  async getNodeStatus() {
+    return getStakerStatus(await this.getBLSPublicKeyB58CheckEncode());
   }
 }
 

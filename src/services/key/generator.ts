@@ -106,7 +106,7 @@ export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes
   return encodedKey;
 }
 
-export async function generateBLSPubKeyB58CheckEncodeFromSeed(seed: string) {
+export async function generateBLSPubKeyB58CheckEncodeFromSeed(seed: number[]) {
   let blsKeyPair = await generateBLSKeyPair(seed);
   let blsPublicKey = convertUint8ArrayToArray(blsKeyPair.blsPublicKey);
   return checkEncode(blsPublicKey, ENCODE_VERSION);
