@@ -79,7 +79,6 @@ export default async function sendStakingRequest({
     nativePaymentAmount: nativePaymentAmountBN.toNumber(),
     nativeSpendingCoinSNs,
     txType: TxCustomTokenPrivacyType,
-    privacyTokenTxType: CustomTokenInit,
     accountPublicKeySerialized: candidateAccountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     meta: metaData,

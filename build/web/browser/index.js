@@ -68217,11 +68217,128 @@ function sendStakingRequest(_a) {
                             nativePaymentAmount: nativePaymentAmountBN.toNumber(),
                             nativeSpendingCoinSNs: nativeSpendingCoinSNs,
                             txType: _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_4__["TxCustomTokenPrivacyType"],
-                            privacyTokenTxType: _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_4__["CustomTokenInit"],
                             accountPublicKeySerialized: candidateAccountKeySet.publicKeySerialized,
                             usePrivacyForNativeToken: usePrivacyForNativeToken,
                             meta: metaData,
                             devInfo: 'staking request'
+                        })];
+            }
+        });
+    });
+}
+
+
+/***/ }),
+
+/***/ "./src/services/tx/sendWithdrawReward.ts":
+/*!***********************************************!*\
+  !*** ./src/services/tx/sendWithdrawReward.ts ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sendWithdrawReward; });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/services/tx/utils.ts");
+/* harmony import */ var _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/rpc */ "./src/services/rpc/index.ts");
+/* harmony import */ var _src_wasm_methods__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/wasm/methods */ "./src/wasm/methods.ts");
+/* harmony import */ var _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/services/tx/constants */ "./src/services/tx/constants.ts");
+/* harmony import */ var _sendNativeToken__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sendNativeToken */ "./src/services/tx/sendNativeToken.ts");
+/* harmony import */ var _wallet_constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../wallet/constants */ "./src/services/wallet/constants.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+
+
+
+;
+function sendWithdrawReward(_a) {
+    var accountKeySet = _a.accountKeySet, availableNativeCoins = _a.availableNativeCoins, tokenId = _a.tokenId;
+    return __awaiter(this, void 0, void 0, function () {
+        var usePrivacyForNativeToken, nativeFeeBN, nativePaymentInfoList, nativePaymentAmountBN, nativeTxInput, metaData, txInfo, sentInfo, _b, nativeSpendingCoinSNs, nativeListUTXO;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    usePrivacyForNativeToken = false;
+                    nativeFeeBN = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["toBNAmount"])(0);
+                    nativePaymentInfoList = [];
+                    nativePaymentAmountBN = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getTotalAmountFromPaymentList"])(nativePaymentInfoList);
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getNativeTokenTxInput"])(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeFeeBN, usePrivacyForNativeToken)];
+                case 1:
+                    nativeTxInput = _c.sent();
+                    console.log('nativeTxInput', nativeTxInput);
+                    metaData = {
+                        Type: _wallet_constants__WEBPACK_IMPORTED_MODULE_5__["WithDrawRewardRequestMeta"],
+                        PaymentAddress: accountKeySet.paymentAddressKeySerialized,
+                        TokenID: tokenId
+                    };
+                    return [4 /*yield*/, Object(_sendNativeToken__WEBPACK_IMPORTED_MODULE_4__["createTx"])({
+                            nativeTxInput: nativeTxInput,
+                            nativePaymentInfoList: nativePaymentInfoList,
+                            nativeTokenFeeBN: nativeFeeBN,
+                            nativePaymentAmountBN: nativePaymentAmountBN,
+                            privateKeySerialized: accountKeySet.privateKeySerialized,
+                            usePrivacyForNativeToken: usePrivacyForNativeToken,
+                            initTxMethod: _src_wasm_methods__WEBPACK_IMPORTED_MODULE_2__["default"].initWithdrawRewardTx,
+                            metaData: metaData
+                        })];
+                case 2:
+                    txInfo = _c.sent();
+                    console.log('txInfo', txInfo);
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["sendB58CheckEncodeTxToChain"])(_src_services_rpc__WEBPACK_IMPORTED_MODULE_1__["default"].sendRawTx, txInfo.b58CheckEncodeTx)];
+                case 3:
+                    sentInfo = _c.sent();
+                    _b = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getCoinInfoForCache"])(nativeTxInput.inputCoinStrs), nativeSpendingCoinSNs = _b.serialNumberList, nativeListUTXO = _b.listUTXO;
+                    return [2 /*return*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["createHistoryInfo"])({
+                            txId: sentInfo.txId,
+                            lockTime: txInfo.lockTime,
+                            nativePaymentInfoList: nativePaymentInfoList,
+                            nativeFee: nativeFeeBN.toNumber(),
+                            nativeListUTXO: nativeListUTXO,
+                            nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+                            nativeSpendingCoinSNs: nativeSpendingCoinSNs,
+                            txType: _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_3__["TxNormalType"],
+                            accountPublicKeySerialized: accountKeySet.publicKeySerialized,
+                            usePrivacyForNativeToken: usePrivacyForNativeToken,
+                            meta: metaData,
+                            devInfo: 'withdraw reward request'
                         })];
             }
         });
@@ -69974,6 +70091,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_services_coin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/services/coin */ "./src/services/coin/index.ts");
 /* harmony import */ var _src_services_token__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/token */ "./src/services/token/index.ts");
 /* harmony import */ var _src_services_history_txHistory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/services/history/txHistory */ "./src/services/history/txHistory.ts");
+/* harmony import */ var _src_services_tx_sendWithdrawReward__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/services/tx/sendWithdrawReward */ "./src/services/tx/sendWithdrawReward.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -70010,6 +70128,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 
@@ -70121,6 +70240,24 @@ var Token = /** @class */ (function () {
         });
     };
     Token.prototype.transfer = function (paymentInfoList, nativeFee, privacyFee) { };
+    Token.prototype.withdrawNodeReward = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _a = _src_services_tx_sendWithdrawReward__WEBPACK_IMPORTED_MODULE_3__["default"];
+                        _b = {
+                            accountKeySet: this.accountKeySet
+                        };
+                        return [4 /*yield*/, this.getAvailableCoins()];
+                    case 1: return [2 /*return*/, _a.apply(void 0, [(_b.availableNativeCoins = _c.sent(),
+                                _b.tokenId = this.tokenId,
+                                _b)])];
+                }
+            });
+        });
+    };
     return Token;
 }());
 /* harmony default export */ __webpack_exports__["default"] = (Token);

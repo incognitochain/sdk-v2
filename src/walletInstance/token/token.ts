@@ -4,6 +4,7 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import { getTotalBalance, getUnspentCoins, getAvailableCoins, getAvailableBalance } from '@src/services/token';
 import { getTxHistoryByPublicKey } from '@src/services/history/txHistory';
 import PaymentInfoModel from '@src/models/paymentInfo';
+import sendWithdrawReward from '@src/services/tx/sendWithdrawReward';
 
 interface NativeTokenParam {
   tokenId: string,
@@ -79,6 +80,14 @@ class Token implements BaseTokenModel {
   }
 
   transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: number, privacyFee?: number) {}
+
+  async withdrawNodeReward() {
+    return sendWithdrawReward({
+      accountKeySet: this.accountKeySet,
+      availableNativeCoins: await this.getAvailableCoins(),
+      tokenId: this.tokenId,
+    });
+  }
 }
 
 export default Token;
