@@ -1,6 +1,7 @@
 import BaseAccountModel from '@src/models/account/baseAccount';
 import KeyWalletModel from '@src/models/key/keyWallet';
 import { base58CheckSerialize, getBackupData as getBackupDataKeyWallet } from '@src/services/key/keyWallet';
+import { getRewardAmount } from '@src/services/node';
 
 interface BaseAccountInterface extends BaseAccountModel {};
 
@@ -24,6 +25,10 @@ class BaseAccount implements BaseAccountInterface {
       name: this.name,
       key: getBackupDataKeyWallet(this.key),
     };
+  }
+
+  async getNodeRewards() {
+    return getRewardAmount(this.key.keySet);
   }
 }
 
