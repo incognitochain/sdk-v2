@@ -1,13 +1,12 @@
-import { getTotalAmountFromPaymentList, getNativeTokenTxInput, toBNAmount, sendB58CheckEncodeTxToChain, getCoinInfoForCache, getPrivacyTokenTxInput, createHistoryInfo } from './utils';
+import { getTotalAmountFromPaymentList, getNativeTokenTxInput, toBNAmount, sendB58CheckEncodeTxToChain, getCoinInfoForCache, getPrivacyTokenTxInput, createHistoryInfo, getBurningAddress } from './utils';
 import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import wasmMethods from '@src/wasm/methods';
-import { CustomTokenInit, TxCustomTokenPrivacyType, CustomTokenTransfer } from '@src/services/tx/constants';
+import { TxCustomTokenPrivacyType, CustomTokenTransfer } from '@src/services/tx/constants';
 import { createTx } from './sendPrivacyToken';
-
-import { BurnAddress, BurningRequestMeta } from '../wallet/constants';
+import { BurningRequestMeta } from '../wallet/constants';
 
 interface TokenInfo {
   tokenId: TokenIdType,
@@ -31,17 +30,6 @@ function parseOutchainAddress(outchainAddress: string) {
   }
 
   return outchainAddress;
-}
-
-async function getBurningAddress (beaconHeight = 0){
-  let burningAddress;
-  try {
-    burningAddress = await rpc.getBurningAddress(beaconHeight);
-  } catch (e){
-    burningAddress = BurnAddress;
-  }
-
-  return burningAddress;
 }
 
 export default async function sendBurningRequest({

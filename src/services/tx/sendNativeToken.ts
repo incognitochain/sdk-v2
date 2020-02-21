@@ -17,15 +17,27 @@ interface SendParam {
   nativeFee: number,
 };
 
-interface CreateTxParam {
+interface CreateNativeTxParam {
   nativeTxInput: TxInputType,
   nativePaymentInfoList: PaymentInfoModel[],
   nativeTokenFeeBN: bn,
   nativePaymentAmountBN: bn,
   privateKeySerialized: string,
+  usePrivacyForNativeToken?: boolean,
+  metaData?: any,
+  initTxMethod: Function
 };
 
-async function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput, nativePaymentInfoList, privateKeySerialized } : CreateTxParam) {
+export async function createTx({
+  nativeTokenFeeBN,
+  nativePaymentAmountBN,
+  nativeTxInput,
+  nativePaymentInfoList,
+  privateKeySerialized,
+  usePrivacyForNativeToken = true,
+  metaData,
+  initTxMethod,
+} : CreateNativeTxParam) {
   const outputCoins = createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
 
   console.log('outputCoint', outputCoins);
@@ -35,9 +47,9 @@ async function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput
     paramPaymentInfos: nativePaymentInfoList,
     inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
     fee: nativeTokenFeeBN.toNumber(),
-    isPrivacy: true,
+    isPrivacy: usePrivacyForNativeToken,
     tokenID: <string>null,
-    metaData: <any>null,
+    metaData,
     info: '',
     commitmentIndices: nativeTxInput.commitmentIndices,
     myCommitmentIndices: nativeTxInput.myCommitmentIndices,
@@ -47,7 +59,7 @@ async function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput
 
   console.log('paramInitTx', paramInitTx);
   
-  const resInitTx = await initTx(wasmMethods.initPrivacyTx, paramInitTx);
+  const resInitTx = await initTx(initTxMethod, paramInitTx);
 
   console.log('resInitTx', resInitTx);
 
@@ -75,7 +87,15 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
   console.log('txInput', nativeTxInput);
 
-  const txInfo = await createTx({ nativeTxInput, nativePaymentAmountBN, nativeTokenFeeBN, privateKeySerialized: accountKeySet.privateKeySerialized, nativePaymentInfoList });
+  const txInfo = await createTx({
+    nativeTxInput,
+    nativePaymentAmountBN,
+    nativeTokenFeeBN,
+    privateKeySerialized: accountKeySet.privateKeySerialized,
+    nativePaymentInfoList,
+    initTxMethod: wasmMethods.initPrivacyTx,
+    usePrivacyForNativeToken,
+  });
   console.log('txInfo', txInfo);
 
   const sentInfo = await sendB58CheckEncodeTxToChain(rpc.sendRawTx, txInfo.b58CheckEncodeTx);

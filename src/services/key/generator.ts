@@ -77,34 +77,34 @@ export function generateTransmissionKey(receivingKey: KeyBytes) : KeyBytes {
   return transmissionKey;
 }
 
-// // hashPrivateKey 
-// export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes: Uint8Array, publicKeyBytes: Uint8Array) {
-//   let incPubKey = convertUint8ArrayToArray(publicKeyBytes);
+// hashPrivateKey 
+export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes: Uint8Array, publicKeyBytes: Uint8Array) {
+  let incPubKey = convertUint8ArrayToArray(publicKeyBytes);
 
-//   let blsKeyPair = await generateBLSKeyPair(hashPrivateKeyBytes);
+  let blsKeyPair = await generateBLSKeyPair(hashPrivateKeyBytes);
 
-//   let ecdsaKeyPair = generateECDSAKeyPair(hashPrivateKeyBytes);
+  let ecdsaKeyPair = generateECDSAKeyPair(hashPrivateKeyBytes);
 
-//   let miningPubKey = {
-//     'bls': base64ArrayBuffer(blsKeyPair.blsPublicKey),
-//     'dsa': base64ArrayBuffer(ecdsaKeyPair.ecdsaPublicKey)
-//   };
+  let miningPubKey = {
+    'bls': base64ArrayBuffer(blsKeyPair.blsPublicKey),
+    'dsa': base64ArrayBuffer(ecdsaKeyPair.ecdsaPublicKey)
+  };
 
-//   console.log('Generate committee key bls public key: ', blsKeyPair.blsPublicKey.join(', '));
-//   console.log('Generate committee key mining pub key dsa: ', ecdsaKeyPair.ecdsaPublicKey.join(', '));
-//   console.log('Generate committee key incognito pub key: ', incPubKey.join(', '));
+  console.log('Generate committee key bls public key: ', blsKeyPair.blsPublicKey.join(', '));
+  console.log('Generate committee key mining pub key dsa: ', ecdsaKeyPair.ecdsaPublicKey.join(', '));
+  console.log('Generate committee key incognito pub key: ', incPubKey.join(', '));
 
-//   let committeeKey = {
-//     IncPubKey: base64ArrayBuffer(incPubKey),
-//     MiningPubKey: miningPubKey,
-//   };
+  let committeeKey = {
+    IncPubKey: base64ArrayBuffer(incPubKey),
+    MiningPubKey: miningPubKey,
+  };
 
-//   // JSON marshal commiteeKey 
-//   let keyStr = json.stringify(committeeKey);
-//   let encodedKey = checkEncode(stringToBytes(keyStr), ENCODE_VERSION);
+  // JSON marshal commiteeKey 
+  let keyStr = json.stringify(committeeKey);
+  let encodedKey = checkEncode(stringToBytes(keyStr), ENCODE_VERSION);
 
-//   return encodedKey;
-// }
+  return encodedKey;
+}
 
 export async function generateBLSPubKeyB58CheckEncodeFromSeed(seed: string) {
   let blsKeyPair = await generateBLSKeyPair(seed);

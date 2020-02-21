@@ -9396,6 +9396,224 @@ module.exports = CipherBase
 
 /***/ }),
 
+/***/ "./node_modules/circular-json/build/circular-json.node.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/circular-json/build/circular-json.node.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/*!
+Copyright (C) 2013-2017 by Andrea Giammarchi - @WebReflection
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+var
+  // should be a not so common char
+  // possibly one JSON does not encode
+  // possibly one encodeURIComponent does not encode
+  // right now this char is '~' but this might change in the future
+  specialChar = '~',
+  safeSpecialChar = '\\x' + (
+    '0' + specialChar.charCodeAt(0).toString(16)
+  ).slice(-2),
+  escapedSafeSpecialChar = '\\' + safeSpecialChar,
+  specialCharRG = new RegExp(safeSpecialChar, 'g'),
+  safeSpecialCharRG = new RegExp(escapedSafeSpecialChar, 'g'),
+
+  safeStartWithSpecialCharRG = new RegExp('(?:^|([^\\\\]))' + escapedSafeSpecialChar),
+
+  indexOf = [].indexOf || function(v){
+    for(var i=this.length;i--&&this[i]!==v;);
+    return i;
+  },
+  $String = String  // there's no way to drop warnings in JSHint
+                    // about new String ... well, I need that here!
+                    // faked, and happy linter!
+;
+
+function generateReplacer(value, replacer, resolve) {
+  var
+    doNotIgnore = false,
+    inspect = !!replacer,
+    path = [],
+    all  = [value],
+    seen = [value],
+    mapp = [resolve ? specialChar : '[Circular]'],
+    last = value,
+    lvl  = 1,
+    i, fn
+  ;
+  if (inspect) {
+    fn = typeof replacer === 'object' ?
+      function (key, value) {
+        return key !== '' && replacer.indexOf(key) < 0 ? void 0 : value;
+      } :
+      replacer;
+  }
+  return function(key, value) {
+    // the replacer has rights to decide
+    // if a new object should be returned
+    // or if there's some key to drop
+    // let's call it here rather than "too late"
+    if (inspect) value = fn.call(this, key, value);
+
+    // first pass should be ignored, since it's just the initial object
+    if (doNotIgnore) {
+      if (last !== this) {
+        i = lvl - indexOf.call(all, this) - 1;
+        lvl -= i;
+        all.splice(lvl, all.length);
+        path.splice(lvl - 1, path.length);
+        last = this;
+      }
+      // console.log(lvl, key, path);
+      if (typeof value === 'object' && value) {
+    	// if object isn't referring to parent object, add to the
+        // object path stack. Otherwise it is already there.
+        if (indexOf.call(all, value) < 0) {
+          all.push(last = value);
+        }
+        lvl = all.length;
+        i = indexOf.call(seen, value);
+        if (i < 0) {
+          i = seen.push(value) - 1;
+          if (resolve) {
+            // key cannot contain specialChar but could be not a string
+            path.push(('' + key).replace(specialCharRG, safeSpecialChar));
+            mapp[i] = specialChar + path.join(specialChar);
+          } else {
+            mapp[i] = mapp[0];
+          }
+        } else {
+          value = mapp[i];
+        }
+      } else {
+        if (typeof value === 'string' && resolve) {
+          // ensure no special char involved on deserialization
+          // in this case only first char is important
+          // no need to replace all value (better performance)
+          value = value .replace(safeSpecialChar, escapedSafeSpecialChar)
+                        .replace(specialChar, safeSpecialChar);
+        }
+      }
+    } else {
+      doNotIgnore = true;
+    }
+    return value;
+  };
+}
+
+function retrieveFromPath(current, keys) {
+  for(var i = 0, length = keys.length; i < length; current = current[
+    // keys should be normalized back here
+    keys[i++].replace(safeSpecialCharRG, specialChar)
+  ]);
+  return current;
+}
+
+function generateReviver(reviver) {
+  return function(key, value) {
+    var isString = typeof value === 'string';
+    if (isString && value.charAt(0) === specialChar) {
+      return new $String(value.slice(1));
+    }
+    if (key === '') value = regenerate(value, value, {});
+    // again, only one needed, do not use the RegExp for this replacement
+    // only keys need the RegExp
+    if (isString) value = value .replace(safeStartWithSpecialCharRG, '$1' + specialChar)
+                                .replace(escapedSafeSpecialChar, safeSpecialChar);
+    return reviver ? reviver.call(this, key, value) : value;
+  };
+}
+
+function regenerateArray(root, current, retrieve) {
+  for (var i = 0, length = current.length; i < length; i++) {
+    current[i] = regenerate(root, current[i], retrieve);
+  }
+  return current;
+}
+
+function regenerateObject(root, current, retrieve) {
+  for (var key in current) {
+    if (current.hasOwnProperty(key)) {
+      current[key] = regenerate(root, current[key], retrieve);
+    }
+  }
+  return current;
+}
+
+function regenerate(root, current, retrieve) {
+  return current instanceof Array ?
+    // fast Array reconstruction
+    regenerateArray(root, current, retrieve) :
+    (
+      current instanceof $String ?
+        (
+          // root is an empty string
+          current.length ?
+            (
+              retrieve.hasOwnProperty(current) ?
+                retrieve[current] :
+                retrieve[current] = retrieveFromPath(
+                  root, current.split(specialChar)
+                )
+            ) :
+            root
+        ) :
+        (
+          current instanceof Object ?
+            // dedicated Object parser
+            regenerateObject(root, current, retrieve) :
+            // value as it is
+            current
+        )
+    )
+  ;
+}
+
+var CircularJSON = {
+  stringify: function stringify(value, replacer, space, doNotResolve) {
+    return CircularJSON.parser.stringify(
+      value,
+      generateReplacer(value, replacer, !doNotResolve),
+      space
+    );
+  },
+  parse: function parse(text, reviver) {
+    return CircularJSON.parser.parse(
+      text,
+      generateReviver(reviver)
+    );
+  },
+  // A parser should be an API 1:1 compatible with JSON
+  // it should expose stringify and parse methods.
+  // The default parser is the native JSON.
+  parser: JSON
+};
+
+module.exports = CircularJSON;
+
+
+/***/ }),
+
 /***/ "./node_modules/core-js/es6/index.js":
 /*!*******************************************!*\
   !*** ./node_modules/core-js/es6/index.js ***!
@@ -61521,6 +61739,38 @@ var PC_CAPACITY = 5;
 
 /***/ }),
 
+/***/ "./src/privacy/ecdsa.ts":
+/*!******************************!*\
+  !*** ./src/privacy/ecdsa.ts ***!
+  \******************************/
+/*! exports provided: generateECDSAKeyPair */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateECDSAKeyPair", function() { return generateECDSAKeyPair; });
+/* harmony import */ var elliptic__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! elliptic */ "./node_modules/elliptic/lib/elliptic.js");
+/* harmony import */ var elliptic__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(elliptic__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/privacy/utils.ts");
+
+
+var secp256k1 = new elliptic__WEBPACK_IMPORTED_MODULE_0___default.a.ec('secp256k1');
+// generateECDSAKeyPair generates ECDSA key pair from seed
+function generateECDSAKeyPair(seed) {
+    var hash = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["hashKeccakBytesToBytes"])(seed);
+    var keyPair = secp256k1.keyFromPrivate(hash);
+    var privateKey = keyPair.getPrivate();
+    var publicKey = keyPair.getPublic();
+    return {
+        ecdsaPrivateKey: privateKey.toArray(),
+        ecdsaPublicKey: publicKey.encodeCompressed()
+    };
+}
+
+
+
+/***/ }),
+
 /***/ "./src/privacy/hybridEncryption.ts":
 /*!*****************************************!*\
   !*** ./src/privacy/hybridEncryption.ts ***!
@@ -65334,7 +65584,7 @@ function restoreKeySetFromBackupData(data) {
 /*!***************************************!*\
   !*** ./src/services/key/generator.ts ***!
   \***************************************/
-/*! exports provided: generatePrivateKey, generatePublicKey, generateReceivingKey, generateTransmissionKey, generateBLSPubKeyB58CheckEncodeFromSeed, generateMasterKey */
+/*! exports provided: generatePrivateKey, generatePublicKey, generateReceivingKey, generateTransmissionKey, generateCommitteeKeyFromHashPrivateKey, generateBLSPubKeyB58CheckEncodeFromSeed, generateMasterKey */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65343,18 +65593,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generatePublicKey", function() { return generatePublicKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateReceivingKey", function() { return generateReceivingKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateTransmissionKey", function() { return generateTransmissionKey; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateCommitteeKeyFromHashPrivateKey", function() { return generateCommitteeKeyFromHashPrivateKey; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateBLSPubKeyB58CheckEncodeFromSeed", function() { return generateBLSPubKeyB58CheckEncodeFromSeed; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateMasterKey", function() { return generateMasterKey; });
 /* harmony import */ var _src_privacy_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @src/privacy/utils */ "./src/privacy/utils.ts");
 /* harmony import */ var _src_wasm_methods__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/wasm/methods */ "./src/wasm/methods.ts");
-/* harmony import */ var _src_privacy_bls__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/privacy/bls */ "./src/privacy/bls.ts");
-/* harmony import */ var _src_utils_base58__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/utils/base58 */ "./src/utils/base58.ts");
-/* harmony import */ var _src_constants_constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @src/constants/constants */ "./src/constants/constants.ts");
-/* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
-/* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(crypto_js__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils */ "./src/services/key/utils.ts");
-/* harmony import */ var _accountKeySet__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./accountKeySet */ "./src/services/key/accountKeySet.ts");
-/* harmony import */ var _src_models_key_keyWallet__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @src/models/key/keyWallet */ "./src/models/key/keyWallet.ts");
+/* harmony import */ var _src_privacy_ecdsa__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/privacy/ecdsa */ "./src/privacy/ecdsa.ts");
+/* harmony import */ var _src_privacy_bls__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/privacy/bls */ "./src/privacy/bls.ts");
+/* harmony import */ var _src_utils_base58__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @src/utils/base58 */ "./src/utils/base58.ts");
+/* harmony import */ var _src_constants_constants__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @src/constants/constants */ "./src/constants/constants.ts");
+/* harmony import */ var circular_json__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! circular-json */ "./node_modules/circular-json/build/circular-json.node.js");
+/* harmony import */ var circular_json__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(circular_json__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _src_utils_common__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @src/utils/common */ "./src/utils/common.ts");
+/* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
+/* harmony import */ var crypto_js__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(crypto_js__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils */ "./src/services/key/utils.ts");
+/* harmony import */ var _accountKeySet__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./accountKeySet */ "./src/services/key/accountKeySet.ts");
+/* harmony import */ var _src_models_key_keyWallet__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @src/models/key/keyWallet */ "./src/models/key/keyWallet.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -65391,6 +65646,9 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
+
+
 
 
 
@@ -65454,53 +65712,62 @@ function generateTransmissionKey(receivingKey) {
     var transmissionKey = Object(_src_privacy_utils__WEBPACK_IMPORTED_MODULE_0__["base64Decode"])(transmissionKeyB64Encode);
     return transmissionKey;
 }
-// // hashPrivateKey 
-// export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes: Uint8Array, publicKeyBytes: Uint8Array) {
-//   let incPubKey = convertUint8ArrayToArray(publicKeyBytes);
-//   let blsKeyPair = await generateBLSKeyPair(hashPrivateKeyBytes);
-//   let ecdsaKeyPair = generateECDSAKeyPair(hashPrivateKeyBytes);
-//   let miningPubKey = {
-//     'bls': base64ArrayBuffer(blsKeyPair.blsPublicKey),
-//     'dsa': base64ArrayBuffer(ecdsaKeyPair.ecdsaPublicKey)
-//   };
-//   console.log('Generate committee key bls public key: ', blsKeyPair.blsPublicKey.join(', '));
-//   console.log('Generate committee key mining pub key dsa: ', ecdsaKeyPair.ecdsaPublicKey.join(', '));
-//   console.log('Generate committee key incognito pub key: ', incPubKey.join(', '));
-//   let committeeKey = {
-//     IncPubKey: base64ArrayBuffer(incPubKey),
-//     MiningPubKey: miningPubKey,
-//   };
-//   // JSON marshal commiteeKey 
-//   let keyStr = json.stringify(committeeKey);
-//   let encodedKey = checkEncode(stringToBytes(keyStr), ENCODE_VERSION);
-//   return encodedKey;
-// }
+// hashPrivateKey 
+function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes, publicKeyBytes) {
+    return __awaiter(this, void 0, void 0, function () {
+        var incPubKey, blsKeyPair, ecdsaKeyPair, miningPubKey, committeeKey, keyStr, encodedKey;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    incPubKey = Object(_src_privacy_utils__WEBPACK_IMPORTED_MODULE_0__["convertUint8ArrayToArray"])(publicKeyBytes);
+                    return [4 /*yield*/, Object(_src_privacy_bls__WEBPACK_IMPORTED_MODULE_3__["generateBLSKeyPair"])(hashPrivateKeyBytes)];
+                case 1:
+                    blsKeyPair = _a.sent();
+                    ecdsaKeyPair = Object(_src_privacy_ecdsa__WEBPACK_IMPORTED_MODULE_2__["generateECDSAKeyPair"])(hashPrivateKeyBytes);
+                    miningPubKey = {
+                        'bls': Object(_src_utils_common__WEBPACK_IMPORTED_MODULE_7__["base64ArrayBuffer"])(blsKeyPair.blsPublicKey),
+                        'dsa': Object(_src_utils_common__WEBPACK_IMPORTED_MODULE_7__["base64ArrayBuffer"])(ecdsaKeyPair.ecdsaPublicKey)
+                    };
+                    console.log('Generate committee key bls public key: ', blsKeyPair.blsPublicKey.join(', '));
+                    console.log('Generate committee key mining pub key dsa: ', ecdsaKeyPair.ecdsaPublicKey.join(', '));
+                    console.log('Generate committee key incognito pub key: ', incPubKey.join(', '));
+                    committeeKey = {
+                        IncPubKey: Object(_src_utils_common__WEBPACK_IMPORTED_MODULE_7__["base64ArrayBuffer"])(incPubKey),
+                        MiningPubKey: miningPubKey,
+                    };
+                    keyStr = circular_json__WEBPACK_IMPORTED_MODULE_6___default.a.stringify(committeeKey);
+                    encodedKey = Object(_src_utils_base58__WEBPACK_IMPORTED_MODULE_4__["checkEncode"])(Object(_src_privacy_utils__WEBPACK_IMPORTED_MODULE_0__["stringToBytes"])(keyStr), _src_constants_constants__WEBPACK_IMPORTED_MODULE_5__["ENCODE_VERSION"]);
+                    return [2 /*return*/, encodedKey];
+            }
+        });
+    });
+}
 function generateBLSPubKeyB58CheckEncodeFromSeed(seed) {
     return __awaiter(this, void 0, void 0, function () {
         var blsKeyPair, blsPublicKey;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Object(_src_privacy_bls__WEBPACK_IMPORTED_MODULE_2__["generateBLSKeyPair"])(seed)];
+                case 0: return [4 /*yield*/, Object(_src_privacy_bls__WEBPACK_IMPORTED_MODULE_3__["generateBLSKeyPair"])(seed)];
                 case 1:
                     blsKeyPair = _a.sent();
                     blsPublicKey = Object(_src_privacy_utils__WEBPACK_IMPORTED_MODULE_0__["convertUint8ArrayToArray"])(blsKeyPair.blsPublicKey);
-                    return [2 /*return*/, Object(_src_utils_base58__WEBPACK_IMPORTED_MODULE_3__["checkEncode"])(blsPublicKey, _src_constants_constants__WEBPACK_IMPORTED_MODULE_4__["ENCODE_VERSION"])];
+                    return [2 /*return*/, Object(_src_utils_base58__WEBPACK_IMPORTED_MODULE_4__["checkEncode"])(blsPublicKey, _src_constants_constants__WEBPACK_IMPORTED_MODULE_5__["ENCODE_VERSION"])];
             }
         });
     });
 }
 function generateMasterKey(seed) {
     // HmacSHA512(data, key)
-    var hmac = crypto_js__WEBPACK_IMPORTED_MODULE_5___default.a.HmacSHA512(crypto_js__WEBPACK_IMPORTED_MODULE_5___default.a.enc.Base64.stringify(Object(_utils__WEBPACK_IMPORTED_MODULE_6__["byteArrayToWordArray"])(seed)), 'Constant seed');
-    var intermediary = Object(_utils__WEBPACK_IMPORTED_MODULE_6__["wordArrayToByteArray"])(hmac);
+    var hmac = crypto_js__WEBPACK_IMPORTED_MODULE_8___default.a.HmacSHA512(crypto_js__WEBPACK_IMPORTED_MODULE_8___default.a.enc.Base64.stringify(Object(_utils__WEBPACK_IMPORTED_MODULE_9__["byteArrayToWordArray"])(seed)), 'Constant seed');
+    var intermediary = Object(_utils__WEBPACK_IMPORTED_MODULE_9__["wordArrayToByteArray"])(hmac);
     // Split it into our PubKey and chain code
     var keyBytes = intermediary.slice(0, 32); // use to create master private/public keypair
     var chainCode = Uint8Array.from(intermediary.slice(32)); // be used with public PubKey (in keypair) for new child keys 
-    var keyWallet = new _src_models_key_keyWallet__WEBPACK_IMPORTED_MODULE_8__["default"]();
+    var keyWallet = new _src_models_key_keyWallet__WEBPACK_IMPORTED_MODULE_11__["default"]();
     keyWallet.chainCode = chainCode;
     keyWallet.depth = 0;
     keyWallet.childNumber = new Uint8Array([0, 0, 0, 0]);
-    keyWallet.keySet = Object(_accountKeySet__WEBPACK_IMPORTED_MODULE_7__["generateKeySet"])(keyBytes);
+    keyWallet.keySet = Object(_accountKeySet__WEBPACK_IMPORTED_MODULE_10__["generateKeySet"])(keyBytes);
     return keyWallet;
 }
 
@@ -67091,7 +67358,7 @@ function getAvailableBalance(availableCoins) {
 /*!**************************************!*\
   !*** ./src/services/tx/constants.ts ***!
   \**************************************/
-/*! exports provided: TxNormalType, TxSalaryType, TxCustomTokenType, TxCustomTokenPrivacyType, CustomTokenInit, CustomTokenTransfer, TxVersion, MaxInputNumberForDefragment, MaxInfoSize */
+/*! exports provided: TxNormalType, TxSalaryType, TxCustomTokenType, TxCustomTokenPrivacyType, CustomTokenInit, CustomTokenTransfer, TxVersion, MaxInputNumberForDefragment, MaxInfoSize, STAKING_TYPES */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67105,6 +67372,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TxVersion", function() { return TxVersion; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MaxInputNumberForDefragment", function() { return MaxInputNumberForDefragment; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MaxInfoSize", function() { return MaxInfoSize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "STAKING_TYPES", function() { return STAKING_TYPES; });
 var TxNormalType = 'n'; // normal tx(send and receive coin)
 var TxSalaryType = 's'; // salary tx(gov pay salary for block producer)
 var TxCustomTokenType = 't'; // token  tx with no supporting privacy
@@ -67112,6 +67380,10 @@ var TxCustomTokenPrivacyType = 'tp'; // token  tx with supporting privacy
 var CustomTokenInit = 0;
 var CustomTokenTransfer = 1;
 var TxVersion = 1;
+var STAKING_TYPES = {
+    SHARD: 0,
+    BEACON: 1
+};
 // todo: 0xkraken
 // NumUTXO must be 255
 // because tx zise is exceed 100kb with NumUTXO = 255
@@ -67337,27 +67609,6 @@ function parseOutchainAddress(outchainAddress) {
     }
     return outchainAddress;
 }
-function getBurningAddress(beaconHeight) {
-    if (beaconHeight === void 0) { beaconHeight = 0; }
-    return __awaiter(this, void 0, void 0, function () {
-        var burningAddress, e_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__["default"].getBurningAddress(beaconHeight)];
-                case 1:
-                    burningAddress = _a.sent();
-                    return [3 /*break*/, 3];
-                case 2:
-                    e_1 = _a.sent();
-                    burningAddress = _wallet_constants__WEBPACK_IMPORTED_MODULE_6__["BurnAddress"];
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/, burningAddress];
-            }
-        });
-    });
-}
 function sendBurningRequest(_a) {
     var accountKeySet = _a.accountKeySet, nativeAvailableCoins = _a.nativeAvailableCoins, privacyAvailableCoins = _a.privacyAvailableCoins, nativeFee = _a.nativeFee, privacyFee = _a.privacyFee, tokenId = _a.tokenId, tokenSymbol = _a.tokenSymbol, tokenName = _a.tokenName, outchainAddress = _a.outchainAddress, burningAmount = _a.burningAmount;
     return __awaiter(this, void 0, void 0, function () {
@@ -67373,7 +67624,7 @@ function sendBurningRequest(_a) {
                     usePrivacyForPrivacyToken = false;
                     nativePaymentInfoList = [];
                     outchainAddressParsed = parseOutchainAddress(outchainAddress);
-                    return [4 /*yield*/, getBurningAddress()];
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getBurningAddress"])()];
                 case 1:
                     burningAddress = _d.sent();
                     privacyPaymentInfoList = [
@@ -67464,11 +67715,12 @@ function sendBurningRequest(_a) {
 /*!********************************************!*\
   !*** ./src/services/tx/sendNativeToken.ts ***!
   \********************************************/
-/*! exports provided: default */
+/*! exports provided: createTx, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createTx", function() { return createTx; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sendNativeToken; });
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bn.js */ "./node_modules/bn.js/lib/bn.js");
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bn_js__WEBPACK_IMPORTED_MODULE_0__);
@@ -67526,11 +67778,11 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 ;
 ;
 function createTx(_a) {
-    var nativeTokenFeeBN = _a.nativeTokenFeeBN, nativePaymentAmountBN = _a.nativePaymentAmountBN, nativeTxInput = _a.nativeTxInput, nativePaymentInfoList = _a.nativePaymentInfoList, privateKeySerialized = _a.privateKeySerialized;
+    var nativeTokenFeeBN = _a.nativeTokenFeeBN, nativePaymentAmountBN = _a.nativePaymentAmountBN, nativeTxInput = _a.nativeTxInput, nativePaymentInfoList = _a.nativePaymentInfoList, privateKeySerialized = _a.privateKeySerialized, _b = _a.usePrivacyForNativeToken, usePrivacyForNativeToken = _b === void 0 ? true : _b, metaData = _a.metaData, initTxMethod = _a.initTxMethod;
     return __awaiter(this, void 0, void 0, function () {
         var outputCoins, paramInitTx, resInitTx, resInitTxBytes, b58CheckEncodeTx, lockTimeBytes, lockTime;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
                     outputCoins = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["createOutputCoin"])(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
                     console.log('outputCoint', outputCoins);
@@ -67539,9 +67791,9 @@ function createTx(_a) {
                         paramPaymentInfos: nativePaymentInfoList,
                         inputCoinStrs: nativeTxInput.inputCoinStrs.map(function (coin) { return coin.toJson(); }),
                         fee: nativeTokenFeeBN.toNumber(),
-                        isPrivacy: true,
+                        isPrivacy: usePrivacyForNativeToken,
                         tokenID: null,
-                        metaData: null,
+                        metaData: metaData,
                         info: '',
                         commitmentIndices: nativeTxInput.commitmentIndices,
                         myCommitmentIndices: nativeTxInput.myCommitmentIndices,
@@ -67549,9 +67801,9 @@ function createTx(_a) {
                         sndOutputs: outputCoins
                     };
                     console.log('paramInitTx', paramInitTx);
-                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_1__["initTx"])(_src_wasm_methods__WEBPACK_IMPORTED_MODULE_6__["default"].initPrivacyTx, paramInitTx)];
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_1__["initTx"])(initTxMethod, paramInitTx)];
                 case 1:
-                    resInitTx = _b.sent();
+                    resInitTx = _c.sent();
                     console.log('resInitTx', resInitTx);
                     resInitTxBytes = Object(_src_privacy_utils__WEBPACK_IMPORTED_MODULE_3__["base64Decode"])(resInitTx);
                     b58CheckEncodeTx = Object(_src_utils_base58__WEBPACK_IMPORTED_MODULE_4__["checkEncode"])(resInitTxBytes.slice(0, resInitTxBytes.length - 8), _src_constants_constants__WEBPACK_IMPORTED_MODULE_5__["ENCODE_VERSION"]);
@@ -67579,7 +67831,15 @@ function sendNativeToken(_a) {
                 case 1:
                     nativeTxInput = _c.sent();
                     console.log('txInput', nativeTxInput);
-                    return [4 /*yield*/, createTx({ nativeTxInput: nativeTxInput, nativePaymentAmountBN: nativePaymentAmountBN, nativeTokenFeeBN: nativeTokenFeeBN, privateKeySerialized: accountKeySet.privateKeySerialized, nativePaymentInfoList: nativePaymentInfoList })];
+                    return [4 /*yield*/, createTx({
+                            nativeTxInput: nativeTxInput,
+                            nativePaymentAmountBN: nativePaymentAmountBN,
+                            nativeTokenFeeBN: nativeTokenFeeBN,
+                            privateKeySerialized: accountKeySet.privateKeySerialized,
+                            nativePaymentInfoList: nativePaymentInfoList,
+                            initTxMethod: _src_wasm_methods__WEBPACK_IMPORTED_MODULE_6__["default"].initPrivacyTx,
+                            usePrivacyForNativeToken: usePrivacyForNativeToken,
+                        })];
                 case 2:
                     txInfo = _c.sent();
                     console.log('txInfo', txInfo);
@@ -67814,11 +68074,157 @@ function sendPrivacyToken(_a) {
 
 /***/ }),
 
+/***/ "./src/services/tx/sendStakingRequest.ts":
+/*!***********************************************!*\
+  !*** ./src/services/tx/sendStakingRequest.ts ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sendStakingRequest; });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/services/tx/utils.ts");
+/* harmony import */ var _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/services/rpc */ "./src/services/rpc/index.ts");
+/* harmony import */ var _src_models_paymentInfo__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/models/paymentInfo */ "./src/models/paymentInfo.ts");
+/* harmony import */ var _src_wasm_methods__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/wasm/methods */ "./src/wasm/methods.ts");
+/* harmony import */ var _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @src/services/tx/constants */ "./src/services/tx/constants.ts");
+/* harmony import */ var _sendNativeToken__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./sendNativeToken */ "./src/services/tx/sendNativeToken.ts");
+/* harmony import */ var _src_utils_base58__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @src/utils/base58 */ "./src/utils/base58.ts");
+/* harmony import */ var _key_generator__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../key/generator */ "./src/services/key/generator.ts");
+/* harmony import */ var _wallet_constants__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../wallet/constants */ "./src/services/wallet/constants.ts");
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (undefined && undefined.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+
+
+
+
+
+
+
+
+
+;
+function sendStakingRequest(_a) {
+    var candidateAccountKeySet = _a.candidateAccountKeySet, rewardReceiverPaymentAddress = _a.rewardReceiverPaymentAddress, availableNativeCoins = _a.availableNativeCoins, nativeFee = _a.nativeFee, _b = _a.autoReStaking, autoReStaking = _b === void 0 ? true : _b;
+    return __awaiter(this, void 0, void 0, function () {
+        var stakingType, usePrivacyForNativeToken, stakingAmount, stakingAmountBN, nativeFeeBN, nativePaymentInfoList, _c, _d, nativePaymentAmountBN, nativeTxInput, candidateHashPrivateKeyBytes, committeeKey, metaData, txInfo, sentInfo, _e, nativeSpendingCoinSNs, nativeListUTXO;
+        return __generator(this, function (_f) {
+            switch (_f.label) {
+                case 0:
+                    stakingType = _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_4__["STAKING_TYPES"].SHARD;
+                    usePrivacyForNativeToken = false;
+                    return [4 /*yield*/, _src_services_rpc__WEBPACK_IMPORTED_MODULE_1__["default"].getStakingAmount(stakingType)];
+                case 1:
+                    stakingAmount = (_f.sent()).res;
+                    stakingAmountBN = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["toBNAmount"])(stakingAmount);
+                    nativeFeeBN = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["toBNAmount"])(nativeFee);
+                    _c = _src_models_paymentInfo__WEBPACK_IMPORTED_MODULE_2__["default"].bind;
+                    _d = {};
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getBurningAddress"])()];
+                case 2:
+                    nativePaymentInfoList = [
+                        new (_c.apply(_src_models_paymentInfo__WEBPACK_IMPORTED_MODULE_2__["default"], [void 0, (_d.paymentAddress = _f.sent(),
+                                _d.amount = stakingAmountBN.toNumber(),
+                                _d.message = "",
+                                _d)]))()
+                    ];
+                    nativePaymentAmountBN = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getTotalAmountFromPaymentList"])(nativePaymentInfoList);
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getNativeTokenTxInput"])(candidateAccountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeFeeBN, usePrivacyForNativeToken)];
+                case 3:
+                    nativeTxInput = _f.sent();
+                    candidateHashPrivateKeyBytes = Object(_src_utils_base58__WEBPACK_IMPORTED_MODULE_6__["checkDecode"])(candidateAccountKeySet.validatorKey).bytesDecoded;
+                    return [4 /*yield*/, Object(_key_generator__WEBPACK_IMPORTED_MODULE_7__["generateCommitteeKeyFromHashPrivateKey"])(candidateHashPrivateKeyBytes, candidateAccountKeySet.paymentAddress.publicKeyBytes)];
+                case 4:
+                    committeeKey = _f.sent();
+                    console.log('nativeTxInput', nativeTxInput);
+                    metaData = {
+                        Type: _wallet_constants__WEBPACK_IMPORTED_MODULE_8__["MetaStakingShard"],
+                        FunderPaymentAddress: candidateAccountKeySet.paymentAddressKeySerialized,
+                        RewardReceiverPaymentAddress: rewardReceiverPaymentAddress,
+                        StakingAmountShard: stakingAmountBN.toNumber(),
+                        CommitteePublicKey: committeeKey,
+                        AutoReStaking: autoReStaking,
+                    };
+                    return [4 /*yield*/, Object(_sendNativeToken__WEBPACK_IMPORTED_MODULE_5__["createTx"])({
+                            nativeTxInput: nativeTxInput,
+                            nativePaymentInfoList: nativePaymentInfoList,
+                            nativeTokenFeeBN: nativeFeeBN,
+                            nativePaymentAmountBN: nativePaymentAmountBN,
+                            privateKeySerialized: candidateAccountKeySet.privateKeySerialized,
+                            usePrivacyForNativeToken: usePrivacyForNativeToken,
+                            initTxMethod: _src_wasm_methods__WEBPACK_IMPORTED_MODULE_3__["default"].staking,
+                            metaData: metaData
+                        })];
+                case 5:
+                    txInfo = _f.sent();
+                    console.log('txInfo', txInfo);
+                    return [4 /*yield*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["sendB58CheckEncodeTxToChain"])(_src_services_rpc__WEBPACK_IMPORTED_MODULE_1__["default"].sendRawTx, txInfo.b58CheckEncodeTx)];
+                case 6:
+                    sentInfo = _f.sent();
+                    _e = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["getCoinInfoForCache"])(nativeTxInput.inputCoinStrs), nativeSpendingCoinSNs = _e.serialNumberList, nativeListUTXO = _e.listUTXO;
+                    return [2 /*return*/, Object(_utils__WEBPACK_IMPORTED_MODULE_0__["createHistoryInfo"])({
+                            txId: sentInfo.txId,
+                            lockTime: txInfo.lockTime,
+                            nativePaymentInfoList: nativePaymentInfoList,
+                            nativeFee: nativeFee,
+                            nativeListUTXO: nativeListUTXO,
+                            nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+                            nativeSpendingCoinSNs: nativeSpendingCoinSNs,
+                            txType: _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_4__["TxCustomTokenPrivacyType"],
+                            privacyTokenTxType: _src_services_tx_constants__WEBPACK_IMPORTED_MODULE_4__["CustomTokenInit"],
+                            accountPublicKeySerialized: candidateAccountKeySet.publicKeySerialized,
+                            usePrivacyForNativeToken: usePrivacyForNativeToken,
+                            meta: metaData,
+                            devInfo: 'staking request'
+                        })];
+            }
+        });
+    });
+}
+
+
+/***/ }),
+
 /***/ "./src/services/tx/utils.ts":
 /*!**********************************!*\
   !*** ./src/services/tx/utils.ts ***!
   \**********************************/
-/*! exports provided: toBNAmount, getTotalAmountFromPaymentList, getNativeTokenTxInput, getPrivacyTokenTxInput, initTx, createOutputCoin, encryptPaymentMessage, sendB58CheckEncodeTxToChain, getCoinInfoForCache, createHistoryInfo */
+/*! exports provided: toBNAmount, getTotalAmountFromPaymentList, getNativeTokenTxInput, getPrivacyTokenTxInput, initTx, createOutputCoin, encryptPaymentMessage, sendB58CheckEncodeTxToChain, getCoinInfoForCache, createHistoryInfo, getBurningAddress */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67833,6 +68239,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendB58CheckEncodeTxToChain", function() { return sendB58CheckEncodeTxToChain; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCoinInfoForCache", function() { return getCoinInfoForCache; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createHistoryInfo", function() { return createHistoryInfo; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBurningAddress", function() { return getBurningAddress; });
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! bn.js */ "./node_modules/bn.js/lib/bn.js");
 /* harmony import */ var bn_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bn_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _src_wasm_methods__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @src/wasm/methods */ "./src/wasm/methods.ts");
@@ -68146,6 +68553,27 @@ function createHistoryInfo(_a) {
     // TODO: handle cache error
     Object(_cache_txHistory__WEBPACK_IMPORTED_MODULE_10__["cacheTxHistory"])(history.txId, history);
     return history;
+}
+function getBurningAddress(beaconHeight) {
+    if (beaconHeight === void 0) { beaconHeight = 0; }
+    return __awaiter(this, void 0, void 0, function () {
+        var burningAddress, e_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, _src_services_rpc__WEBPACK_IMPORTED_MODULE_5__["default"].getBurningAddress(beaconHeight)];
+                case 1:
+                    burningAddress = _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    e_1 = _a.sent();
+                    burningAddress = _src_services_wallet_constants__WEBPACK_IMPORTED_MODULE_9__["BurnAddress"];
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/, burningAddress];
+            }
+        });
+    });
 }
 
 
@@ -69262,6 +69690,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _token__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./token */ "./src/walletInstance/token/token.ts");
 /* harmony import */ var _src_services_tx_sendNativeToken__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @src/services/tx/sendNativeToken */ "./src/services/tx/sendNativeToken.ts");
 /* harmony import */ var _src_constants_constants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @src/constants/constants */ "./src/constants/constants.ts");
+/* harmony import */ var _src_services_tx_sendStakingRequest__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @src/services/tx/sendStakingRequest */ "./src/services/tx/sendStakingRequest.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -69315,6 +69744,7 @@ var __generator = (undefined && undefined.__generator) || function (thisArg, bod
 
 
 
+
 var NativeToken = /** @class */ (function (_super) {
     __extends(NativeToken, _super);
     function NativeToken(accountKeySet) {
@@ -69336,6 +69766,26 @@ var NativeToken = /** @class */ (function (_super) {
                         _b = { nativePaymentInfoList: paymentInfoList, nativeFee: nativeFee, accountKeySet: this.accountKeySet };
                         return [4 /*yield*/, this.getAvailableCoins()];
                     case 1: return [2 /*return*/, _a.apply(void 0, [(_b.availableCoins = _c.sent(), _b)])];
+                }
+            });
+        });
+    };
+    NativeToken.prototype.requestStaking = function (rewardReceiverPaymentAddress, nativeFee) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _a = _src_services_tx_sendStakingRequest__WEBPACK_IMPORTED_MODULE_4__["default"];
+                        _b = {
+                            candidateAccountKeySet: this.accountKeySet
+                        };
+                        return [4 /*yield*/, this.getAvailableCoins()];
+                    case 1: return [2 /*return*/, _a.apply(void 0, [(_b.availableNativeCoins = _c.sent(),
+                                _b.nativeFee = nativeFee,
+                                _b.rewardReceiverPaymentAddress = rewardReceiverPaymentAddress,
+                                _b.autoReStaking = true,
+                                _b)])];
                 }
             });
         });

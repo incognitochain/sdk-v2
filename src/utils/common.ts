@@ -56,7 +56,7 @@ function newHashFromStr(str: string) {
   return bytes;
 }
 
-function base64ArrayBuffer(arrayBuffer: ArrayBuffer) {
+function base64ArrayBuffer(arrayBuffer: any) {
   var base64    = '';
   var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   

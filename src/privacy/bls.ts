@@ -2,7 +2,7 @@ import wasmMethods from '../wasm/methods';
 import { base64Decode, base64Encode } from './utils';
 
 // seed is bytes array
-async function generateBLSKeyPair(seed: string) {
+async function generateBLSKeyPair(seed: any) {
   let seedStr = base64Encode(seed);
 
   if (typeof wasmMethods.generateBLSKeyPairFromSeed === 'function') {

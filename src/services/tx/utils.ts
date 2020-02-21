@@ -10,7 +10,7 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import CoinModel from '@src/models/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import { TxHistoryModel } from '@src/models/txHistory';
-import { SuccessTx } from '@src/services/wallet/constants';
+import { SuccessTx, BurnAddress } from '@src/services/wallet/constants';
 import { cacheTxHistory } from '../cache/txHistory';
 
 export interface TxInputType {
@@ -311,4 +311,15 @@ export function createHistoryInfo({
   cacheTxHistory(history.txId, history);
 
   return history;
+}
+
+export async function getBurningAddress(beaconHeight = 0){
+  let burningAddress;
+  try {
+    burningAddress = await rpc.getBurningAddress(beaconHeight);
+  } catch (e){
+    burningAddress = BurnAddress;
+  }
+
+  return burningAddress;
 }
