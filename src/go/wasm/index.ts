@@ -49,7 +49,7 @@ async function _loadWasmOnBrowser(resolve: Function, reject: Function) {
   }
 }
 
-export function loadWASM() {
+export function implementGoMethodUseWasm() {
   return new Promise((resolve, reject) => {
     if (isWASMRunned) {
       console.info('WASM was loaded');

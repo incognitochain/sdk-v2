@@ -3,7 +3,7 @@ import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { TxCustomTokenPrivacyType, CustomTokenTransfer } from '@src/services/tx/constants';
 import { extractInfoFromInitedTxBytes as customExtractInfoFromInitedTxBytes } from '@src/services/tx/sendNativeToken';
 import { createTx } from './sendPrivacyToken';
@@ -88,7 +88,7 @@ export default async function sendPrivacyTokenPdeTradeRequest({
     tokenName,
     usePrivacyForPrivacyToken,
     usePrivacyForNativeToken,
-    initTxMethod: wasmMethods.initPTokenTradeTx,
+    initTxMethod: goMethods.initPTokenTradeTx,
     metaData,
     privacyTokenParamAdditional: {
     },

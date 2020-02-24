@@ -1,5 +1,5 @@
 import {base64Decode, base64Encode} from '@src/privacy/utils';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { generateECDSAKeyPair } from '@src/privacy/ecdsa';
 import { generateBLSKeyPair } from '@src/privacy/bls';
 import { stringToBytes, convertUint8ArrayToArray } from '@src/privacy/utils';
@@ -18,8 +18,8 @@ export function generatePrivateKey(seed: any) : KeyBytes {
   let seedB64Encode = base64Encode(seed);
 
   let privateKeyB64Encode;
-  if (typeof wasmMethods.generateKeyFromSeed == 'function') {
-    privateKeyB64Encode = wasmMethods.generateKeyFromSeed(seedB64Encode);
+  if (typeof goMethods.generateKeyFromSeed == 'function') {
+    privateKeyB64Encode = goMethods.generateKeyFromSeed(seedB64Encode);
   }
   if (privateKeyB64Encode == null) {
     throw new Error('Can not generate private key');
@@ -34,8 +34,8 @@ export function generatePublicKey(privateKey: KeyBytes) : KeyBytes {
   let privateKeyB64Encode = base64Encode(privateKey);
 
   let publicKeyB64Encode;
-  if (typeof wasmMethods.scalarMultBase == 'function') {
-    publicKeyB64Encode = wasmMethods.scalarMultBase(privateKeyB64Encode);
+  if (typeof goMethods.scalarMultBase == 'function') {
+    publicKeyB64Encode = goMethods.scalarMultBase(privateKeyB64Encode);
   }
   if (publicKeyB64Encode == null) {
     throw new Error('Can not generate public key');
@@ -50,8 +50,8 @@ export function generateReceivingKey(privateKey: KeyBytes) : KeyBytes {
   let privateKeyB64Encode = base64Encode(privateKey);
 
   let receivingKeyB64Encode;
-  if (typeof wasmMethods.generateKeyFromSeed == 'function') {
-    receivingKeyB64Encode = wasmMethods.generateKeyFromSeed(privateKeyB64Encode);
+  if (typeof goMethods.generateKeyFromSeed == 'function') {
+    receivingKeyB64Encode = goMethods.generateKeyFromSeed(privateKeyB64Encode);
   }
   if (receivingKeyB64Encode == null) {
     throw new Error('Can not generate private key');
@@ -66,8 +66,8 @@ export function generateTransmissionKey(receivingKey: KeyBytes) : KeyBytes {
   let receivingKeyB64Encode = base64Encode(receivingKey);
 
   let transmissionKeyB64Encode;
-  if (typeof wasmMethods.scalarMultBase == 'function') {
-    transmissionKeyB64Encode = wasmMethods.scalarMultBase(receivingKeyB64Encode);
+  if (typeof goMethods.scalarMultBase == 'function') {
+    transmissionKeyB64Encode = goMethods.scalarMultBase(receivingKeyB64Encode);
   }
   if (transmissionKeyB64Encode == null) {
     throw new Error('Can not generate public key');

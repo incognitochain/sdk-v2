@@ -4,7 +4,7 @@ import rpc from '@src/services/rpc';
 import { base64Decode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
 import { ENCODE_VERSION } from '@src/constants/constants';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
@@ -99,7 +99,7 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     nativeTokenFeeBN,
     privateKeySerialized: accountKeySet.privateKeySerialized,
     nativePaymentInfoList,
-    initTxMethod: wasmMethods.initPrivacyTx,
+    initTxMethod: goMethods.initPrivacyTx,
     usePrivacyForNativeToken,
   });
   console.log('txInfo', txInfo);

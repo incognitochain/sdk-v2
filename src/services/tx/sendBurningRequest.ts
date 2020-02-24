@@ -3,7 +3,7 @@ import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { TxCustomTokenPrivacyType, CustomTokenTransfer } from '@src/services/tx/constants';
 import { createTx } from './sendPrivacyToken';
 import { BurningRequestMeta } from '../wallet/constants';
@@ -97,7 +97,7 @@ export default async function sendBurningRequest({
     usePrivacyForNativeToken,
     usePrivacyForPrivacyToken,
     metaData: burningReqMetadata,
-    initTxMethod: wasmMethods.initBurningRequestTx
+    initTxMethod: goMethods.initBurningRequestTx
   });
 
   console.log('txInfo', txInfo);

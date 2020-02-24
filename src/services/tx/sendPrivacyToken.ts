@@ -4,7 +4,7 @@ import rpc from '@src/services/rpc';
 import { base64Decode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
 import { ENCODE_VERSION } from '@src/constants/constants';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { convertHashToStr } from '@src/utils/common';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
@@ -181,7 +181,7 @@ export default async function sendPrivacyToken({
     tokenId,
     tokenSymbol,
     tokenName,
-    initTxMethod: wasmMethods.initPrivacyTokenTx,
+    initTxMethod: goMethods.initPrivacyTokenTx,
   });
 
   console.log('txInfo', txInfo);

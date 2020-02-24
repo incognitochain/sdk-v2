@@ -3,7 +3,7 @@ import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { CustomTokenInit, TxCustomTokenPrivacyType } from '@src/services/tx/constants';
 import { createTx } from './sendPrivacyToken';
 
@@ -65,7 +65,7 @@ export default async function initPrivacyToken({
     tokenName,
     usePrivacyForPrivacyToken,
     usePrivacyForNativeToken,
-    initTxMethod: wasmMethods.initPrivacyTokenTx,
+    initTxMethod: goMethods.initPrivacyTokenTx,
     privacyTokenParamAdditional: {
       amount: supplyAmount,
       tokenTxType: CustomTokenInit,

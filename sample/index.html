@@ -22,14 +22,14 @@
       }
 
       function initWallet(incognito) {
-        const wallet = new incognito.Wallet();
+        const wallet = new incognito.WalletInstance();
         wallet.init('pass');
 
         return wallet;
       }
 
       function setStorage(incognito) {
-        incognito.storage.implement({
+        incognito.storageService.implement({
           setMethod: (key, data) => {
             return localStorage.setItem(key, data);
           },
@@ -60,7 +60,7 @@
       async function main() {
         if (incognitoJs) {
           console.log('Incognito module', incognitoJs);
-          await section('LOAD WASM', incognitoJs.loadWASM);
+          await section('LOAD WASM', incognitoJs.goServices.implementGoMethodUseWasm);
 
           await section('SET STORAGE', async () => {
             return setStorage(incognitoJs);

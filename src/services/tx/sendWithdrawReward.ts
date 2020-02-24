@@ -3,7 +3,7 @@ import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { TxNormalType } from '@src/services/tx/constants';
 import { createTx } from './sendNativeToken';
 import { WithDrawRewardRequestMeta } from '../wallet/constants';
@@ -41,7 +41,7 @@ export default async function sendWithdrawReward({
     nativePaymentAmountBN,
     privateKeySerialized: accountKeySet.privateKeySerialized,
     usePrivacyForNativeToken,
-    initTxMethod: wasmMethods.initWithdrawRewardTx,
+    initTxMethod: goMethods.initWithdrawRewardTx,
     metaData
   });
   

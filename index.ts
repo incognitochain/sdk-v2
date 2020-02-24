@@ -1,18 +1,18 @@
 import '@src/utils/polyfill.ts';
 import '@src/global';
-import  { loadWASM } from '@src/wasm';
-import WalletInstance from '@src/walletInstance/wallet';
-import storageService from '@src/services/storage'
 import { checkCachedHistories, getTxHistoryByPublicKey } from '@src/services/history/txHistory';
+import { implementGoMethodManually, implementGoMethodUseWasm, GO_METHOD_NAMES } from '@src/go';
 
-const historyService = {
+export { default as WalletInstance } from '@src/walletInstance/wallet';
+export { default as storageService } from '@src/services/storage';
+
+export const historyServices = {
   checkCachedHistories,
   getTxHistoryByPublicKey
 };
 
-export default {
-  loadWASM,
-  WalletInstance,
-  storageService,
-  historyService
+export const goServices = {
+  implementGoMethodManually,
+  implementGoMethodUseWasm,
+  GO_METHOD_NAMES
 };

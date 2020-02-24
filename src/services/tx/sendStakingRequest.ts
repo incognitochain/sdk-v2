@@ -3,7 +3,7 @@ import rpc from '@src/services/rpc';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { TxCustomTokenPrivacyType, STAKING_TYPES } from '@src/services/tx/constants';
 import { createTx } from './sendNativeToken';
 import { checkDecode } from '@src/utils/base58';
@@ -61,7 +61,7 @@ export default async function sendStakingRequest({
     nativePaymentAmountBN,
     privateKeySerialized: candidateAccountKeySet.privateKeySerialized,
     usePrivacyForNativeToken,
-    initTxMethod: wasmMethods.staking,
+    initTxMethod: goMethods.staking,
     metaData
   });
   

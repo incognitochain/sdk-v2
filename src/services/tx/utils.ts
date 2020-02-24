@@ -1,5 +1,5 @@
 import bn from 'bn.js';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { base64Decode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
 import { ENCODE_VERSION, ED25519_KEY_SIZE } from '@src/constants/constants';
@@ -202,7 +202,7 @@ export function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpend
   const sndOutputs: string[] = new Array(numberOutput);
 
   if (numberOutput > 0) {
-    const sndOutputStrs = wasmMethods.randomScalars(numberOutput);
+    const sndOutputStrs = goMethods.randomScalars(numberOutput);
     if (sndOutputStrs === null || sndOutputStrs === '') {
       throw new Error('Can not random scalars for output coins');
     }

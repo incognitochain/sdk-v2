@@ -150,7 +150,6 @@ const browserLib = {
   output: {
     filename: 'index.js',
     library: 'incognitoJs',
-    libraryExport: 'default',
     libraryTarget: 'umd',
   },
   plugins: [

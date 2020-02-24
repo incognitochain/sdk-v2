@@ -1,3 +1,6 @@
+export { implementGoMethodUseWasm } from './wasm';
+export { implementGoMethodManually, GO_METHOD_NAMES } from './implement';
+
 function getMethod(methodName: string) {
   let func;
 
@@ -12,6 +15,12 @@ function getMethod(methodName: string) {
   if (typeof func === 'function') {
     (methods as { [key: string]: any })[methodName] = func;
     return  func;
+  } else {
+    throw new Error(`
+      Can not find GO method "${methodName}", please make sure it's been implemented.
+      Use "implementGoMethodUseWasm" to automatically implement on Browser & NodeJS enviroment,
+      or "implementGoMethodManually" on other enviroments (React Native, ElectronJS,..)
+    `);
   }
 }
 

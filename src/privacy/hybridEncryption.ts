@@ -1,6 +1,6 @@
 import { ED25519_KEY_SIZE } from '@src/constants/constants';
 import { convertUint8ArrayToArray } from './utils';
-import wasmMethods from '../wasm/methods';
+import goMethods from '../go';
 
 const { base64Decode, base64Encode } = require('./utils');
 
@@ -13,8 +13,8 @@ async function hybridEncryption(publicKeyBytes: KeyBytes, msgBytes: ArrayLike<nu
   dataBytes.set(msgBytes, ED25519_KEY_SIZE);
   let dataEncoded = base64Encode(convertUint8ArrayToArray(dataBytes));
 
-  if (typeof wasmMethods.hybridEncryptionASM === 'function') {
-    let ciphertextEncoded = await wasmMethods.hybridEncryptionASM(dataEncoded);
+  if (typeof goMethods.hybridEncryptionASM === 'function') {
+    let ciphertextEncoded = await goMethods.hybridEncryptionASM(dataEncoded);
 
     let ciphertextBytes = base64Decode(ciphertextEncoded);
     return ciphertextBytes;
@@ -32,8 +32,8 @@ async function hybridDecryption(privateKeyBytes: KeyBytes, ciphertextBytes: Arra
   dataBytes.set(ciphertextBytes, ED25519_KEY_SIZE);
   let dataEncoded = base64Encode(convertUint8ArrayToArray(dataBytes));
 
-  if (typeof wasmMethods.hybridDecryptionASM === 'function') {
-    let plainTextEncoded = await wasmMethods.hybridDecryptionASM(dataEncoded);
+  if (typeof goMethods.hybridDecryptionASM === 'function') {
+    let plainTextEncoded = await goMethods.hybridDecryptionASM(dataEncoded);
     if (plainTextEncoded === null){
       throw new Error('Can not decrypt message with private key');
     }

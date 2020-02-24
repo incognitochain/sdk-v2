@@ -2,7 +2,7 @@ import bn from 'bn.js';
 import { checkEncode, checkDecode } from '@src/utils/base58';
 import { ENCODE_VERSION, ED25519_KEY_SIZE } from '@src/constants/constants';
 import rpcClient from '@src/services/rpc';
-import wasmMethods from '@src/wasm/methods';
+import goMethods from '@src/go';
 import { base64Decode } from '@src/privacy/utils';
 import { hybridDecryption } from '@src/privacy/hybridEncryption';
 import CoinModel from '@src/models/coin';
@@ -65,7 +65,7 @@ export async function deriveSerialNumbers(accountKeySet: AccountKeySetModel, coi
   
     let paramJson = JSON.stringify(param);
   
-    let res = await wasmMethods.deriveSerialNumber(paramJson);
+    let res = await goMethods.deriveSerialNumber(paramJson);
     if (res === null || res === '') {
       throw new Error('Can not derive serial number');
     }
