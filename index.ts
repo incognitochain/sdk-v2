@@ -1,9 +1,8 @@
 import '@src/utils/polyfill.ts';
 import '@src/global';
 import  { loadWASM } from '@src/wasm';
-import Wallet from '@src/walletInstance/wallet';
-import storage from '@src/services/storage'
-import bn from 'bn.js';
+import WalletInstance from '@src/walletInstance/wallet';
+import storageService from '@src/services/storage'
 import { checkCachedHistories, getTxHistoryByPublicKey } from '@src/services/history/txHistory';
 
 const historyService = {
@@ -13,8 +12,7 @@ const historyService = {
 
 export default {
   loadWASM,
-  storage,
-  bn,
-  Wallet,
+  WalletInstance,
+  storageService,
   historyService
 };
