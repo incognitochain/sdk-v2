@@ -15,6 +15,19 @@ const getEnv = otherEnv => ({
   ...otherEnv
 });
 
+
+function getDataByTarget(node, webBrowser, webModule) {
+  if (target === 'web:module') {
+    return webModule;
+  } else if (target === 'web:browser') {
+    return webBrowser;
+  } else if (target === 'node') {
+    return node;
+  }
+}
+
+const buildDir = getDataByTarget('build/node', 'build/web/browser', 'build/web/module');
+
 const optimization = {
   minimize: true,
   minimizer: [
@@ -26,7 +39,7 @@ const optimization = {
           pure_funcs: ['console.log', 'console.info'],
         },
         parse: {},
-        mangle: true,
+        mangle: getDataByTarget(true, false, true),
         output: {
           comments: false,
           ascii_only: true,
@@ -43,7 +56,7 @@ const optimization = {
 
 const devConfig = {
   mode: 'development',
-  devtool: 'source-map'
+  devtool: 'inline-source-map',
 };
 
 const prodConfig = {
@@ -57,14 +70,21 @@ const prodConfig = {
 const baseConfig = {
   entry: './index.ts',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, buildDir),
   },
   module: {
     rules: [
       // rules for modules (configure loaders, parser options, etc.)
       {
         test: /\.ts?$/,
-        use: 'ts-loader',
+        use: {
+          loader: 'ts-loader',
+          options: {
+            compilerOptions: {
+              outDir: path.resolve(__dirname, buildDir),
+            }
+          },
+        },
         exclude: /node_modules/,
       },
       {
@@ -95,7 +115,6 @@ const baseConfig = {
 const nodeLib = {
   target: 'node',
   output: {
-    path: path.resolve(__dirname, 'build/node'),
     filename: 'index.js',
     libraryTarget: 'umd',
   },
@@ -112,14 +131,13 @@ const webModuleLib = {
     fs: 'empty'
   },
   output: {
-    path: path.resolve(__dirname, 'build/web/module'),
     filename: 'index.js',
     libraryTarget: 'umd',
   },
   plugins: [
     new DefinePlugin(getEnv({
       '__IS_WEB__': true
-    }))
+    })),
   ]
 };
 
@@ -130,7 +148,6 @@ const browserLib = {
     fs: 'empty'
   },
   output: {
-    path: path.resolve(__dirname, 'build/web/browser'),
     filename: 'index.js',
     library: 'incognitoJs',
     libraryExport: 'default',
@@ -139,9 +156,10 @@ const browserLib = {
   plugins: [
     new DefinePlugin(getEnv({
       '__IS_WEB__': true
-    }))
+    })),
   ]
 };
+
 
 
 module.exports = function() {
@@ -150,13 +168,10 @@ module.exports = function() {
 
   const commonConfig = merge(baseConfig, isProd ? prodConfig : devConfig);
   const targets = [];
+  const webpackConfig = getDataByTarget(nodeLib, browserLib, webModuleLib);
 
-  if (target === 'web:module') {
-    targets.push(merge(commonConfig, webModuleLib));
-  } else if (target === 'web:browser') {
-    targets.push(merge(commonConfig, browserLib));
-  } else if (target === 'node') {
-    targets.push(merge(commonConfig, nodeLib));
+  if (webpackConfig) {
+    targets.push(merge(commonConfig, webpackConfig));
   } else {
     targets.push(
       merge(commonConfig, webModuleLib),

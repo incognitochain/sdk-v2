@@ -5,7 +5,7 @@ function getMethod(methodName: string) {
   if (__IS_WEB__ && typeof (window as { [key: string]: any })[methodName] === 'function') {
     func = (window as { [key: string]: any })[methodName];
   } else if (__IS_NODE__ && typeof (global as { [key: string]: any })[methodName] === 'function') {
-    func = (window as { [key: string]: any })[methodName];
+    func = (global as { [key: string]: any })[methodName];
   }
 
   // then, cache it

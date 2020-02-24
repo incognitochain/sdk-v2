@@ -11,12 +11,14 @@
     "build:web:module": "rimraf build/web/module && yarn lint && NODE_ENV='production' TARGET='web:module' webpack --progress",
     "build:web:browser": "rimraf build/web/browser && yarn lint && NODE_ENV='production' TARGET='web:browser' webpack --progress",
     "build:node": "rimraf build/node && yarn lint && NODE_ENV='production' TARGET='node' webpack --progress",
-    "build": "yarn clean:build && yarn lint && NODE_ENV='production' webpack --progress",
-    "build:dev": "yarn clean:build && webpack --progress",
+    "build": "yarn build:node && yarn build:web:module && yarn build:web:browser",
+    "build:dev": "yarn build:dev:node && yarn build:dev:web:browser && yarn build:dev:web:module",
     "build:dev:node": "rimraf build/node && TARGET='node' webpack --progress",
     "build:dev:web:browser": "rimraf build/web/browser && TARGET='web:browser' webpack --progress",
+    "build:dev:web:module": "rimraf build/web/module && TARGET='web:module' webpack --progress",
     "test:browser": "copyfiles -s ./privacy.wasm ./sample/ && http-server -o sample/index.html",
-    "test:node": "node sample/test-node.js"
+    "test:node": "node sample/test-node.js",
+    "stats": "TARGET='node' webpack --json > stats.json"
   },
   "author": "vuongdao@autonomous.nyc",
   "license": "ISC",

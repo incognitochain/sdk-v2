@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "declaration": true,                   /* Generates corresponding '.d.ts' file. */
+    "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
+    "sourceMap": true, 
     "baseUrl": "./src",
     "paths": {
       "@src/*": ["./*"],
@@ -9,7 +12,7 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "module": "es6",
+    "module": "commonjs",
     "target": "es5"
   },
   "exclude": ["node_modules", "build", "src/wasm"]
