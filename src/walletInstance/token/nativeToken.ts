@@ -7,6 +7,7 @@ import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendStakingRequest from '@src/services/tx/sendStakingRequest';
 import sendNativeTokenPdeContribution from '@src/services/tx/sendNativeTokenPdeContribution';
+import sendNativeTokenPdeTradeRequest from '@src/services/tx/sendNativeTokenPdeTradeRequest';
 
 class NativeToken extends Token implements NativeTokenModel {
   tokenId: string;
@@ -45,6 +46,19 @@ class NativeToken extends Token implements NativeTokenModel {
       pdeContributionPairID,
       tokenId: this.tokenId,
       contributedAmount
+    });
+  }
+
+  async requestTrade(tokenIdBuy: TokenIdType, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, tradingFee: number) {
+    return sendNativeTokenPdeTradeRequest({
+      accountKeySet: this.accountKeySet,
+      availableNativeCoins: await this.getAvailableCoins(),
+      nativeFee,
+      tradingFee,
+      tokenIdBuy,
+      tokenIdSell: this.tokenId,
+      sellAmount,
+      minimumAcceptableAmount
     });
   }
 }
