@@ -23,7 +23,8 @@ export async function getTxHistoryCache() {
       nativeTokenInfo: historyData.nativeTokenInfo,
       privacyTokenInfo: historyData.privacyTokenInfo,
       meta: historyData.meta,
-      accountPublicKeySerialized: historyData.accountPublicKeySerialized
+      accountPublicKeySerialized: historyData.accountPublicKeySerialized,
+      devInfo: historyData.devInfo
     });
   });
 

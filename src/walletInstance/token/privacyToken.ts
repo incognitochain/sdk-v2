@@ -7,6 +7,7 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import sendBurningRequest from '@src/services/tx/sendBurningRequest';
 import { hasExchangeRate } from '@src/services/token';
 import sendPrivacyTokenPdeContribution from '@src/services/tx/sendPrivacyTokenPdeContribution';
+import sendPrivacyTokenPdeTradeRequest from '@src/services/tx/sendPrivacyTokenPdeTradeRequest';
 
 interface PrivacyTokenParam {
   tokenId: string,
@@ -80,6 +81,23 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       privacyFee,
       tokenSymbol: this.symbol,
       tokenName: this.name
+    });
+  }
+
+  async requestTrade(tokenIdBuy: TokenIdType, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, privacyFee: number, tradingFee: number) {
+    return sendPrivacyTokenPdeTradeRequest({
+      accountKeySet: this.accountKeySet,
+      availableNativeCoins: await this.getNativeAvailableCoins(),
+      privacyAvailableCoins: await this.getAvailableCoins(),
+      nativeFee,
+      tradingFee,
+      privacyFee,
+      tokenIdBuy,
+      sellAmount,
+      minimumAcceptableAmount,
+      tokenName: this.name,
+      tokenSymbol: this.symbol,
+      tokenId: this.tokenId,
     });
   }
 }
