@@ -80,8 +80,10 @@ const baseConfig = {
         use: {
           loader: 'ts-loader',
           options: {
+            compiler: 'ttypescript',
             compilerOptions: {
               outDir: path.resolve(__dirname, buildDir),
+              plugins: [{ 'transform': 'typescript-transform-paths', 'afterDeclarations': true  }]
             }
           },
         },

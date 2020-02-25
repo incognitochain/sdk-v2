@@ -60,7 +60,9 @@
     "rimraf": "^3.0.0",
     "terser-webpack-plugin": "^2.2.1",
     "ts-loader": "^6.2.1",
+    "ttypescript": "^1.5.10",
     "typescript": "^3.7.5",
+    "typescript-transform-paths": "^1.1.14",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-merge": "^4.2.2"
