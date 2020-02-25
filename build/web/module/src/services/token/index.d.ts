@@ -1,6 +1,6 @@
 /// <reference types="bn.js" />
-import AccountKeySetModel from '@src/models/key/accountKeySet';
-import CoinModel from '@src/models/coin';
+import AccountKeySetModel from "../../models/key/accountKeySet";
+import CoinModel from "../../models/coin";
 /**
  * Return list of coins that not existed in chain (not use yet)
  */

@@ -1,5 +1,5 @@
-import AccountKeySetModel from '@src/models/key/accountKeySet';
-import CoinModel from '@src/models/coin';
+import AccountKeySetModel from "../../models/key/accountKeySet";
+import CoinModel from "../../models/coin";
 interface WithdrawRewardParam {
     accountKeySet: AccountKeySetModel;
     availableNativeCoins: CoinModel[];

@@ -1,4 +1,4 @@
-import BaseTokenModel from './baseToken';
+import BaseTokenModel from "./baseToken";
 interface NativeTokenModelParam {
     tokenId: string;
     name: string;

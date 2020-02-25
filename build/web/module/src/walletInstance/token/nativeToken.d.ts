@@ -1,7 +1,7 @@
-import Token from './token';
-import NativeTokenModel from '@src/models/token/nativeToken';
-import AccountKeySetModel from '@src/models/key/accountKeySet';
-import PaymentInfoModel from '@src/models/paymentInfo';
+import Token from "./token";
+import NativeTokenModel from "../../models/token/nativeToken";
+import AccountKeySetModel from "../../models/key/accountKeySet";
+import PaymentInfoModel from "../../models/paymentInfo";
 declare class NativeToken extends Token implements NativeTokenModel {
     tokenId: string;
     name: string;

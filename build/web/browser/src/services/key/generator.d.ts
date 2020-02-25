@@ -1,4 +1,4 @@
-import KeyWalletModel from '@src/models/key/keyWallet';
+import KeyWalletModel from "../../models/key/keyWallet";
 export declare function generatePrivateKey(seed: any): KeyBytes;
 export declare function generatePublicKey(privateKey: KeyBytes): KeyBytes;
 export declare function generateReceivingKey(privateKey: KeyBytes): KeyBytes;

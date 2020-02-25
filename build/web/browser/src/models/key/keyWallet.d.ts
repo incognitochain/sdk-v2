@@ -1,5 +1,5 @@
-import BaseModel from '@src/models/baseModel';
-import AccountKeySetModel from './accountKeySet';
+import BaseModel from "../baseModel";
+import AccountKeySetModel from "./accountKeySet";
 declare class KeyWalletModel extends BaseModel {
     depth: number;
     childNumber: Uint8Array;

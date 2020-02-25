@@ -1,6 +1,6 @@
-import BaseAccount from './baseAccount';
-import MasterAccountModel from '@src/models/account/masterAccount';
-import Account from './account';
+import BaseAccount from "./baseAccount";
+import MasterAccountModel from "../../models/account/masterAccount";
+import Account from "./account";
 interface MasterAccountInterface extends MasterAccountModel {
 }
 declare class MasterAccount extends BaseAccount implements MasterAccountInterface {

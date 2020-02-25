@@ -1,8 +1,8 @@
 import bn from 'bn.js';
-import PaymentInfoModel from '@src/models/paymentInfo';
-import CoinModel from '@src/models/coin';
-import AccountKeySetModel from '@src/models/key/accountKeySet';
-import { TxHistoryModel } from '@src/models/txHistory';
+import PaymentInfoModel from "../../models/paymentInfo";
+import CoinModel from "../../models/coin";
+import AccountKeySetModel from "../../models/key/accountKeySet";
+import { TxHistoryModel } from "../../models/txHistory";
 export interface TxInputType {
     inputCoinStrs: CoinModel[];
     totalValueInputBN: bn;

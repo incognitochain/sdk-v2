@@ -1,7 +1,7 @@
-import BaseModel from '../baseModel';
-import PrivateKeyModel from './privateKey';
-import PaymentAddressKeyModel from './paymentAddress';
-import ViewingKeyModel from './viewingKey';
+import BaseModel from "../baseModel";
+import PrivateKeyModel from "./privateKey";
+import PaymentAddressKeyModel from "./paymentAddress";
+import ViewingKeyModel from "./viewingKey";
 interface AccountKeySetParam {
     privateKey: PrivateKeyModel;
     paymentAddress: PaymentAddressKeyModel;

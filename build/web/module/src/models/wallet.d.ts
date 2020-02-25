@@ -1,5 +1,5 @@
-import BaseModel from './baseModel';
-import MasterAccountModel from './account/masterAccount';
+import BaseModel from "./baseModel";
+import MasterAccountModel from "./account/masterAccount";
 declare class WalletModel extends BaseModel {
     seed: Uint8Array;
     entropy: number[];

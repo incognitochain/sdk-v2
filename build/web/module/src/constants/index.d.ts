@@ -1,2 +1,2 @@
-export { default as TokenInfo } from './tokenInfo';
+export { default as TokenInfo } from "./tokenInfo";
 //# sourceMappingURL=index.d.ts.map

@@ -1,5 +1,5 @@
-import BaseAccountModel from '@src/models/account/baseAccount';
-import KeyWalletModel from '@src/models/key/keyWallet';
+import BaseAccountModel from "../../models/account/baseAccount";
+import KeyWalletModel from "../../models/key/keyWallet";
 interface BaseAccountInterface extends BaseAccountModel {
 }
 declare class BaseAccount implements BaseAccountInterface {

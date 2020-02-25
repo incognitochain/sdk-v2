@@ -1,5 +1,5 @@
-import BaseModel from '../baseModel';
-import KeyWalletModel from '../key/keyWallet';
+import BaseModel from "../baseModel";
+import KeyWalletModel from "../key/keyWallet";
 declare class BaseAccountModel extends BaseModel {
     name: string;
     key: KeyWalletModel;

@@ -1,4 +1,4 @@
-import AccountKeySetModel from '@src/models/key/accountKeySet';
+import AccountKeySetModel from "../../models/key/accountKeySet";
 export declare function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes): AccountKeySetModel;
 export declare function getBLSPublicKeyB58CheckEncode(miningSeedKey: number[]): Promise<string>;
 export declare function generateKeySet(seed: string): AccountKeySetModel;

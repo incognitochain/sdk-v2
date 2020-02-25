@@ -1,7 +1,7 @@
-import BaseAccount from './baseAccount';
-import { NativeToken, PrivacyToken } from '../token';
-import AccountModel from '@src/models/account/account';
-import KeyWalletModel from '@src/models/key/keyWallet';
+import BaseAccount from "./baseAccount";
+import { NativeToken, PrivacyToken } from "../token";
+import AccountModel from "../../models/account/account";
+import KeyWalletModel from "../../models/key/keyWallet";
 interface AccountModelInterface extends AccountModel {
     nativeToken: NativeToken;
 }

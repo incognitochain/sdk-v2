@@ -1,4 +1,4 @@
-import BaseKeyModel from './baseKey';
+import BaseKeyModel from "./baseKey";
 declare class PaymentAddressKeyModel extends BaseKeyModel {
     publicKeyBytes: KeyBytes;
     transmissionKeyBytes: KeyBytes;

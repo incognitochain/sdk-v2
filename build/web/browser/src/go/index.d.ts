@@ -1,3 +1,5 @@
+export { implementGoMethodUseWasm } from "./wasm";
+export { implementGoMethodManually, GO_METHOD_NAMES } from "./implement";
 declare const methods: {
     deriveSerialNumber: any;
     initPrivacyTx: any;
@@ -19,4 +21,4 @@ declare const methods: {
     generateBLSKeyPairFromSeed: any;
 };
 export default methods;
-//# sourceMappingURL=methods.d.ts.map
+//# sourceMappingURL=index.d.ts.map

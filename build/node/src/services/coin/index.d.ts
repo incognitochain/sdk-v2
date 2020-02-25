@@ -1,6 +1,6 @@
 import bn from 'bn.js';
-import CoinModel from '@src/models/coin';
-import AccountKeySetModel from '@src/models/key/accountKeySet';
+import CoinModel from "../../models/coin";
+import AccountKeySetModel from "../../models/key/accountKeySet";
 /** getAllOutputCoins returns all output coins with tokenID, for native token: tokenId is null
    *
    */

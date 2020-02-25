@@ -1,7 +1,7 @@
 /// <reference types="bn.js" />
-import BaseTokenModel from '@src/models/token/baseToken';
-import AccountKeySetModel from '@src/models/key/accountKeySet';
-import PaymentInfoModel from '@src/models/paymentInfo';
+import BaseTokenModel from "../../models/token/baseToken";
+import AccountKeySetModel from "../../models/key/accountKeySet";
+import PaymentInfoModel from "../../models/paymentInfo";
 interface NativeTokenParam {
     tokenId: string;
     name: string;

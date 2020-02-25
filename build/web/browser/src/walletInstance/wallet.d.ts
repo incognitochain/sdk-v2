@@ -1,4 +1,4 @@
-import WalletModel from "@src/models/wallet";
+import WalletModel from "../models/wallet";
 import { MasterAccount } from "./account";
 declare class Wallet implements WalletModel {
     seed: Uint8Array;

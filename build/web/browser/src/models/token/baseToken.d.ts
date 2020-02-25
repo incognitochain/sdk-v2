@@ -1,4 +1,4 @@
-import BaseModel from '../baseModel';
+import BaseModel from "../baseModel";
 interface BaseTokenModelParam {
     tokenId: string;
     name: string;

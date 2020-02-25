@@ -1,7 +1,7 @@
-import PrivateKeyModel from '@src/models/key//privateKey';
-import PaymentAddressKeyModel from '@src/models/key/paymentAddress';
-import ViewingKeyModel from '@src/models/key//viewingKey';
-import KeyWalletModel from '@src/models/key/keyWallet';
+import PrivateKeyModel from "../../models/key/privateKey";
+import PaymentAddressKeyModel from "../../models/key/paymentAddress";
+import ViewingKeyModel from "../../models/key/viewingKey";
+import KeyWalletModel from "../../models/key/keyWallet";
 declare type AllKeyModelType = PrivateKeyModel | PaymentAddressKeyModel | ViewingKeyModel;
 declare type KeyTypeString = 'PRIVATE_KEY' | 'PAYMENT_ADDRESS' | 'PUBLIC_KEY' | 'VIEWING_KEY';
 export declare function serializeKey(key: AllKeyModelType, depth: KeyWalletDepth, childNumber: KeyWalletChildNumber, chainCode: KeyWalletChainCode): Uint8Array;

@@ -1,6 +1,6 @@
-import BaseAccountModel from './baseAccount';
-import NativeTokenModel from '../token/nativeToken';
-import KeyWalletModel from '../key/keyWallet';
+import BaseAccountModel from "./baseAccount";
+import NativeTokenModel from "../token/nativeToken";
+import KeyWalletModel from "../key/keyWallet";
 declare class AccountModel extends BaseAccountModel {
     isImport: boolean;
     nativeToken: NativeTokenModel;

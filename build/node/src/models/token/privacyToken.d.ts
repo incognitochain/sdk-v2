@@ -1,4 +1,4 @@
-import BaseTokenModel from './baseToken';
+import BaseTokenModel from "./baseToken";
 interface PrivacyTokenModelData {
     tokenId: string;
     name: string;

@@ -1,7 +1,7 @@
-import Token from './token';
-import PrivacyTokenModel from '@src/models/token/privacyToken';
-import AccountKeySetModel from '@src/models/key/accountKeySet';
-import PaymentInfoModel from '@src/models/paymentInfo';
+import Token from "./token";
+import PrivacyTokenModel from "../../models/token/privacyToken";
+import AccountKeySetModel from "../../models/key/accountKeySet";
+import PaymentInfoModel from "../../models/paymentInfo";
 interface PrivacyTokenParam {
     tokenId: string;
     name: string;

@@ -1,4 +1,4 @@
-import BaseModel from './baseModel';
+import BaseModel from "./baseModel";
 declare class TxInputModel extends BaseModel {
 }
 export default TxInputModel;

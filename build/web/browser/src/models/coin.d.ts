@@ -1,4 +1,4 @@
-import BaseModel from './baseModel';
+import BaseModel from "./baseModel";
 export interface CoinRawData {
     PublicKey: string;
     CoinCommitment: string;

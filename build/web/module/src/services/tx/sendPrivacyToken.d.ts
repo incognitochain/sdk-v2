@@ -1,8 +1,8 @@
 import bn from 'bn.js';
-import { TxInputType } from './utils';
-import PaymentInfoModel from '@src/models/paymentInfo';
-import AccountKeySetModel from '@src/models/key/accountKeySet';
-import CoinModel, { CoinRawData } from '@src/models/coin';
+import { TxInputType } from "./utils";
+import PaymentInfoModel from "../../models/paymentInfo";
+import AccountKeySetModel from "../../models/key/accountKeySet";
+import CoinModel, { CoinRawData } from "../../models/coin";
 interface TokenInfo {
     tokenId: TokenIdType;
     tokenSymbol: TokenSymbolType;

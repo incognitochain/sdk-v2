@@ -1,4 +1,4 @@
-import PaymentInfoModel from './paymentInfo';
+import PaymentInfoModel from "./paymentInfo";
 interface NativeTokenHistoryInfo {
     fee: number;
     amount: number;

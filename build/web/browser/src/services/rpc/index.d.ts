@@ -1,5 +1,5 @@
-import RPCHttpService from '@src/services/http';
-import CoinModel from '@src/models/coin';
+import RPCHttpService from "../http";
+import CoinModel from "../../models/coin";
 declare class RpcClient {
     rpcHttpService: RPCHttpService;
     constructor(url?: string, user?: string, password?: string);
