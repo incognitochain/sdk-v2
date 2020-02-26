@@ -4,11 +4,11 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import goMethods from '@src/go';
-import { TxCustomTokenPrivacyType, STAKING_TYPES } from '@src/services/tx/constants';
+import { STAKING_TYPES, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import { createTx } from './sendNativeToken';
 import { checkDecode } from '@src/utils/base58';
 import { generateCommitteeKeyFromHashPrivateKey } from '../key/generator';
-import { MetaStakingShard } from '../wallet/constants';
+import { MetaStakingShard } from '@src/constants/wallet';
 
 interface StakingParam {
   candidateAccountKeySet: AccountKeySetModel,
@@ -78,10 +78,10 @@ export default async function sendStakingRequest({
     nativeListUTXO,
     nativePaymentAmount: nativePaymentAmountBN.toNumber(),
     nativeSpendingCoinSNs,
-    txType: TxCustomTokenPrivacyType,
+    txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,
     accountPublicKeySerialized: candidateAccountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     meta: metaData,
-    devInfo: 'staking request'
+    historyType: HISTORY_TYPE.STAKING_REQUEST
   });
 }

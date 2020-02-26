@@ -3,7 +3,7 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import rpc from '@src/services/rpc';
 import { getTxHistoryCache } from '../cache/txHistory';
-import { ConfirmedTx, FailedTx } from '../wallet/constants';
+import { TX_STATUS } from '@src/constants/tx';
 
 /**
  * Return list of coins that not existed in chain (not use yet)
@@ -42,7 +42,7 @@ export async function getSpendingSerialCoins() : Promise<{spendingNativeSerialNu
   const spendingPrivacySerialNumbers: string[] = [];
 
   txHistories.forEach(txHistory => {
-    if (txHistory.status !== ConfirmedTx && txHistory.status !== FailedTx) {
+    if (txHistory.status !== TX_STATUS.CONFIRMED && txHistory.status !== TX_STATUS.FAILED) {
       spendingNativeSerialNumbers.push(...txHistory.nativeTokenInfo.spendingCoinSNs || []);
       spendingPrivacySerialNumbers.push(...txHistory.privacyTokenInfo.spendingCoinSNs || []);
     }

@@ -3,6 +3,10 @@ import '@src/global';
 import { checkCachedHistories, getTxHistoryByPublicKey } from '@src/services/history/txHistory';
 import { implementGoMethodManually, implementGoMethodUseWasm, GO_METHOD_NAMES } from '@src/go';
 import { setPrivacyUtilRandomBytesFunc } from '@src/services/wallet';
+import * as _CONSTANT from '@src/constants/constants';
+import * as _TX_CONSTANT from '@src/constants/tx';
+import * as _WALLET_CONSTANT from '@src/constants/wallet';
+import _TOKEN_INFO_CONSTANT from '@src/constants/tokenInfo';
 
 export { default as AccountInstance } from '@src/walletInstance/account/account';
 export { default as NativeTokenInstance } from '@src/walletInstance/token/nativeToken';
@@ -24,4 +28,11 @@ export const goServices = {
   implementGoMethodManually,
   implementGoMethodUseWasm,
   GO_METHOD_NAMES
+};
+
+export const CONSTANT = {
+  ..._CONSTANT,
+  TX_CONSTANT: _TX_CONSTANT,
+  WALLET_CONSTANT: _WALLET_CONSTANT,
+  TOKEN_INFO_CONSTANT: _TOKEN_INFO_CONSTANT
 };

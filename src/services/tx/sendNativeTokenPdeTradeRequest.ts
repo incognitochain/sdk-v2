@@ -4,9 +4,9 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import goMethods from '@src/go';
-import { TxNormalType } from '@src/services/tx/constants';
 import { createTx } from './sendNativeToken';
-import { PDETradeRequestMeta } from '../wallet/constants';
+import { PDETradeRequestMeta } from '@src/constants/wallet';
+import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 
 interface TradeParam {
   accountKeySet: AccountKeySetModel,
@@ -82,10 +82,10 @@ export default async function sendNativeTokenPdeTradeRequest({
     nativeListUTXO,
     nativePaymentAmount: nativePaymentAmountBN.toNumber(),
     nativeSpendingCoinSNs,
-    txType: TxNormalType,
+    txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     meta: metaData,
-    devInfo: 'native token trade request'
+    historyType: HISTORY_TYPE.PDE_TRADE_REQUEST_NATIVE_TOKEN
   });
 }

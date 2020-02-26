@@ -1,5 +1,5 @@
 import { HASH_SIZE } from '@src/constants/constants';
-import { ShardNumber } from '@src/services/wallet/constants';
+import { ShardNumber } from '@src/constants/wallet';
 
 /**
  * @return {number}

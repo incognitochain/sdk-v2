@@ -4,9 +4,9 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import goMethods from '@src/go';
-import { TxCustomTokenPrivacyType, CustomTokenTransfer } from '@src/services/tx/constants';
+import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import { createTx } from './sendPrivacyToken';
-import { BurningRequestMeta } from '../wallet/constants';
+import { BurningRequestMeta } from '@src/constants/wallet';
 
 interface TokenInfo {
   tokenId: TokenIdType,
@@ -118,17 +118,17 @@ export default async function sendBurningRequest({
     tokenSymbol,
     tokenName,
     tokenId: txInfo.tokenID,
-    txType: TxCustomTokenPrivacyType,
+    txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,
     privacyFee,
     privacyListUTXO,
     privacySpendingCoinSNs,
-    privacyTokenTxType: CustomTokenTransfer,
+    privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     privacyPaymentInfoList,
     privacyPaymentAmount: totalBurningAmountBN.toNumber(),
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForPrivacyToken,
     usePrivacyForNativeToken,
     meta: burningReqMetadata,
-    devInfo: 'burning request tx -- only for dev',
+    historyType: HISTORY_TYPE.BURNING_REQUEST
   });
 }

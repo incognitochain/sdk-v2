@@ -1,5 +1,5 @@
 import BaseKeyModel from './baseKey';
-import { ViewingKeyType } from '@src/services/wallet/constants'
+import { ViewingKeyType } from '@src/constants/wallet'
 import { VIEWING_KEY_SIZE, PUBLIC_KEY_SIZE } from '@src/constants/constants';
 
 

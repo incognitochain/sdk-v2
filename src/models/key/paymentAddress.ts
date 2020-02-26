@@ -1,5 +1,5 @@
 import BaseKeyModel from './baseKey';
-import { PaymentAddressType } from '@src/services/wallet/constants';
+import { PaymentAddressType } from '@src/constants/wallet';
 import { PUBLIC_KEY_SIZE, PAYMENT_ADDR_SIZE } from '@src/constants/constants';
 
 class PaymentAddressKeyModel extends BaseKeyModel {

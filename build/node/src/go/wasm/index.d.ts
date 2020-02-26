@@ -1,3 +1,3 @@
 import "./wasm_exec";
-export declare function implementGoMethodUseWasm(): Promise<unknown>;
+export default function loadWasm(): Promise<unknown>;
 //# sourceMappingURL=index.d.ts.map

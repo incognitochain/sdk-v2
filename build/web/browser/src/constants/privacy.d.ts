@@ -14,4 +14,4 @@ declare const ED25519_KEY_SIZE = 32;
 declare const UINT64_SIZE = 8;
 declare const PC_CAPACITY = 5;
 export { CM_RING_SIZE, CM_RING_SIZE_EXP, MAX_EXP, ONE_OF_MANY_PROOF_SIZE, SN_PRIVACY_PROOF_SIZE, SN_NO_PRIVACY_PROOF_SIZE, ED25519_KEY_SIZE, PC_CAPACITY, SK, VALUE, SND, SHARD_ID, RAND, FULL, UINT64_SIZE, };
-//# sourceMappingURL=constants.d.ts.map
+//# sourceMappingURL=privacy.d.ts.map

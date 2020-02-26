@@ -1,6 +1,6 @@
 /// <reference types="node" />
 export declare function setPrivacyUtilRandomBytesFunc(f: Function): void;
-export declare function initWalletData(randomBytesFunction: Function, passPhrase: string): {
+export declare function initWalletData(passPhrase: string): {
     entropy: any;
     mnemonic: string;
     seed: Buffer;

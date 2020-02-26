@@ -4,14 +4,15 @@ import { base64Decode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
 import { ENCODE_VERSION, ED25519_KEY_SIZE } from '@src/constants/constants';
 import rpc from '@src/services/rpc';
-import { CM_RING_SIZE } from '@src/privacy/constants';
+import { CM_RING_SIZE } from '@src/constants/privacy';
 import { getValueFromCoins, chooseBestCoinToSpent } from '@src/services/coin';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import CoinModel from '@src/models/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import { TxHistoryModel } from '@src/models/txHistory';
-import { SuccessTx, BurnAddress } from '@src/services/wallet/constants';
+import { BurnAddress } from '@src/constants/wallet';
 import { cacheTxHistory } from '../cache/txHistory';
+import { TX_STATUS } from '@src/constants/tx';
 
 export interface TxInputType {
   inputCoinStrs: CoinModel[],
@@ -41,7 +42,7 @@ export interface CreateHistoryParam {
   txType?: any,
   privacyTokenTxType?: any,
   accountPublicKeySerialized: string,
-  devInfo?: any,
+  historyType?: number,
   usePrivacyForPrivacyToken?: boolean,
   usePrivacyForNativeToken: boolean
 };
@@ -272,7 +273,7 @@ export function createHistoryInfo({
   txType,
   privacyTokenTxType,
   accountPublicKeySerialized,
-  devInfo,
+  historyType,
   usePrivacyForPrivacyToken,
   usePrivacyForNativeToken
 }: CreateHistoryParam) {
@@ -280,7 +281,7 @@ export function createHistoryInfo({
     txId,
     txType,
     lockTime,
-    status: SuccessTx,
+    status: TX_STATUS.SUCCESS,
     nativeTokenInfo: {
       spendingCoinSNs: nativeSpendingCoinSNs,
       listUTXO: nativeListUTXO,
@@ -303,7 +304,7 @@ export function createHistoryInfo({
     },
     meta,
     accountPublicKeySerialized,
-    devInfo,
+    historyType,
   });
 
 

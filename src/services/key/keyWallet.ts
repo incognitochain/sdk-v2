@@ -10,7 +10,7 @@ import {
   PublicKeySerializeSize,
   ChildNumberSize,
   ChainCodeSize,
-} from '@src/services/wallet/constants';
+} from '@src/constants/wallet';
 import { addChecksumToBytes } from './utils';
 import { checkEncode, checkDecode, checkSumFirst4Bytes } from '@src/utils/base58';
 import { ENCODE_VERSION, ED25519_KEY_SIZE } from '@src/constants/constants';

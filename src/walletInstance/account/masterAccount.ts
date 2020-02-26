@@ -2,7 +2,6 @@ import _ from 'lodash';
 import { generateMasterKey } from '@src/services/key/generator';
 import bn from 'bn.js';
 import BaseAccount from './baseAccount';
-import AccountModel from '@src/models/account/account';
 import MasterAccountModel from '@src/models/account/masterAccount';
 import { generateChildKeyData, base58CheckDeserialize, restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
 import KeyWalletModel from '@src/models/key/keyWallet';

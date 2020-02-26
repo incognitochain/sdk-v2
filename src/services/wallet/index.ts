@@ -6,9 +6,7 @@ export function setPrivacyUtilRandomBytesFunc(f: Function) {
   setRandBytesFunc(f);
 }
 
-export function initWalletData(randomBytesFunction: Function, passPhrase: string) {
-  setPrivacyUtilRandomBytesFunc(randomBytesFunction);
-
+export function initWalletData(passPhrase: string) {
    // generate mnenomic generator
    const mnemonicGen = new MnemonicGenerator();
    const entropy = mnemonicGen.newEntropy(128);

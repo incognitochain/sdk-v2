@@ -4,9 +4,9 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import goMethods from '@src/go';
-import { TxNormalType } from '@src/services/tx/constants';
 import { createTx } from './sendNativeToken';
-import { PDEContributionMeta } from '../wallet/constants';
+import { PDEContributionMeta } from '@src/constants/wallet';
+import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
@@ -74,10 +74,10 @@ export default async function sendNativeTokenPdeContribution({
     nativeListUTXO,
     nativePaymentAmount: nativePaymentAmountBN.toNumber(),
     nativeSpendingCoinSNs,
-    txType: TxNormalType,
+    txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     meta: metaData,
-    devInfo: 'pde contribution'
+    historyType: HISTORY_TYPE.PDE_CONTRIBUTION_NATIVE_TOKEN
   });
 }

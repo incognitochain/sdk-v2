@@ -4,10 +4,10 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import goMethods from '@src/go';
-import { TxCustomTokenPrivacyType, CustomTokenTransfer } from '@src/services/tx/constants';
+import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import { extractInfoFromInitedTxBytes as customExtractInfoFromInitedTxBytes } from '@src/services/tx/sendNativeToken';
 import { createTx } from './sendPrivacyToken';
-import { PDEContributionMeta } from '../wallet/constants';
+import { PDEContributionMeta } from '@src/constants/wallet';
 
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
@@ -105,8 +105,8 @@ export default async function sendPrivacyTokenPdeContribution({
     tokenSymbol,
     tokenName,
     tokenId,
-    txType: TxCustomTokenPrivacyType,
-    privacyTokenTxType: CustomTokenTransfer,
+    txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,
+    privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     privacyPaymentInfoList,
     privacyPaymentAmount: privacyPaymentAmountBN.toNumber(),
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
@@ -116,6 +116,6 @@ export default async function sendPrivacyTokenPdeContribution({
     privacyListUTXO,
     meta: metaData,
     privacyFee,
-    devInfo: 'privacy pde contribution'
+    historyType: HISTORY_TYPE.PDE_CONTRIBUTION_PRIVACY_TOKEN
   });
 }

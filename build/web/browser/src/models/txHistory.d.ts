@@ -22,7 +22,7 @@ interface TxHistoryModelParam {
     privacyTokenInfo?: PrivacyTokenHistoryInfo;
     meta?: any;
     accountPublicKeySerialized: string;
-    devInfo?: any;
+    historyType?: number;
 }
 export declare class TxHistoryModel {
     txId: string;
@@ -33,8 +33,8 @@ export declare class TxHistoryModel {
     privacyTokenInfo: PrivacyTokenHistoryInfo;
     meta: any;
     accountPublicKeySerialized: string;
-    devInfo: any;
-    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, devInfo }: TxHistoryModelParam);
+    historyType: number;
+    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType }: TxHistoryModelParam);
     toJson(): {
         txId: string;
         txType: string;
@@ -44,7 +44,7 @@ export declare class TxHistoryModel {
         privacyTokenInfo: PrivacyTokenHistoryInfo;
         meta: any;
         accountPublicKeySerialized: string;
-        devInfo: any;
+        historyType: number;
     };
 }
 export {};

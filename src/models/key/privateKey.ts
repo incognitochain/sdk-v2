@@ -1,5 +1,5 @@
 import BaseKeyModel from './baseKey';
-import { PriKeyType } from '@src/services/wallet/constants';
+import { PriKeyType } from '@src/constants/wallet';
 
 class PrivateKeyModel extends BaseKeyModel {
   privateKeyBytes: Uint8Array;

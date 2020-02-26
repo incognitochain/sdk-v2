@@ -9,9 +9,6 @@ declare const PublicKeySerializeSize = 34;
 declare const PriKeySerializeAddCheckSumSize = 75;
 declare const PaymentAddrSerializeAddCheckSumSize = 71;
 declare const ReadonlyKeySerializeAddCheckSumSize = 71;
-declare const FailedTx = 0;
-declare const SuccessTx = 1;
-declare const ConfirmedTx = 2;
 declare const MetaStakingBeacon = 64;
 declare const MetaStakingShard = 63;
 declare const StopAutoStakingMeta = 127;
@@ -20,7 +17,6 @@ declare const BeaconStakingType = 1;
 declare const MaxTxSize = 100;
 declare const ChildNumberSize = 4;
 declare const ChainCodeSize = 32;
-declare const PrivacyUnit = 1000000000;
 declare const NanoUnit = 1e-9;
 declare const BurnAddress = "15pABFiJVeh9D5uiQEhQX4SVibGGbdAVipQxBdxkmDqAJaoG1EdFKHBrNfs";
 declare const BurningRequestMeta = 27;
@@ -40,5 +36,5 @@ declare const MenmonicWordLen = 12;
 declare const PercentFeeToReplaceTx = 10;
 declare const MaxSizeInfoCoin = 255;
 declare const ShardNumber = 8;
-export { PriKeyType, PaymentAddressType, ViewingKeyType, PublicKeyType, PriKeySerializeSize, PaymentAddrSerializeSize, ReadonlyKeySerializeSize, PublicKeySerializeSize, FailedTx, SuccessTx, ConfirmedTx, MetaStakingBeacon, MetaStakingShard, ShardStakingType, BeaconStakingType, MaxTxSize, ChildNumberSize, ChainCodeSize, PercentFeeToReplaceTx, PrivacyUnit, NanoUnit, BurnAddress, BurningRequestMeta, WithDrawRewardRequestMeta, PRVID, NoStakeStatus, CandidatorStatus, ValidatorStatus, PDEContributionMeta, PDETradeRequestMeta, PDETradeResponseMeta, PDEWithdrawalRequestMeta, PDEWithdrawalResponseMeta, PRVIDSTR, PDEPOOLKEY, PriKeySerializeAddCheckSumSize, PaymentAddrSerializeAddCheckSumSize, ReadonlyKeySerializeAddCheckSumSize, MenmonicWordLen, MaxSizeInfoCoin, StopAutoStakingMeta, ShardNumber };
-//# sourceMappingURL=constants.d.ts.map
+export { PriKeyType, PaymentAddressType, ViewingKeyType, PublicKeyType, PriKeySerializeSize, PaymentAddrSerializeSize, ReadonlyKeySerializeSize, PublicKeySerializeSize, MetaStakingBeacon, MetaStakingShard, ShardStakingType, BeaconStakingType, MaxTxSize, ChildNumberSize, ChainCodeSize, PercentFeeToReplaceTx, NanoUnit, BurnAddress, BurningRequestMeta, WithDrawRewardRequestMeta, PRVID, NoStakeStatus, CandidatorStatus, ValidatorStatus, PDEContributionMeta, PDETradeRequestMeta, PDETradeResponseMeta, PDEWithdrawalRequestMeta, PDEWithdrawalResponseMeta, PRVIDSTR, PDEPOOLKEY, PriKeySerializeAddCheckSumSize, PaymentAddrSerializeAddCheckSumSize, ReadonlyKeySerializeAddCheckSumSize, MenmonicWordLen, MaxSizeInfoCoin, StopAutoStakingMeta, ShardNumber };
+//# sourceMappingURL=wallet.d.ts.map

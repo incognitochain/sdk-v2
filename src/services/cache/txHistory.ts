@@ -24,7 +24,7 @@ export async function getTxHistoryCache() {
       privacyTokenInfo: historyData.privacyTokenInfo,
       meta: historyData.meta,
       accountPublicKeySerialized: historyData.accountPublicKeySerialized,
-      devInfo: historyData.devInfo
+      historyType: historyData.historyType
     });
   });
 

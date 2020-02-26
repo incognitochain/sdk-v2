@@ -1,17 +1,17 @@
 import { TxHistoryModel } from "@src/models/txHistory";
 import rpc from "../rpc";
-import { FailedTx, ConfirmedTx } from "../wallet/constants";
 import { getTxHistoryCache, cacheTxHistory } from "../cache/txHistory";
+import { TX_STATUS } from "@src/constants/tx";
 
 export async function updateTxHistory(txHistory: TxHistoryModel) {
   const txInfo: { [key:string]: any } = await rpc.getTransactionByHash(txHistory.txId);
 
   if (txInfo?.isInBlock) {
     // tx completed
-    txHistory.status = ConfirmedTx;
+    txHistory.status = TX_STATUS.CONFIRMED;
   } else if (!txInfo.isInBlock && !txInfo.isInMempool && txInfo.err !== null) {
     // tx failed
-    txHistory.status = FailedTx;
+    txHistory.status = TX_STATUS.FAILED;
   }
 
   return txHistory;

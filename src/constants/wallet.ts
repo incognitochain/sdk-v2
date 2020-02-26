@@ -12,10 +12,6 @@ const PriKeySerializeAddCheckSumSize = 75;
 const PaymentAddrSerializeAddCheckSumSize = 71;
 const ReadonlyKeySerializeAddCheckSumSize = 71;
 
-const FailedTx = 0;
-const SuccessTx = 1;
-const ConfirmedTx = 2;
-
 // for staking tx
 // amount in mili constant
 const MetaStakingBeacon = 64;
@@ -29,7 +25,6 @@ const MaxTxSize = 100;    // in kb
 
 const ChildNumberSize = 4;
 const ChainCodeSize = 32;
-const PrivacyUnit = 1e9;
 const NanoUnit = 1e-9;
 
 const BurnAddress =
@@ -66,9 +61,6 @@ export {
   PaymentAddrSerializeSize,
   ReadonlyKeySerializeSize,
   PublicKeySerializeSize,
-  FailedTx,
-  SuccessTx,
-  ConfirmedTx,
   MetaStakingBeacon,
   MetaStakingShard,
   ShardStakingType,
@@ -77,7 +69,6 @@ export {
   ChildNumberSize,
   ChainCodeSize,
   PercentFeeToReplaceTx,
-  PrivacyUnit,
   NanoUnit,
   BurnAddress,
   BurningRequestMeta,

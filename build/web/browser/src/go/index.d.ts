@@ -1,5 +1,5 @@
-export { implementGoMethodUseWasm } from "./wasm";
 export { implementGoMethodManually, GO_METHOD_NAMES } from "./implement";
+export declare function implementGoMethodUseWasm(): Promise<any>;
 declare const methods: {
     deriveSerialNumber: any;
     initPrivacyTx: any;

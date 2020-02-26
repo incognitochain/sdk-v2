@@ -30,7 +30,7 @@ export interface CreateHistoryParam {
     txType?: any;
     privacyTokenTxType?: any;
     accountPublicKeySerialized: string;
-    devInfo?: any;
+    historyType?: number;
     usePrivacyForPrivacyToken?: boolean;
     usePrivacyForNativeToken: boolean;
 }
@@ -70,7 +70,7 @@ export declare function initTx(handler: Function, param: object): Promise<any>;
  * @param totalAmountToSpendBN Amount uses to send
  * @param paymentInfoList
  */
-export declare function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]): string[];
+export declare function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]): Promise<string[]>;
 export declare function encryptPaymentMessage(paymentInfoList: PaymentInfoModel[]): PaymentInfoModel[];
 export declare function sendB58CheckEncodeTxToChain(handler: Function, b58CheckEncodeTx: string): Promise<{
     txId: string;
@@ -79,6 +79,6 @@ export declare function getCoinInfoForCache(coins: CoinModel[]): {
     serialNumberList: string[];
     listUTXO: string[];
 };
-export declare function createHistoryInfo({ txId, lockTime, nativePaymentInfoList, privacyPaymentInfoList, nativePaymentAmount, privacyPaymentAmount, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, nativeSpendingCoinSNs, privacySpendingCoinSNs, nativeListUTXO, privacyListUTXO, meta, txType, privacyTokenTxType, accountPublicKeySerialized, devInfo, usePrivacyForPrivacyToken, usePrivacyForNativeToken }: CreateHistoryParam): TxHistoryModel;
+export declare function createHistoryInfo({ txId, lockTime, nativePaymentInfoList, privacyPaymentInfoList, nativePaymentAmount, privacyPaymentAmount, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, nativeSpendingCoinSNs, privacySpendingCoinSNs, nativeListUTXO, privacyListUTXO, meta, txType, privacyTokenTxType, accountPublicKeySerialized, historyType, usePrivacyForPrivacyToken, usePrivacyForNativeToken }: CreateHistoryParam): TxHistoryModel;
 export declare function getBurningAddress(beaconHeight?: number): Promise<any>;
 //# sourceMappingURL=utils.d.ts.map

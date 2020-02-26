@@ -23,9 +23,7 @@
 
       function initWallet(incognito) {
         const wallet = new incognito.WalletInstance();
-        wallet.init('pass');
-
-        return wallet;
+        return wallet.init('123456-is-a-super-security-password');
       }
 
       function setStorage(incognito) {
@@ -41,22 +39,6 @@
         });
       }
 
-      window.transfer = function(token, paymentAddress, amount, nativeFee, privacyFee) {
-        return token.transfer([{
-            paymentAddressStr: paymentAddress,
-            amount,
-            message: 'Cool'
-          }], nativeFee, privacyFee);
-      }
-
-      window.totalBalance = async function(token) {
-        return (await token.getTotalBalance()).toNumber();
-      }
-
-      window.avaiableBalance = async function(token) {
-        return (await token.getAvaiableBalance()).toNumber();
-      }
-
       async function main() {
         if (incognitoJs) {
           console.log('Incognito module', incognitoJs);
@@ -67,47 +49,8 @@
           });
 
           await section('INIT WALLET', async () => {
-            const wallet = initWallet(incognitoJs);
+            const wallet = await initWallet(incognitoJs);
             window.wallet = wallet;
-            window.masterAccount = wallet.masterAccount;
-            window.masterAccount.importAccount('acc0', '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd');
-            window.masterAccount.importAccount('ICO', '112t8roafGgHL1rhAP9632Yef3sx5k8xgp8cwK4MCJsCL1UWcxXvpzg97N4dwvcD735iKf31Q2ZgrAvKfVjeSUEvnzKJyyJD3GqqSZdxN4or');
-            window.masterAccount.importAccount('acc2', '112t8rnXYKWwtQzdvPk9gfbexGsZpZkYGJo8ooHBthFFKZUhS5aeUFkaQ5VJqVDzozAYgaFay3iJzQn9mEhhgeXrmJmxzuRyH5hAmsJjMCBc');
-            window.masterAccount.importAccount('acc3', '112t8rnXVkDqvy3XrytxiLrENLqCQYf2MmSosqq3Bmpf9WCkB5BSm8GePkLvU4JbPg4yrucPNftxBKHifEHH8YxhKenn87sWmd6obkK4Ue4t');
-
-            // window.account = wallet.masterAccount.child[0];
-            window.acc0 = wallet.masterAccount.child[1];
-            window.icoAcc = wallet.masterAccount.child[2];
-            window.acc2 = wallet.masterAccount.child[3];
-            window.acc3 = wallet.masterAccount.child[4];
-            // window.nativeToken = account.nativeToken;
-
-            window.acc0.followTokenById('30cce7bcc677f4e598f6518657ffa25528b7d20d2f0a394682003a2f9a5b8674');
-            window.acc0.followTokenById('4a9acb1bb6240fb859920112d641f613d75b67407a6e56e1f99751bd9da99f7c');
-
-            window.acc2.followTokenById('2e824bbdc3fbc3fa80a5b604216155395dd76b60fbe3d4a5a7d5496fd55e772b');
-            window.acc2.followTokenById('a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df'); // tomo 15
-
-            window.icoAcc.followTokenById('f26b19aeeca6fa87fcd610cc0251ad6b7b209a4b1bc0987d3a74701ec8bb4437');
-            window.icoAcc.followTokenById('30cce7bcc677f4e598f6518657ffa25528b7d20d2f0a394682003a2f9a5b8674');
-            window.icoAcc.followTokenById('8073c88c92cde5dc0d198fa0add156df02cdaa169da89397a5a39b48fb548992');
-            window.icoAcc.followTokenById('60dcb18876927405343024b133879f980fb4a9ef1266b0de909806054e6529b5');
-
-            acc2.getFollowingPrivacyToken('2e824bbdc3fbc3fa80a5b604216155395dd76b60fbe3d4a5a7d5496fd55e772b').then(t => {
-              window.tokenAcc2 = t;
-              console.log('Loaded token acc 2', t)
-            });
-            acc3.getFollowingPrivacyToken('2e824bbdc3fbc3fa80a5b604216155395dd76b60fbe3d4a5a7d5496fd55e772b').then(t => {
-              window.tokenAcc3 = t;
-              console.log('Loaded token acc 3', t)
-            });
-
-            // console.log('XAXA token.getTotalBalance()', (await token.getTotalBalance()).toNumber())
-            // console.log('XAXA token.getAvaiableBalance()', (await token.getAvaiableBalance()).toNumber())
-            // console.log('XAXA icoAcc.nativeToken.getTotalBalance()', (await icoAcc.nativeToken.getTotalBalance()).toNumber())
-            // console.log('XAXA icoAcc.nativeToken.getAvaiableBalance()', (await icoAcc.nativeToken.getAvaiableBalance()).toNumber())
-
-            // console.log('Wallet', await wallet.getAccounts());
           });
         } else {
           throw new Error('Incognito module load failed');

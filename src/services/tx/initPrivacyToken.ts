@@ -4,7 +4,7 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import goMethods from '@src/go';
-import { CustomTokenInit, TxCustomTokenPrivacyType } from '@src/services/tx/constants';
+import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import { createTx } from './sendPrivacyToken';
 
 interface TokenInfo {
@@ -68,7 +68,7 @@ export default async function initPrivacyToken({
     initTxMethod: goMethods.initPrivacyTokenTx,
     privacyTokenParamAdditional: {
       amount: supplyAmount,
-      tokenTxType: CustomTokenInit,
+      tokenTxType: PRIVACY_TOKEN_TX_TYPE.INIT,
     },
   });
 
@@ -89,13 +89,13 @@ export default async function initPrivacyToken({
     tokenSymbol,
     tokenName,
     tokenId: txInfo.tokenID,
-    txType: TxCustomTokenPrivacyType,
-    privacyTokenTxType: CustomTokenInit,
+    txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,
+    privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.INIT,
     privacyPaymentInfoList,
     privacyPaymentAmount: supplyAmount,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     usePrivacyForPrivacyToken,
-    devInfo: 'issue token'
+    historyType: HISTORY_TYPE.ISSUE_TOKEN
   });
 }

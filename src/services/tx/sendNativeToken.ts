@@ -8,7 +8,7 @@ import goMethods from '@src/go';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import { TxNormalType } from '@src/services/tx/constants';
+import { TX_TYPE } from '@src/constants/tx';
 
 interface SendParam {
   accountKeySet: AccountKeySetModel,
@@ -54,7 +54,7 @@ export async function createTx({
   initTxMethod,
   customExtractInfoFromInitedTxMethod
 } : CreateNativeTxParam) {
-  const outputCoins = createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
+  const outputCoins = await createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
 
   console.log('outputCoint', outputCoins);
 
@@ -118,7 +118,7 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     nativeListUTXO: listUTXO,
     nativePaymentAmount: nativePaymentAmountBN.toNumber(),
     nativeSpendingCoinSNs: serialNumberList,
-    txType: TxNormalType,
+    txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
   });

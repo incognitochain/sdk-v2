@@ -3,7 +3,7 @@ import { checkDecode, checkEncode } from '@src/utils/base58';
 import { stringToBytes, bytesToString } from '@src/privacy/utils';
 import { ENCODE_VERSION } from '@src/constants/constants';
 import { CustomError, ErrorObject, RPCError } from '@src/errorhandler';
-import { PRVIDSTR, PDEPOOLKEY } from '@src/services/wallet/constants';
+import { PRVIDSTR, PDEPOOLKEY } from '@src/constants/wallet';
 import CoinModel, { CoinRawData } from '@src/models/coin';
 
 const parseResponse = async (rpcService: RPCHttpService, method: string) => {

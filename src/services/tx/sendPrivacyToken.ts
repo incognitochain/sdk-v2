@@ -9,7 +9,7 @@ import { convertHashToStr } from '@src/utils/common';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel, { CoinRawData } from '@src/models/coin';
-import { CustomTokenTransfer, TxCustomTokenPrivacyType } from '@src/services/tx/constants';
+import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE } from '@src/constants/tx';
 
 interface TokenInfo {
   tokenId: TokenIdType,
@@ -93,8 +93,8 @@ export async function createTx({
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
 } : CreateTxParam) {
-  const nativeOutputCoins = createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
-  const privacyOutputCoins = createOutputCoin(privacyPaymentAmountBN.add(privacyTokenFeeBN), privacyTxInput.totalValueInputBN, privacyPaymentInfoList);
+  const nativeOutputCoins = await createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
+  const privacyOutputCoins = await createOutputCoin(privacyPaymentAmountBN.add(privacyTokenFeeBN), privacyTxInput.totalValueInputBN, privacyPaymentInfoList);
 
   console.log('nativeOutputCoins', nativeOutputCoins);
   console.log('privacyOutputCoins', privacyOutputCoins);
@@ -104,7 +104,7 @@ export async function createTx({
     propertyName: tokenName,
     propertySymbol: tokenSymbol,
     amount: 0,
-    tokenTxType: CustomTokenTransfer,
+    tokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     fee: privacyTokenFeeBN.toNumber(),
     paymentInfoForPToken: privacyPaymentInfoList,
     tokenInputs: privacyTxInput.inputCoinStrs.map(coin => coin.toJson()),
@@ -207,8 +207,8 @@ export default async function sendPrivacyToken({
     privacyPaymentAmount: privacyPaymentAmountBN.toNumber(),
     privacyPaymentInfoList,
     privacySpendingCoinSNs,
-    txType: TxCustomTokenPrivacyType,
-    privacyTokenTxType: CustomTokenTransfer,
+    txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,
+    privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForPrivacyToken,
     usePrivacyForNativeToken

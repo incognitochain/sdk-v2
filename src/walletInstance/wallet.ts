@@ -1,5 +1,4 @@
 import WalletModel from "@src/models/wallet";
-import CryptoJS from "crypto-js";
 import { MasterAccount } from "./account";
 import { initWalletData, encryptWalletData, decryptWalletData } from '@src/services/wallet';
 
@@ -33,7 +32,7 @@ class Wallet implements WalletModel {
   }
 
   async init(passPhrase: string, name?: string) {
-    const { entropy, mnemonic, seed } = initWalletData(null, passPhrase);
+    const { entropy, mnemonic, seed } = initWalletData(passPhrase);
     this.passPhrase = passPhrase;
     this.name = name || this.name;
     this.seed = seed;

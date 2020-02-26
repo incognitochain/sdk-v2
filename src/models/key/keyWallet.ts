@@ -2,7 +2,7 @@ import BaseModel from '@src/models/baseModel';
 import {
   ChildNumberSize,
   ChainCodeSize,
-} from '@src/services/wallet/constants';
+} from '@src/constants/wallet';
 import AccountKeySetModel from './accountKeySet';
 
 class KeyWalletModel extends BaseModel {
