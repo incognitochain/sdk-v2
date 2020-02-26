@@ -14,12 +14,12 @@ import KeyWalletModel from '@src/models/key/keyWallet';
 
 
 // GeneratePrivateKey generates spending key from seed
-export function generatePrivateKey(seed: any) : KeyBytes {
+export async function generatePrivateKey(seed: any) : Promise<KeyBytes> {
   let seedB64Encode = base64Encode(seed);
 
   let privateKeyB64Encode;
   if (typeof goMethods.generateKeyFromSeed == 'function') {
-    privateKeyB64Encode = goMethods.generateKeyFromSeed(seedB64Encode);
+    privateKeyB64Encode = await goMethods.generateKeyFromSeed(seedB64Encode);
   }
   if (privateKeyB64Encode == null) {
     throw new Error('Can not generate private key');
@@ -30,12 +30,12 @@ export function generatePrivateKey(seed: any) : KeyBytes {
 }
 
 // GeneratePublicKey generates a public key (address) from spendingKey
-export function generatePublicKey(privateKey: KeyBytes) : KeyBytes {
+export async function generatePublicKey(privateKey: KeyBytes) : Promise<KeyBytes> {
   let privateKeyB64Encode = base64Encode(privateKey);
 
   let publicKeyB64Encode;
   if (typeof goMethods.scalarMultBase == 'function') {
-    publicKeyB64Encode = goMethods.scalarMultBase(privateKeyB64Encode);
+    publicKeyB64Encode = await goMethods.scalarMultBase(privateKeyB64Encode);
   }
   if (publicKeyB64Encode == null) {
     throw new Error('Can not generate public key');
@@ -46,12 +46,12 @@ export function generatePublicKey(privateKey: KeyBytes) : KeyBytes {
 }
 
 // GenerateReceivingKey generates a receiving key (ElGamal decryption key) from spendingKey
-export function generateReceivingKey(privateKey: KeyBytes) : KeyBytes {
+export async function generateReceivingKey(privateKey: KeyBytes) : Promise<KeyBytes> {
   let privateKeyB64Encode = base64Encode(privateKey);
 
   let receivingKeyB64Encode;
   if (typeof goMethods.generateKeyFromSeed == 'function') {
-    receivingKeyB64Encode = goMethods.generateKeyFromSeed(privateKeyB64Encode);
+    receivingKeyB64Encode = await goMethods.generateKeyFromSeed(privateKeyB64Encode);
   }
   if (receivingKeyB64Encode == null) {
     throw new Error('Can not generate private key');
@@ -62,12 +62,12 @@ export function generateReceivingKey(privateKey: KeyBytes) : KeyBytes {
 }
 
 // GenerateTransmissionKey generates a transmission key (ElGamal encryption key) from receivingKey
-export function generateTransmissionKey(receivingKey: KeyBytes) : KeyBytes {
+export async function generateTransmissionKey(receivingKey: KeyBytes) : Promise<KeyBytes> {
   let receivingKeyB64Encode = base64Encode(receivingKey);
 
   let transmissionKeyB64Encode;
   if (typeof goMethods.scalarMultBase == 'function') {
-    transmissionKeyB64Encode = goMethods.scalarMultBase(receivingKeyB64Encode);
+    transmissionKeyB64Encode = await goMethods.scalarMultBase(receivingKeyB64Encode);
   }
   if (transmissionKeyB64Encode == null) {
     throw new Error('Can not generate public key');
@@ -112,7 +112,7 @@ export async function generateBLSPubKeyB58CheckEncodeFromSeed(seed: number[]) {
   return checkEncode(blsPublicKey, ENCODE_VERSION);
 }
 
-export function generateMasterKey(seed: Uint8Array) {
+export async function generateMasterKey(seed: Uint8Array) {
   // HmacSHA512(data, key)
   let hmac = CryptoJS.HmacSHA512(CryptoJS.enc.Base64.stringify(byteArrayToWordArray(seed)), 'Constant seed');
   let intermediary = wordArrayToByteArray(hmac);
@@ -125,7 +125,7 @@ export function generateMasterKey(seed: Uint8Array) {
   keyWallet.chainCode = chainCode;
   keyWallet.depth = 0;
   keyWallet.childNumber = new Uint8Array([0, 0, 0, 0]);
-  keyWallet.keySet = generateKeySet(keyBytes);
+  keyWallet.keySet = await generateKeySet(keyBytes);
   
   return keyWallet;
 }

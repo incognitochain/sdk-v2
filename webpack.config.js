@@ -64,6 +64,7 @@ const prodConfig = {
   performance: {
     hints: 'warning'
   },
+  devtool: 'source-map',
   optimization
 };
 

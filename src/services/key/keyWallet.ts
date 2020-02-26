@@ -210,10 +210,10 @@ export function getIntermediary(childIndex: number, keyWalletChainCode: KeyWalle
   return intermediary;
 }
 
-export function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWalletDepth, keyWalletChainCode: KeyWalletChainCode) {
+export async function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWalletDepth, keyWalletChainCode: KeyWalletChainCode) {
   let intermediary = getIntermediary(childIndex, keyWalletChainCode);
   let newSeed = intermediary.slice(0, 32);
-  const keySet = generateKeySet(newSeed);
+  const keySet = await generateKeySet(newSeed);
 
   const childNumber: KeyWalletChildNumber = Uint8Array.from((new bn(childIndex)).toArray('be', ChildNumberSize));
   const chainCode: KeyWalletChainCode = Uint8Array.from(intermediary.slice(ChainCodeSize));

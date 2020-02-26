@@ -36,22 +36,22 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     return account;
   }
 
-  init(walletSeed: Uint8Array) {
-    this.key = generateMasterKey(walletSeed);
+  async init(walletSeed: Uint8Array) {
+    this.key = await generateMasterKey(walletSeed);
+    this.serializeKeys();
     
-    this.addAccount('Account 0');
+    await this.addAccount('Account 0');
 
     return this;
   }
 
-  addAccount(name: string, shardId?: number) {
+  async addAccount(name: string, shardId?: number) {
     const lastChildAccountIndex = _.findLastIndex(this.child, account => !account.isImport && !!account.key.childNumber);
     const lastChildAccount = lastChildAccountIndex !== -1 && this.child[lastChildAccountIndex];
     let newIndex = lastChildAccount ? new bn(lastChildAccount.key.childNumber).add(new bn(1)).toNumber() : 0;
     let keyData, lastByte;
-    
     do {
-      keyData = generateChildKeyData(newIndex, this.key.depth, this.key.chainCode);
+      keyData = await generateChildKeyData(newIndex, this.key.depth, this.key.chainCode);
       const publicKeyBytes = keyData.keySet.paymentAddress.publicKeyBytes;
 
       lastByte = publicKeyBytes[publicKeyBytes.length - 1];
@@ -79,12 +79,12 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     return this.child;
   }
 
-  importAccount(name: string, privateKey: string) {
+  async importAccount(name: string, privateKey: string) {
     const { key, type } = base58CheckDeserialize(privateKey);
     if (type === 'PRIVATE_KEY') {
       const privateKeyData = <{[key: string]: any}>key;
       const childAccountKeyWallet = new KeyWalletModel();
-      const keySet = getKeySetFromPrivateKeyBytes((<PrivateKeyModel>privateKeyData.privateKey).privateKeyBytes);
+      const keySet = await getKeySetFromPrivateKeyBytes((<PrivateKeyModel>privateKeyData.privateKey).privateKeyBytes);
       
       childAccountKeyWallet.chainCode = <Uint8Array>privateKeyData.chainCode;
       childAccountKeyWallet.childNumber = <Uint8Array>privateKeyData.childNumber;

@@ -32,14 +32,14 @@ class Wallet implements WalletModel {
     return wallet;
   }
 
-  init(passPhrase: string, name?: string) {
+  async init(passPhrase: string, name?: string) {
     const { entropy, mnemonic, seed } = initWalletData(null, passPhrase);
     this.passPhrase = passPhrase;
     this.name = name || this.name;
     this.seed = seed;
     this.mnemonic = mnemonic;
     this.entropy = entropy;
-    this.masterAccount = new MasterAccount('MASTER').init(seed);
+    this.masterAccount = await new MasterAccount('MASTER').init(seed);
 
     return this;
   }

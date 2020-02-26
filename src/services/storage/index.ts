@@ -1,15 +1,15 @@
 interface ImplementInterface {
-  setMethod: Function;
-  getMethod: Function;
-  removeMethod: Function;
+  setMethod(key: string, data: string) : Promise<any>;
+  getMethod(key: string) : Promise<any>;
+  removeMethod(key: string) : Promise<any>
   namespace: string;
 };
 
-export class Storage {
+export class StorageService {
   namespace: string;
-  setMethod: Function;
-  getMethod: Function;
-  removeMethod: Function;
+  setMethod: (key: string, data: string) => Promise<any>;
+  getMethod: (key: string) => Promise<string>;
+  removeMethod: (key: string) => Promise<any>;
 
   constructor(namespace?: string) {
     this.namespace = namespace;
@@ -44,6 +44,6 @@ export class Storage {
   }
 }
 
-const storage = new Storage();
+const storage = new StorageService();
 
 export default storage;

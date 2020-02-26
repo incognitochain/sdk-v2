@@ -1,5 +1,11 @@
-export { implementGoMethodUseWasm } from './wasm';
 export { implementGoMethodManually, GO_METHOD_NAMES } from './implement';
+
+export async function implementGoMethodUseWasm() {
+  return await import('./wasm').then(async (wasmModule: any) => {
+    const loadWasm = wasmModule.default;
+    return await loadWasm();
+  });
+}
 
 function getMethod(methodName: string) {
   let func;
@@ -19,7 +25,7 @@ function getMethod(methodName: string) {
     throw new Error(`
       Can not find GO method "${methodName}", please make sure it's been implemented.
       Use "implementGoMethodUseWasm" to automatically implement on Browser & NodeJS enviroment,
-      or "implementGoMethodManually" on other enviroments (React Native, ElectronJS,..)
+      or "implementGoMethodManually" on other enviroments (React Native)
     `);
   }
 }

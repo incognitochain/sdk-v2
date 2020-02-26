@@ -189,7 +189,7 @@ export async function initTx(handler: Function, param: object) {
  * @param totalAmountToSpendBN Amount uses to send
  * @param paymentInfoList 
  */
-export function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]): string[] {
+export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]) {
   if (totalAmountToSpendBN.lt(totalAmountToTransferBN)) {
     throw new Error('Amount uses to spend must larger than or equal amount uses to transfer');
   }
@@ -202,7 +202,7 @@ export function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpend
   const sndOutputs: string[] = new Array(numberOutput);
 
   if (numberOutput > 0) {
-    const sndOutputStrs = goMethods.randomScalars(numberOutput);
+    const sndOutputStrs = await goMethods.randomScalars(numberOutput);
     if (sndOutputStrs === null || sndOutputStrs === '') {
       throw new Error('Can not random scalars for output coins');
     }

@@ -4,13 +4,13 @@ import ViewingKeyModel from '@src/models/key/viewingKey';
 import PrivateKeyModel from '@src/models/key/privateKey';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 
-export function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes) {
+export async function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes) {
   const paymentAddress = new PaymentAddressKeyModel();
   const viewingKey = new ViewingKeyModel();
   const privateKey = new PrivateKeyModel(privateKeyBytes);
-  const publicKeyBytes = generatePublicKey(privateKeyBytes);
-  const receivingKeyBytes = generateReceivingKey(privateKeyBytes);
-  const transmissionKeyBytes = generateTransmissionKey(receivingKeyBytes);
+  const publicKeyBytes = await generatePublicKey(privateKeyBytes);
+  const receivingKeyBytes = await generateReceivingKey(privateKeyBytes);
+  const transmissionKeyBytes = await generateTransmissionKey(receivingKeyBytes);
 
   paymentAddress.publicKeyBytes = publicKeyBytes;
   paymentAddress.transmissionKeyBytes = transmissionKeyBytes;
@@ -25,8 +25,8 @@ export async function getBLSPublicKeyB58CheckEncode(miningSeedKey: number[]){
   return await generateBLSPubKeyB58CheckEncodeFromSeed(miningSeedKey);
 }
 
-export function generateKeySet(seed: string) {
-  const privateKey = generatePrivateKey(seed);
+export async function generateKeySet(seed: string) {
+  const privateKey = await generatePrivateKey(seed);
   return getKeySetFromPrivateKeyBytes(privateKey);
 }
 
