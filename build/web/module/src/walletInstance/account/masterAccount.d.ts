@@ -7,11 +7,11 @@ declare class MasterAccount extends BaseAccount implements MasterAccountInterfac
     child: Account[];
     constructor(name?: string);
     static restoreFromBackupData(data: any): MasterAccount;
-    init(walletSeed: Uint8Array): this;
-    addAccount(name: string, shardId?: number): Account;
+    init(walletSeed: Uint8Array): Promise<this>;
+    addAccount(name: string, shardId?: number): Promise<Account>;
     removeAccount(name: string): void;
     getAccounts(): Account[];
-    importAccount(name: string, privateKey: string): Account;
+    importAccount(name: string, privateKey: string): Promise<Account>;
     getBackupData(): {
         name: string;
         key: {

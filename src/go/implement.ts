@@ -29,6 +29,10 @@ export const GO_METHOD_NAMES = [
 
 export function implementGoMethodManually(param: GoMethods) {
   GO_METHOD_NAMES.forEach((methodName:MethodName) => {
-    (global as { [key: string]: any })[methodName] = param[methodName];
+    if (typeof param[methodName] === 'function') {
+      (global as { [key: string]: any })[methodName] = param[methodName];
+    } else {
+      throw new Error(`Implement GO module failed. "${methodName}" must be a function`);
+    }
   });
 }

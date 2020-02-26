@@ -1,6 +1,6 @@
 export {};
 interface ENV {
-    LOCAL_CHAIN_URL: string;
+    CHAIN_URL: string;
 }
 declare global {
     interface Array<T> {

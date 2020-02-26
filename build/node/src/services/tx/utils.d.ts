@@ -70,7 +70,7 @@ export declare function initTx(handler: Function, param: object): Promise<any>;
  * @param totalAmountToSpendBN Amount uses to send
  * @param paymentInfoList
  */
-export declare function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]): string[];
+export declare function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]): Promise<string[]>;
 export declare function encryptPaymentMessage(paymentInfoList: PaymentInfoModel[]): PaymentInfoModel[];
 export declare function sendB58CheckEncodeTxToChain(handler: Function, b58CheckEncodeTx: string): Promise<{
     txId: string;

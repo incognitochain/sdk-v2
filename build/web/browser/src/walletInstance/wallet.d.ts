@@ -9,7 +9,7 @@ declare class Wallet implements WalletModel {
     name: string;
     constructor();
     static restore(encryptedWallet: string, password: string): Promise<Wallet>;
-    init(passPhrase: string, name?: string): this;
+    init(passPhrase: string, name?: string): Promise<this>;
     import(name: string, passPhrase: string, mnemonic: string, entropy: number[], seed: Uint8Array, masterAccount: MasterAccount): void;
     backup(password: string): string;
 }

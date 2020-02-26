@@ -1,14 +1,14 @@
 interface ImplementInterface {
-    setMethod: Function;
-    getMethod: Function;
-    removeMethod: Function;
+    setMethod(key: string, data: string): Promise<any>;
+    getMethod(key: string): Promise<any>;
+    removeMethod(key: string): Promise<any>;
     namespace: string;
 }
-export declare class Storage {
+export declare class StorageService {
     namespace: string;
-    setMethod: Function;
-    getMethod: Function;
-    removeMethod: Function;
+    setMethod: (key: string, data: string) => Promise<any>;
+    getMethod: (key: string) => Promise<string>;
+    removeMethod: (key: string) => Promise<any>;
     constructor(namespace?: string);
     implement({ setMethod, getMethod, removeMethod, namespace }: ImplementInterface): void;
     _getKey(key: string): string;
@@ -16,6 +16,6 @@ export declare class Storage {
     get(key: string): Promise<any>;
     remove(key: string): Promise<any>;
 }
-declare const storage: Storage;
+declare const storage: StorageService;
 export default storage;
 //# sourceMappingURL=index.d.ts.map
