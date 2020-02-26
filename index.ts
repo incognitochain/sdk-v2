@@ -9,6 +9,7 @@ export { default as NativeTokenInstance } from '@src/walletInstance/token/native
 export { default as PrivacyTokenInstance } from '@src/walletInstance/token/privacyToken';
 export { default as WalletInstance } from '@src/walletInstance/wallet';
 export { default as storageService } from '@src/services/storage';
+export { setConfig, getConfig } from '@src/config';
 
 export const historyServices = {
   checkCachedHistories,

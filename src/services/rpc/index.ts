@@ -30,7 +30,7 @@ class RpcClient {
   rpcHttpService: RPCHttpService;
 
   constructor(url?: string, user?: string, password?: string) {
-    this.rpcHttpService = new RPCHttpService(url, user, password);
+    this.rpcHttpService = new RPCHttpService(user, password);
   }
 
     getOutputCoin = async (paymentAdrr: string, viewingKey = '', tokenID: string = null) => {

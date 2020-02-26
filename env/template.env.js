@@ -3,5 +3,5 @@ function value(v = '') {
 }
 
 module.exports = {
-  LOCAL_CHAIN_URL: value('http://localhost:9334')
+  CHAIN_URL: value('http://localhost:9334')
 };
