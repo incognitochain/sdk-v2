@@ -21,7 +21,7 @@
 
 ## Install <a name="install"></a>
 
-`$ npm install https://github.com/incognitochain/sdk-v2`
+`$ yarn add https://github.com/incognitochain/sdk-v2`
 
 
 ## Usage <a name="usage"></a>
@@ -110,9 +110,9 @@ incognitoJs.storageService.implement({
 |getConfig()|[config param](#configparam)||Get config|
 |CONSTANT||||
 |[WalletInstance](#api_walletinstance)|||Wallet class|
-|AccountInstance|||Account class|
-|NativeTokenInstance|||Native token class|
-|PrivacyTokenInstance|||Privacy token class|
+|[AccountInstance](#api_accountinstance)|||Account class|
+|[NativeTokenInstance](#api_nativetokeninstance)|||Native token class|
+|[PrivacyTokenInstance](#api_privacytokeninstance)|||Privacy token class|
 
 ### Storage implement object param <a name="implementstorageparam"></a> 
 * setMethod(key: string, data: string) : Promise<any>;
