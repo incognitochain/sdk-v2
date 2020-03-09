@@ -77,7 +77,7 @@ class Account extends BaseAccount implements AccountModelInterface {
   async issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee = DEFAULT_NATIVE_FEE } : IssuePrivacyTokenInterface) {
     const availableCoins = await this.nativeToken.getAvailableCoins();
     
-    return initPrivacyToken({
+    const txHistory = await initPrivacyToken({
       accountKeySet: this.key.keySet,
       availableNativeCoins: availableCoins,
       nativeFee: nativeTokenFee,
@@ -85,6 +85,11 @@ class Account extends BaseAccount implements AccountModelInterface {
       tokenSymbol,
       supplyAmount
     });
+
+    // follow this new token
+    this.followTokenById(txHistory.privacyTokenInfo.tokenId);
+
+    return txHistory;
   }
 
   /**

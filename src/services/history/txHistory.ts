@@ -1,4 +1,4 @@
-import { TxHistoryModel } from "@src/models/txHistory";
+import TxHistoryModel from "@src/models/txHistory";
 import rpc from "../rpc";
 import { getTxHistoryCache, cacheTxHistory } from "../cache/txHistory";
 import { TX_STATUS } from "@src/constants/tx";

@@ -15,9 +15,9 @@ export { default as WalletInstance } from '@src/walletInstance/wallet';
 export { default as MasterAccount } from '@src/walletInstance/account/masterAccount';
 export { default as KeyWalletModel } from '@src/models/key/keyWallet';
 export { default as AccountKeySetModel } from '@src/models/key/accountKeySet';
-export { default as TxHistoryModel } from '@src/models/txHistory';
 export { default as PaymentInfoModel } from '@src/models/paymentInfo';
 export { default as storageService } from '@src/services/storage';
+export { default as TxHistoryModel } from '@src/models/txHistory';
 export { setConfig, getConfig } from '@src/config';
 
 export const historyServices = {

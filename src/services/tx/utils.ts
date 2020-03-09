@@ -9,7 +9,7 @@ import { getValueFromCoins, chooseBestCoinToSpent } from '@src/services/coin';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import CoinModel from '@src/models/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
-import { TxHistoryModel } from '@src/models/txHistory';
+import TxHistoryModel from '@src/models/txHistory';
 import { BurnAddress } from '@src/constants/wallet';
 import { cacheTxHistory } from '../cache/txHistory';
 import { TX_STATUS } from '@src/constants/tx';

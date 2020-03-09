@@ -2,7 +2,7 @@ import CoinModel from "@src/models/coin";
 import storage from '@src/services/storage';
 import KEYS from '@src/constants/keys';
 import _ from "lodash";
-import { TxHistoryModel } from "@src/models/txHistory";
+import TxHistoryModel from "@src/models/txHistory";
 
 interface TxHistoryCache {
   [txId: string]: TxHistoryModel,

@@ -39,7 +39,7 @@ interface TxHistoryModelParam {
   historyType?: number
 };
 
-export class TxHistoryModel {
+export default class TxHistoryModel {
   txId: string;
   txType: string;
   lockTime: number;
