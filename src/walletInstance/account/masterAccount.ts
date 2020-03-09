@@ -44,7 +44,19 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     return this;
   }
 
+  getAccountByName(name: string) {
+    return _.find(this.getAccounts(), account => account.name === name);
+  }
+
+  getAccountByPrivateKey(privateKeySerialized: string) {
+    return _.find(this.getAccounts(), account => account.key.keySet.privateKeySerialized === privateKeySerialized);
+  }
+
   async addAccount(name: string, shardId?: number) {
+    if (this.getAccountByName(name)) {
+      throw new Error(`Account with name ${name} was existed`);
+    }
+
     const lastChildAccountIndex = _.findLastIndex(this.child, account => !account.isImport && !!account.key.childNumber);
     const lastChildAccount = lastChildAccountIndex !== -1 && this.child[lastChildAccountIndex];
     let newIndex = lastChildAccount ? new bn(lastChildAccount.key.childNumber).add(new bn(1)).toNumber() : 0;
@@ -79,6 +91,14 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   async importAccount(name: string, privateKey: string) {
+    if (this.getAccountByName(name)) {
+      throw new Error(`Account with name ${name} was existed`);
+    }
+
+    if (this.getAccountByPrivateKey(privateKey)) {
+      throw new Error('Account with this private key was existed');
+    }
+
     const { key, type } = base58CheckDeserialize(privateKey);
     if (type === 'PRIVATE_KEY') {
       const privateKeyData = <{[key: string]: any}>key;
