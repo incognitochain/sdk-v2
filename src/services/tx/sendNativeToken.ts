@@ -9,6 +9,7 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import { TX_TYPE } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 
 interface SendParam {
   accountKeySet: AccountKeySetModel,
@@ -30,6 +31,8 @@ interface CreateNativeTxParam {
 };
 
 export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
+  new Validator('resInitTxBytes', resInitTxBytes).required();
+
   // get b58 check encode tx json
   let b58CheckEncodeTx = checkEncode(resInitTxBytes.slice(0, resInitTxBytes.length - 8), ENCODE_VERSION);
 
@@ -54,6 +57,14 @@ export async function createTx({
   initTxMethod,
   customExtractInfoFromInitedTxMethod
 } : CreateNativeTxParam) {
+  new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
+  new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
+  new Validator('nativeTxInput', nativeTxInput).required();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList).required();
+  new Validator('privateKeySerialized', privateKeySerialized).required().string();
+  new Validator('usePrivacyForNativeToken', usePrivacyForNativeToken).required().boolean();
+  new Validator('initTxMethod', initTxMethod).required();
+
   const outputCoins = await createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
 
   console.log('outputCoint', outputCoins);

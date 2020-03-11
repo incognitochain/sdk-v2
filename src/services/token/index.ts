@@ -4,11 +4,15 @@ import CoinModel from '@src/models/coin';
 import rpc from '@src/services/rpc';
 import { getTxHistoryCache } from '../cache/txHistory';
 import { TX_STATUS } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 
 /**
  * Return list of coins that not existed in chain (not use yet)
  */
 export async function getUnspentCoins(accountKeySet: AccountKeySetModel, tokenId: string) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('tokenId', tokenId).required().string();
+
   const allCoins = await getAllOutputCoins(accountKeySet, tokenId);
   const derivedCoins = await deriveSerialNumbers(accountKeySet, allCoins);
   const coins = derivedCoins.coins;
@@ -24,6 +28,10 @@ export async function getUnspentCoins(accountKeySet: AccountKeySetModel, tokenId
  * Coins can use to create tx (excluding spent coins, spending coins)
  */
 export async function getAvailableCoins(accountKeySet: AccountKeySetModel, tokenId: string, isNativeCoin: boolean) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('tokenId', tokenId).required().string();
+  new Validator('isNativeCoin', isNativeCoin).boolean();
+  
   const unspentCoins = await getUnspentCoins(accountKeySet, tokenId);
   const spendingSerialNumberData = await getSpendingSerialCoins();
   const spendingSerialNumbers = isNativeCoin ? spendingSerialNumberData.spendingNativeSerialNumbers : spendingSerialNumberData.spendingPrivacySerialNumbers;
@@ -55,13 +63,19 @@ export async function getSpendingSerialCoins() : Promise<{spendingNativeSerialNu
 }
 
 export function getTotalBalance(unspentCoins: CoinModel[]) {
+  new Validator('unspentCoins', unspentCoins).required().array();
+
   return getValueFromCoins(unspentCoins);
 }
 
 export function getAvailableBalance(availableCoins: CoinModel[]) {
+  new Validator('availableCoins', availableCoins).required().array();
+
   return getValueFromCoins(availableCoins);
 }
 
 export async function hasExchangeRate(tokenId: string) {
+  new Validator('tokenId', tokenId).required().string();
+
   return await rpc.isExchangeRatePToken(tokenId).catch(() => false);
 }

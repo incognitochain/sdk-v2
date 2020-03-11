@@ -3,8 +3,11 @@ import PaymentAddressKeyModel from '@src/models/key/paymentAddress';
 import ViewingKeyModel from '@src/models/key/viewingKey';
 import PrivateKeyModel from '@src/models/key/privateKey';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
+import Validator from '@src/utils/validator';
 
 export async function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes) {
+  new Validator('privateKeyBytes', privateKeyBytes).required();
+
   const paymentAddress = new PaymentAddressKeyModel();
   const viewingKey = new ViewingKeyModel();
   const privateKey = new PrivateKeyModel(privateKeyBytes);
@@ -22,15 +25,21 @@ export async function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes) {
 }
 
 export async function getBLSPublicKeyB58CheckEncode(miningSeedKey: number[]){
+  new Validator('miningSeedKey', miningSeedKey).required();
+
   return await generateBLSPubKeyB58CheckEncodeFromSeed(miningSeedKey);
 }
 
 export async function generateKeySet(seed: string) {
+  new Validator('seed', seed).required();
+
   const privateKey = await generatePrivateKey(seed);
   return getKeySetFromPrivateKeyBytes(privateKey);
 }
 
 export function getBackupData(keySet: AccountKeySetModel) {
+  new Validator('keySet', keySet).required();
+
   const data = {
     publicKeyBytes: Array.from(keySet.paymentAddress.publicKeyBytes),
     transmissionKeyBytes: Array.from(keySet.paymentAddress.transmissionKeyBytes),
@@ -42,6 +51,8 @@ export function getBackupData(keySet: AccountKeySetModel) {
 }
 
 export function restoreKeySetFromBackupData(data: any) {
+  new Validator('data', data).required();
+
   const { publicKeyBytes, transmissionKeyBytes, privateKeyBytes, receivingKeyBytes } = data;
   const privateKey = new PrivateKeyModel(Uint8Array.from(privateKeyBytes));
   const paymentAddress = new PaymentAddressKeyModel();

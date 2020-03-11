@@ -9,6 +9,7 @@ import { createTx } from './sendNativeToken';
 import { checkDecode } from '@src/utils/base58';
 import { generateCommitteeKeyFromHashPrivateKey } from '../key/generator';
 import { MetaStakingShard } from '@src/constants/wallet';
+import Validator from '@src/utils/validator';
 
 interface StakingParam {
   candidateAccountKeySet: AccountKeySetModel,
@@ -25,6 +26,12 @@ export default async function sendStakingRequest({
   nativeFee,
   autoReStaking = true
 } : StakingParam) {
+  new Validator('candidateAccountKeySet', candidateAccountKeySet).required();
+  new Validator('rewardReceiverPaymentAddress', rewardReceiverPaymentAddress).required().string();
+  new Validator('availableNativeCoins', availableNativeCoins).required();
+  new Validator('nativeFee', nativeFee).required().amount();
+  new Validator('autoReStaking', autoReStaking).required().boolean();
+
   const stakingType = STAKING_TYPES.SHARD;
   const usePrivacyForNativeToken = false;
   const stakingAmount = (await rpc.getStakingAmount(stakingType)).res;

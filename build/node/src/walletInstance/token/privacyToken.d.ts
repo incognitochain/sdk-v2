@@ -18,10 +18,10 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     constructor({ accountKeySet, tokenId, name, symbol, totalSupply }: PrivacyTokenParam);
     hasExchangeRate(): Promise<boolean>;
     getNativeAvailableCoins(): Promise<import("../../models/coin").default[]>;
-    transfer(paymentList: PaymentInfoModel[], nativeFee: number, privacyFee: number): Promise<import("../../models/txHistory").TxHistoryModel>;
-    burning(outchainAddress: string, burningAmount: number, nativeFee: number, privacyFee: number): Promise<import("../../models/txHistory").TxHistoryModel>;
-    pdeContribution(pdeContributionPairID: string, contributedAmount: number, nativeFee: number, privacyFee: number): Promise<import("../../models/txHistory").TxHistoryModel>;
-    requestTrade(tokenIdBuy: TokenIdType, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, privacyFee: number, tradingFee: number): Promise<import("../../models/txHistory").TxHistoryModel>;
+    transfer(paymentList: PaymentInfoModel[], nativeFee: number, privacyFee: number): Promise<import("../../..").TxHistoryModel>;
+    burning(outchainAddress: string, burningAmount: number, nativeFee: number, privacyFee: number): Promise<import("../../..").TxHistoryModel>;
+    pdeContribution(pdeContributionPairID: string, contributedAmount: number, nativeFee: number, privacyFee: number): Promise<import("../../..").TxHistoryModel>;
+    requestTrade(tokenIdBuy: TokenIdType, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, privacyFee: number, tradingFee: number): Promise<import("../../..").TxHistoryModel>;
 }
 export default PrivacyToken;
 //# sourceMappingURL=privacyToken.d.ts.map

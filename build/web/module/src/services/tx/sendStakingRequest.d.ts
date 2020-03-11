@@ -7,6 +7,6 @@ interface StakingParam {
     nativeFee: number;
     autoReStaking: boolean;
 }
-export default function sendStakingRequest({ candidateAccountKeySet, rewardReceiverPaymentAddress, availableNativeCoins, nativeFee, autoReStaking }: StakingParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendStakingRequest({ candidateAccountKeySet, rewardReceiverPaymentAddress, availableNativeCoins, nativeFee, autoReStaking }: StakingParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendStakingRequest.d.ts.map

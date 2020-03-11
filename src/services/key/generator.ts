@@ -11,10 +11,12 @@ import CryptoJS from 'crypto-js';
 import { wordArrayToByteArray, byteArrayToWordArray } from './utils';
 import { generateKeySet } from './accountKeySet';
 import KeyWalletModel from '@src/models/key/keyWallet';
-
+import Validator from '@src/utils/validator';
 
 // GeneratePrivateKey generates spending key from seed
 export async function generatePrivateKey(seed: any) : Promise<KeyBytes> {
+  new Validator('seed', seed).required();
+
   let seedB64Encode = base64Encode(seed);
 
   let privateKeyB64Encode;
@@ -22,7 +24,7 @@ export async function generatePrivateKey(seed: any) : Promise<KeyBytes> {
     privateKeyB64Encode = await goMethods.generateKeyFromSeed(seedB64Encode);
   }
   if (privateKeyB64Encode == null) {
-    throw new Error('Can not generate private key');
+    throw new ErrorCode('Can not generate private key');
   }
   console.log('privateKeyB64Encode', privateKeyB64Encode);
   let spendingKey = base64Decode(privateKeyB64Encode);
@@ -31,6 +33,8 @@ export async function generatePrivateKey(seed: any) : Promise<KeyBytes> {
 
 // GeneratePublicKey generates a public key (address) from spendingKey
 export async function generatePublicKey(privateKey: KeyBytes) : Promise<KeyBytes> {
+  new Validator('privateKey', privateKey).required();
+
   let privateKeyB64Encode = base64Encode(privateKey);
 
   let publicKeyB64Encode;
@@ -38,7 +42,7 @@ export async function generatePublicKey(privateKey: KeyBytes) : Promise<KeyBytes
     publicKeyB64Encode = await goMethods.scalarMultBase(privateKeyB64Encode);
   }
   if (publicKeyB64Encode == null) {
-    throw new Error('Can not generate public key');
+    throw new ErrorCode('Can not generate public key');
   }
 
   let publicKey = base64Decode(publicKeyB64Encode);
@@ -47,6 +51,8 @@ export async function generatePublicKey(privateKey: KeyBytes) : Promise<KeyBytes
 
 // GenerateReceivingKey generates a receiving key (ElGamal decryption key) from spendingKey
 export async function generateReceivingKey(privateKey: KeyBytes) : Promise<KeyBytes> {
+  new Validator('privateKey', privateKey).required();
+
   let privateKeyB64Encode = base64Encode(privateKey);
 
   let receivingKeyB64Encode;
@@ -54,7 +60,7 @@ export async function generateReceivingKey(privateKey: KeyBytes) : Promise<KeyBy
     receivingKeyB64Encode = await goMethods.generateKeyFromSeed(privateKeyB64Encode);
   }
   if (receivingKeyB64Encode == null) {
-    throw new Error('Can not generate private key');
+    throw new ErrorCode('Can not generate private key');
   }
 
   let receivingKey = base64Decode(receivingKeyB64Encode);
@@ -63,6 +69,8 @@ export async function generateReceivingKey(privateKey: KeyBytes) : Promise<KeyBy
 
 // GenerateTransmissionKey generates a transmission key (ElGamal encryption key) from receivingKey
 export async function generateTransmissionKey(receivingKey: KeyBytes) : Promise<KeyBytes> {
+  new Validator('receivingKey', receivingKey).required();
+
   let receivingKeyB64Encode = base64Encode(receivingKey);
 
   let transmissionKeyB64Encode;
@@ -70,7 +78,7 @@ export async function generateTransmissionKey(receivingKey: KeyBytes) : Promise<
     transmissionKeyB64Encode = await goMethods.scalarMultBase(receivingKeyB64Encode);
   }
   if (transmissionKeyB64Encode == null) {
-    throw new Error('Can not generate public key');
+    throw new ErrorCode('Can not generate public key');
   }
 
   let transmissionKey = base64Decode(transmissionKeyB64Encode);
@@ -79,6 +87,9 @@ export async function generateTransmissionKey(receivingKey: KeyBytes) : Promise<
 
 // hashPrivateKey 
 export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes: Uint8Array, publicKeyBytes: Uint8Array) {
+  new Validator('hashPrivateKeyBytes', hashPrivateKeyBytes).required();
+  new Validator('publicKeyBytes', publicKeyBytes).required();
+
   let incPubKey = convertUint8ArrayToArray(publicKeyBytes);
 
   let blsKeyPair = await generateBLSKeyPair(hashPrivateKeyBytes);
@@ -107,12 +118,16 @@ export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes
 }
 
 export async function generateBLSPubKeyB58CheckEncodeFromSeed(seed: number[]) {
+  new Validator('seed', seed).required();
+
   let blsKeyPair = await generateBLSKeyPair(seed);
   let blsPublicKey = convertUint8ArrayToArray(blsKeyPair.blsPublicKey);
   return checkEncode(blsPublicKey, ENCODE_VERSION);
 }
 
 export async function generateMasterKey(seed: Uint8Array) {
+  new Validator('seed', seed).required();
+
   // HmacSHA512(data, key)
   let hmac = CryptoJS.HmacSHA512(CryptoJS.enc.Base64.stringify(byteArrayToWordArray(seed)), 'Constant seed');
   let intermediary = wordArrayToByteArray(hmac);

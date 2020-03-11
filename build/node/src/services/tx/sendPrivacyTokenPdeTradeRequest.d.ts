@@ -14,6 +14,6 @@ interface ContributionParam {
     tokenName: TokenNameType;
     tokenSymbol: TokenSymbolType;
 }
-export default function sendPrivacyTokenPdeTradeRequest({ accountKeySet, availableNativeCoins, privacyAvailableCoins, tradingFee, sellAmount, minimumAcceptableAmount, nativeFee, privacyFee, tokenId, tokenName, tokenSymbol, tokenIdBuy }: ContributionParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendPrivacyTokenPdeTradeRequest({ accountKeySet, availableNativeCoins, privacyAvailableCoins, tradingFee, sellAmount, minimumAcceptableAmount, nativeFee, privacyFee, tokenId, tokenName, tokenSymbol, tokenIdBuy }: ContributionParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendPrivacyTokenPdeTradeRequest.d.ts.map

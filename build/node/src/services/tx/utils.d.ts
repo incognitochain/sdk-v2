@@ -2,7 +2,7 @@ import bn from 'bn.js';
 import PaymentInfoModel from "../../models/paymentInfo";
 import CoinModel from "../../models/coin";
 import AccountKeySetModel from "../../models/key/accountKeySet";
-import { TxHistoryModel } from "../../models/txHistory";
+import TxHistoryModel from "../../models/txHistory";
 export interface TxInputType {
     inputCoinStrs: CoinModel[];
     totalValueInputBN: bn;

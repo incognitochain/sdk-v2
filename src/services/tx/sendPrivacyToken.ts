@@ -10,6 +10,7 @@ import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel, { CoinRawData } from '@src/models/coin';
 import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 
 interface TokenInfo {
   tokenId: TokenIdType,
@@ -57,6 +58,8 @@ interface PrivacyTokenParam {
 };
 
 export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
+  new Validator('resInitTxBytes', resInitTxBytes).required();
+
   // get b58 check encode tx json
   let b58CheckEncodeTx = checkEncode(resInitTxBytes.slice(0, resInitTxBytes.length - 40), ENCODE_VERSION);
 
@@ -93,6 +96,22 @@ export async function createTx({
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
 } : CreateTxParam) {
+  new Validator('nativeTxInput', nativeTxInput).required();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList).required();
+  new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
+  new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
+  new Validator('privacyTxInput', privacyTxInput).required();
+  new Validator('privacyPaymentInfoList', privacyPaymentInfoList).required();
+  new Validator('privacyTokenFeeBN', privacyTokenFeeBN).required();
+  new Validator('privateKeySerialized', privateKeySerialized).required().string();
+  new Validator('tokenId', tokenId).required().string();
+  new Validator('tokenName', tokenName).required().string();
+  new Validator('tokenSymbol', tokenSymbol).required().string();
+  new Validator('tokenName', tokenName).required().string();
+  new Validator('usePrivacyForNativeToken', usePrivacyForNativeToken).required().boolean();
+  new Validator('usePrivacyForPrivacyToken', usePrivacyForPrivacyToken).required().boolean();
+  new Validator('initTxMethod', initTxMethod).required();
+
   const nativeOutputCoins = await createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
   const privacyOutputCoins = await createOutputCoin(privacyPaymentAmountBN.add(privacyTokenFeeBN), privacyTxInput.totalValueInputBN, privacyPaymentInfoList);
 

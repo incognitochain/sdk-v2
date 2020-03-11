@@ -9,6 +9,7 @@ import { restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
 import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import { getBLSPublicKeyB58CheckEncode } from '@src/services/key/accountKeySet';
 import { getRewardAmount, getStakerStatus } from '@src/services/node';
+import Validator from '@src/utils/validator';
 
 interface AccountModelInterface extends AccountModel {
   nativeToken: NativeToken;
@@ -29,6 +30,10 @@ class Account extends BaseAccount implements AccountModelInterface {
   
 
   constructor(name: string, key: KeyWalletModel, isImport: boolean) {
+    new Validator('name', name).required().string();
+    new Validator('key', key).required();
+    new Validator('isImport', isImport).required().boolean();
+
     super(name);
 
     this.isImport = isImport;
@@ -41,6 +46,8 @@ class Account extends BaseAccount implements AccountModelInterface {
   }
 
   static restoreFromBackupData(data: any) {
+    new Validator('data', data).required();
+
     const { name, key, privacyTokenIds, isImport } = data;
     const keyWallet = restoreKeyWalletFromBackupData(key);
 
@@ -64,6 +71,8 @@ class Account extends BaseAccount implements AccountModelInterface {
   }
 
   followTokenById(tokenId: TokenIdType) {
+    new Validator('tokenId', tokenId).required().string();
+
     // TODO verify token id
     if (!this.privacyTokenIds.includes(tokenId)) {
       this.privacyTokenIds.push(tokenId);
@@ -71,10 +80,18 @@ class Account extends BaseAccount implements AccountModelInterface {
   }
 
   unfollowTokenById(tokenId: TokenIdType) {
+    new Validator('tokenId', tokenId).required().string();
+
     _.remove(this.privacyTokenIds, id => id === tokenId);
   }
   
   async issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee = DEFAULT_NATIVE_FEE } : IssuePrivacyTokenInterface) {
+    const missingError = 'Please make sure your params are following format { tokenName, tokenSymbol, supplyAmount, nativeTokenFee }';
+    new Validator('tokenName', tokenName).required(missingError).string();
+    new Validator('tokenSymbol', tokenSymbol).required(missingError).string();
+    new Validator('supplyAmount', supplyAmount).required(missingError).amount();
+    new Validator('nativeTokenFee', nativeTokenFee).required(missingError).amount();
+
     const availableCoins = await this.nativeToken.getAvailableCoins();
     
     const txHistory = await initPrivacyToken({
@@ -97,6 +114,8 @@ class Account extends BaseAccount implements AccountModelInterface {
    * @param {*} tokenId 
    */
   async getFollowingPrivacyToken(tokenId: TokenIdType) {
+    new Validator('tokenId', tokenId).string();
+
     // TODO filter invalid token
     const tokens = await rpc.listPrivacyCustomTokens();
     const privacyTokens = (tokenId ? [tokenId] : this.privacyTokenIds).map(id => {

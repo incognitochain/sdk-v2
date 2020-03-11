@@ -13,6 +13,7 @@ import TxHistoryModel from '@src/models/txHistory';
 import { BurnAddress } from '@src/constants/wallet';
 import { cacheTxHistory } from '../cache/txHistory';
 import { TX_STATUS } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 
 export interface TxInputType {
   inputCoinStrs: CoinModel[],
@@ -52,6 +53,7 @@ export interface CreateHistoryParam {
  * @param amount 
  */
 export function toBNAmount(amount: number) {
+  new Validator('amount', amount).required().amount();
   return new bn(Math.max(amount, 0)) || new bn(0);
 }
 
@@ -60,10 +62,17 @@ export function toBNAmount(amount: number) {
  * @param paymentInfoList 
  */
 export function getTotalAmountFromPaymentList(paymentInfoList: PaymentInfoModel[]) : bn {
+  new Validator('paymentInfoList', paymentInfoList).required().array();
+
   return paymentInfoList.reduce((totalAmount: bn, paymentInfo: PaymentInfoModel) => totalAmount.add(new bn(paymentInfo.amount)), new bn(0));
 }
 
 async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinModel[], usePrivacy: boolean, tokenId?: TokenIdType) {
+  new Validator('paymentAddress', paymentAddress).required().string();
+  new Validator('coinsToSpend', coinsToSpend).required().array();
+  new Validator('usePrivacy', usePrivacy).required().boolean();
+  new Validator('tokenId', tokenId).required().string();
+
   let commitmentIndices = [];
   let myCommitmentIndices = [];
   let commitmentStrs = [];
@@ -77,10 +86,10 @@ async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinMo
 
     // Check number of list of random commitments, list of random commitment indices
     if (commitmentIndices.length !== coinsToSpend.length * CM_RING_SIZE) {
-      throw new Error('Invalid random commitments');
+      throw new ErrorCode('Invalid random commitments');
     }
     if (myCommitmentIndices.length !== coinsToSpend.length) {
-      throw new Error('Number of list my commitment indices must be equal to number of input coins');
+      throw new ErrorCode('Number of list my commitment indices must be equal to number of input coins');
     }
   }
 
@@ -100,6 +109,13 @@ async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinMo
  * @param nativeTokenFeeBN Fee to send (native fee)
  */
 export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, availableNativeCoins: CoinModel[], nativePaymentAmountBN: bn, nativeTokenFeeBN: bn, usePrivacy: boolean = true) : Promise<TxInputType> {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('availableNativeCoins', availableNativeCoins).required().array();
+  new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
+  new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
+  new Validator('usePrivacy', usePrivacy).required().boolean();
+
+
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const totalAmountBN = nativePaymentAmountBN.add(nativeTokenFeeBN);
   const bestCoins = chooseBestCoinToSpent(availableNativeCoins, totalAmountBN);
@@ -107,7 +123,7 @@ export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, a
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
   
   if (totalAmountBN.cmp(totalValueToSpendBN) === 1) {
-    throw new Error('Not enough coin');
+    throw new ErrorCode('Not enough coin');
   }
 
   const { commitmentIndices, myCommitmentIndices, commitmentStrs } = await getRandomCommitments(paymentAddress, coinsToSpend, usePrivacy);
@@ -136,6 +152,13 @@ export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, a
  * @param privacyTokenFeeBN Fee to send (privacy token fee)
  */
 export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, privacyAvailableCoins: CoinModel[], tokenId: TokenIdType, privacyPaymentAmountBN: bn, privacyTokenFeeBN: bn, usePrivacy: boolean = true) : Promise<TxInputType> {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('privacyAvailableCoins', privacyAvailableCoins).required().array();
+  new Validator('tokenId', tokenId).required().string();
+  new Validator('privacyPaymentAmountBN', privacyPaymentAmountBN).required();
+  new Validator('privacyTokenFeeBN', privacyTokenFeeBN).required();
+  new Validator('usePrivacy', usePrivacy).required().boolean();
+
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   let coinsToSpend: CoinModel[] = [];
   let totalValueToSpentBN = new bn(0);
@@ -151,7 +174,7 @@ export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, 
     totalValueToSpentBN = getValueFromCoins(coinsToSpend);
 
     if (totalAmountBN.cmp(totalValueToSpentBN) === 1) {
-      throw new Error('Not enough coin');
+      throw new ErrorCode('Not enough coin');
     }
 
     const RandomCommitmentData = await getRandomCommitments(paymentAddress, coinsToSpend, usePrivacy, tokenId);
@@ -175,9 +198,12 @@ export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, 
 }
 
 export async function initTx(handler: Function, param: object) {
+  new Validator('handler', handler).required().function();
+  new Validator('param', param).required();
+
   const response = await handler(JSON.stringify(param));
   if (!response) {
-    throw new Error('Can not init transaction');
+    throw new ErrorCode('Can not init transaction');
   }
 
   return response;
@@ -191,8 +217,12 @@ export async function initTx(handler: Function, param: object) {
  * @param paymentInfoList 
  */
 export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]) {
+  new Validator('totalAmountToTransferBN', totalAmountToTransferBN).required();
+  new Validator('totalAmountToSpendBN', totalAmountToSpendBN).required();
+  new Validator('paymentInfoList', paymentInfoList).required().array();
+
   if (totalAmountToSpendBN.lt(totalAmountToTransferBN)) {
-    throw new Error('Amount uses to spend must larger than or equal amount uses to transfer');
+    throw new ErrorCode('Amount uses to spend must larger than or equal amount uses to transfer');
   }
 
   let numberOutput = paymentInfoList.length;
@@ -205,7 +235,7 @@ export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountT
   if (numberOutput > 0) {
     const sndOutputStrs = await goMethods.randomScalars(numberOutput);
     if (sndOutputStrs === null || sndOutputStrs === '') {
-      throw new Error('Can not random scalars for output coins');
+      throw new ErrorCode('Can not random scalars for output coins');
     }
   
     console.log('sndOutputStrs: ', sndOutputStrs);
@@ -222,22 +252,29 @@ export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountT
 }
 
 export function encryptPaymentMessage(paymentInfoList: PaymentInfoModel[]) {
+  new Validator('paymentInfoList', paymentInfoList).required().array();
+
   // TODO
   return paymentInfoList;
 }
 
 export async function sendB58CheckEncodeTxToChain(handler: Function, b58CheckEncodeTx: string) {
+  new Validator('handler', handler).required().function();
+  new Validator('b58CheckEncodeTx', b58CheckEncodeTx).required().string();
+
   const response: { txId: string } = await handler(b58CheckEncodeTx);
 
   if (response?.txId) {
     return response;
   }
 
-  throw new Error('Send tx failed');
+  throw new ErrorCode('Send tx failed');
 }
 
 
 export function getCoinInfoForCache(coins: CoinModel[]) {
+  new Validator('coins', coins).required().array();
+
   const serialNumberList: string[] = [];
   const listUTXO: string[] = [];
 

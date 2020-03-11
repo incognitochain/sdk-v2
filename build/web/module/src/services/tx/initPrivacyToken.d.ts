@@ -10,6 +10,6 @@ interface InitParam extends TokenInfo {
     nativeFee: number;
     supplyAmount: number;
 }
-export default function initPrivacyToken({ accountKeySet, availableNativeCoins, nativeFee, tokenSymbol, tokenName, supplyAmount }: InitParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function initPrivacyToken({ accountKeySet, availableNativeCoins, nativeFee, tokenSymbol, tokenName, supplyAmount }: InitParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=initPrivacyToken.d.ts.map

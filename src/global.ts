@@ -14,6 +14,10 @@ declare global {
     importObject: any;
   }
 
+  class ErrorCode {
+    constructor(message: string);
+  }
+
   const __IS_WEB__: boolean;
   const __IS_NODE__: boolean;
   const ENV : ENV;

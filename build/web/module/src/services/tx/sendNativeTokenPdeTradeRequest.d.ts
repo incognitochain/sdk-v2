@@ -10,6 +10,6 @@ interface TradeParam {
     tokenIdSell: TokenIdType;
     minimumAcceptableAmount: number;
 }
-export default function sendNativeTokenPdeTradeRequest({ accountKeySet, availableNativeCoins, nativeFee, tradingFee, tokenIdBuy, tokenIdSell, sellAmount, minimumAcceptableAmount }: TradeParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendNativeTokenPdeTradeRequest({ accountKeySet, availableNativeCoins, nativeFee, tradingFee, tokenIdBuy, tokenIdSell, sellAmount, minimumAcceptableAmount }: TradeParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendNativeTokenPdeTradeRequest.d.ts.map

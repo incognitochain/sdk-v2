@@ -31,6 +31,6 @@ export declare function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nati
     b58CheckEncodeTx: string;
     lockTime: number;
 }>;
-export default function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins }: SendParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins }: SendParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendNativeToken.d.ts.map

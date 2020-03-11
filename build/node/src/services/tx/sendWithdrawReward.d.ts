@@ -5,6 +5,6 @@ interface WithdrawRewardParam {
     availableNativeCoins: CoinModel[];
     tokenId: TokenIdType;
 }
-export default function sendWithdrawReward({ accountKeySet, availableNativeCoins, tokenId }: WithdrawRewardParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendWithdrawReward({ accountKeySet, availableNativeCoins, tokenId }: WithdrawRewardParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendWithdrawReward.d.ts.map

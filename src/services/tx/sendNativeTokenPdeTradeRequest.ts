@@ -7,6 +7,7 @@ import goMethods from '@src/go';
 import { createTx } from './sendNativeToken';
 import { PDETradeRequestMeta } from '@src/constants/wallet';
 import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 
 interface TradeParam {
   accountKeySet: AccountKeySetModel,
@@ -29,6 +30,15 @@ export default async function sendNativeTokenPdeTradeRequest({
   sellAmount,
   minimumAcceptableAmount
 } : TradeParam) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('availableNativeCoins', availableNativeCoins).required();
+  new Validator('nativeFee', nativeFee).required().amount();
+  new Validator('tradingFee', tradingFee).required().amount();
+  new Validator('tokenIdBuy', tokenIdBuy).required().string();
+  new Validator('tokenIdSell', tokenIdSell).required().string();
+  new Validator('sellAmount', sellAmount).required().amount();
+  new Validator('minimumAcceptableAmount', minimumAcceptableAmount).required().amount();
+
   const usePrivacyForNativeToken = false;
   const nativeFeeBN = toBNAmount(nativeFee);
   const tradingFeeBN = toBNAmount(tradingFee);

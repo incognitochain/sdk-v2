@@ -14,6 +14,6 @@ interface SendParam extends TokenInfo {
     outchainAddress: string;
     burningAmount: number;
 }
-export default function sendBurningRequest({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, outchainAddress, burningAmount, }: SendParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendBurningRequest({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, outchainAddress, burningAmount, }: SendParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendBurningRequest.d.ts.map

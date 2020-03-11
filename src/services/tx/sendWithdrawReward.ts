@@ -7,6 +7,7 @@ import goMethods from '@src/go';
 import { createTx } from './sendNativeToken';
 import { WithDrawRewardRequestMeta } from '@src/constants/wallet';
 import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 
 interface WithdrawRewardParam {
   accountKeySet: AccountKeySetModel,
@@ -19,6 +20,10 @@ export default async function sendWithdrawReward({
   availableNativeCoins,
   tokenId
 } : WithdrawRewardParam) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('availableNativeCoins', availableNativeCoins).required();
+  new Validator('tokenId', tokenId).required().string();
+
   const usePrivacyForNativeToken = false;
   const nativeFeeBN = toBNAmount(0);
   const nativePaymentInfoList: PaymentInfoModel[] = [];

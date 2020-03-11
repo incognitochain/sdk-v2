@@ -7,11 +7,15 @@ import { base64Decode } from '@src/privacy/utils';
 import { hybridDecryption } from '@src/privacy/hybridEncryption';
 import CoinModel from '@src/models/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
+import Validator from '@src/utils/validator';
 
 /** getAllOutputCoins returns all output coins with tokenID, for native token: tokenId is null
    *
    */
 export async function getAllOutputCoins(accountKeySet: AccountKeySetModel, tokenId: string): Promise<CoinModel[]> {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('tokenId', tokenId).required().string();
+
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const viewingKey = accountKeySet.viewingKeySerialized;
   const receivingKeyBytes = accountKeySet.viewingKey.receivingKeyBytes;
@@ -47,6 +51,9 @@ export async function getAllOutputCoins(accountKeySet: AccountKeySetModel, token
    *
    */
 export async function deriveSerialNumbers(accountKeySet: AccountKeySetModel, coins: CoinModel[] = []) : Promise<{ coins: CoinModel[], serialNumberList: string[] }> {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('coins', coins).required().array();
+
   const privateKey = accountKeySet.privateKeySerialized;
   let serialNumberList = new Array(coins.length);
   let serialNumberBytes = new Array(coins.length);
@@ -67,7 +74,7 @@ export async function deriveSerialNumbers(accountKeySet: AccountKeySetModel, coi
   
     let res = await goMethods.deriveSerialNumber(paramJson);
     if (res === null || res === '') {
-      throw new Error('Can not derive serial number');
+      throw new ErrorCode('Can not derive serial number');
     }
 
     let tmpBytes = base64Decode(res);
@@ -85,6 +92,8 @@ export async function deriveSerialNumbers(accountKeySet: AccountKeySetModel, coi
 }
 
 export function getValueFromCoins(coins: CoinModel[]): bn {
+  new Validator('coins', coins).required().array();
+
   return coins?.reduce((totalAmount, coin) => totalAmount.add(new bn(coin.value)), new bn(0)) || new bn(0);
 }
 
@@ -93,6 +102,9 @@ export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
   remainInputCoins: CoinModel[],
   totalResultInputCoinAmount: bn
 } {
+  new Validator('coins', coins).required().array();
+  new Validator('amountBN', amountBN).required();
+
   if  (amountBN.gt(new bn(0))) {
     let resultInputCoins: CoinModel[] = [];
     let remainInputCoins: CoinModel[] = [];
@@ -139,7 +151,7 @@ export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
     }
   
     if (totalResultInputCoinAmount.cmp(amountBN) === -1) {
-      throw new Error('Not enough coin');
+      throw new ErrorCode('Not enough coin');
     } else {
       console.timeEnd('chooseBestCoinToSpent');
       return {

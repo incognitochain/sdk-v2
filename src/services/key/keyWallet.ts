@@ -21,11 +21,17 @@ import { generateKeySet, getBackupData as getBackupDataKeySet, restoreKeySetFrom
 import CryptoJS from 'crypto-js';
 import { wordArrayToByteArray, byteArrayToWordArray } from '@src/services/key/utils';
 import KeyWalletModel from '@src/models/key/keyWallet';
+import Validator from '@src/utils/validator';
 
 type AllKeyModelType = PrivateKeyModel | PaymentAddressKeyModel | ViewingKeyModel;
 type KeyTypeString = 'PRIVATE_KEY' | 'PAYMENT_ADDRESS' | 'PUBLIC_KEY' | 'VIEWING_KEY';
 
 export function serializeKey(key : AllKeyModelType, depth: KeyWalletDepth, childNumber: KeyWalletChildNumber, chainCode: KeyWalletChainCode) {
+  new Validator('key', key).required();
+  new Validator('depth', depth).required().number();
+  new Validator('childNumber', childNumber).required();
+  new Validator('chainCode', chainCode).required();
+
   // Write fields to buffer in order
   let keyBytes;
   const keyType = key.keyType;
@@ -94,6 +100,8 @@ export function serializeKey(key : AllKeyModelType, depth: KeyWalletDepth, child
 }
 
 function deserializeKeyValidate(bytes: KeyBytes) {
+  new Validator('bytes', bytes).required();
+
   // validate checksum
   let cs1 = checkSumFirst4Bytes(bytes.slice(0, bytes.length - 4));
   let cs2 = bytes.slice(bytes.length - 4);
@@ -109,6 +117,8 @@ export function deserializePrivateKeyBytes(bytes: KeyBytes) : {
   chainCode: KeyWalletChainCode,
   privateKey: PrivateKeyModel
 } {
+  new Validator('bytes', bytes).required();
+
   const depth = bytes[1];
   const childNumber = bytes.slice(2, 6);
   const chainCode = bytes.slice(6, 38);
@@ -127,6 +137,8 @@ export function deserializePrivateKeyBytes(bytes: KeyBytes) : {
 }
 
 export function deserializePaymentAddressKeyBytes(bytes: KeyBytes) : PaymentAddressKeyModel{
+  new Validator('bytes', bytes).required();
+
   const paymentAddress = new PaymentAddressKeyModel();
 
   const publicKeyLength = bytes[1];
@@ -141,6 +153,8 @@ export function deserializePaymentAddressKeyBytes(bytes: KeyBytes) : PaymentAddr
 }
 
 export function deserializeViewingKeyBytes(bytes: KeyBytes) : ViewingKeyModel{
+  new Validator('bytes', bytes).required();
+
   const viewingKey = new ViewingKeyModel();
 
   const publicKeyLength = bytes[1];
@@ -155,6 +169,8 @@ export function deserializeViewingKeyBytes(bytes: KeyBytes) : ViewingKeyModel{
 }
 
 export function deserializePublicKeyBytes(bytes: KeyBytes) : KeyBytes {
+  new Validator('bytes', bytes).required();
+
   const publicKeyLength = bytes[1];
   const publicKeyBytes =  bytes.slice(2, 2 + publicKeyLength);
 
@@ -164,16 +180,25 @@ export function deserializePublicKeyBytes(bytes: KeyBytes) : KeyBytes {
 }
 
 export function base58CheckSerialize(key: AllKeyModelType, depth: KeyWalletDepth, childNumber: KeyWalletChildNumber, chainCode: KeyWalletChainCode) {
+  new Validator('key', key).required();
+  new Validator('depth', depth).required();
+  new Validator('childNumber', childNumber).required();
+  new Validator('chainCode', chainCode).required();
+
   let serializedKey = serializeKey(key, depth, childNumber, chainCode);
   return checkEncode(serializedKey, ENCODE_VERSION);
 }
 
 export function getKeyTypeFromKeyBytes(keyBytes: KeyBytes) {
+  new Validator('keyBytes', keyBytes).required();
+
   const keyType = keyBytes[0];
   return keyType;
 }
 
 export function base58CheckDeserialize(keyStr: string) {
+  new Validator('keyStr', keyStr).required().string();
+
   let keyBytes = checkDecode(keyStr).bytesDecoded;
   const keyType = getKeyTypeFromKeyBytes(keyBytes);
 
@@ -203,6 +228,9 @@ export function base58CheckDeserialize(keyStr: string) {
 }
 
 export function getIntermediary(childIndex: number, keyWalletChainCode: KeyWalletChainCode) {
+  new Validator('childIndex', childIndex).required();
+  new Validator('keyWalletChainCode', keyWalletChainCode).required();
+
   let childIndexBytes = (new bn(childIndex)).toArray();
   // HmacSHA512(data, key)
   let hmac = CryptoJS.HmacSHA512(CryptoJS.enc.Base64.stringify(byteArrayToWordArray(keyWalletChainCode)), byteArrayToWordArray(Uint8Array.from(childIndexBytes)));
@@ -211,6 +239,10 @@ export function getIntermediary(childIndex: number, keyWalletChainCode: KeyWalle
 }
 
 export async function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWalletDepth, keyWalletChainCode: KeyWalletChainCode) {
+  new Validator('childIndex', childIndex).required();
+  new Validator('keyWalletDepth', keyWalletDepth).required();
+  new Validator('keyWalletChainCode', keyWalletChainCode).required();
+
   let intermediary = getIntermediary(childIndex, keyWalletChainCode);
   let newSeed = intermediary.slice(0, 32);
   const keySet = await generateKeySet(newSeed);
@@ -227,6 +259,8 @@ export async function generateChildKeyData(childIndex: number, keyWalletDepth: K
 }
 
 export function getBackupData(keyWallet: KeyWalletModel) {
+  new Validator('keyWallet', keyWallet).required();
+
   const data = {
     chainCode: Array.from(keyWallet.chainCode),
     childNumber: Array.from(keyWallet.childNumber),
@@ -238,6 +272,8 @@ export function getBackupData(keyWallet: KeyWalletModel) {
 }
 
 export function restoreKeyWalletFromBackupData(data: any) {
+  new Validator('data', data).required();
+
   const { chainCode, childNumber, depth, keySet } = data;
   const keyWallet = new KeyWalletModel();
 

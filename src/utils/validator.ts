@@ -22,7 +22,7 @@ class Validator {
   isRequired: boolean;
 
   constructor(label: string, value: any) {
-    if (!label && typeof label !== 'string') throw new Error('Missing or invalid label');
+    if (!label && typeof label !== 'string') throw new ErrorCode('Missing or invalid label');
 
     this.value = value;
     this.label = label;
@@ -30,7 +30,7 @@ class Validator {
   }
 
   _throwError(message: string) {
-    throw new Error(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);  
+    throw new ErrorCode(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);  
   }
 
   _isDefined() {
@@ -52,6 +52,10 @@ class Validator {
 
   string(message = 'Must be string') {
     return this._onCondition(() => typeof this.value === 'string', message);
+  }
+
+  function(message = 'Must be a function') {
+    return this._onCondition(() => typeof this.value === 'function', message);
   }
 
   boolean(message = 'Must be boolean') {
@@ -120,4 +124,4 @@ class Validator {
   }
 }
 
-module.exports = Validator;
+export default Validator;

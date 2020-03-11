@@ -24,7 +24,7 @@ interface TxHistoryModelParam {
     accountPublicKeySerialized: string;
     historyType?: number;
 }
-export declare class TxHistoryModel {
+export default class TxHistoryModel {
     txId: string;
     txType: string;
     lockTime: number;

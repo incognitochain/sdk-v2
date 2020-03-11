@@ -7,6 +7,7 @@ import goMethods from '@src/go';
 import { createTx } from './sendNativeToken';
 import { PDEContributionMeta } from '@src/constants/wallet';
 import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
@@ -25,6 +26,13 @@ export default async function sendNativeTokenPdeContribution({
   tokenId,
   contributedAmount,
 } : ContributionParam) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('availableNativeCoins', availableNativeCoins).required();
+  new Validator('nativeFee', nativeFee).required().amount;
+  new Validator('pdeContributionPairID', pdeContributionPairID).required().string();
+  new Validator('tokenId', tokenId).required().string();
+  new Validator('contributedAmount', contributedAmount).required().amount();
+
   const usePrivacyForNativeToken = false;
   const nativeFeeBN = toBNAmount(nativeFee);
   const contributedAmountBN = toBNAmount(contributedAmount);

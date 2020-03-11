@@ -41,9 +41,9 @@ declare class Token implements BaseTokenModel {
      * @param tokenId use `null` for native token
      */
     getTotalBalance(tokenId?: TokenIdType): Promise<import("bn.js")>;
-    getTxHistories(): Promise<import("../../models/txHistory").TxHistoryModel[]>;
+    getTxHistories(): Promise<import("../../..").TxHistoryModel[]>;
     transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: number, privacyFee?: number): void;
-    withdrawNodeReward(): Promise<import("../../models/txHistory").TxHistoryModel>;
+    withdrawNodeReward(): Promise<import("../../..").TxHistoryModel>;
 }
 export default Token;
 //# sourceMappingURL=token.d.ts.map

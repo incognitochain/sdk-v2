@@ -8,6 +8,6 @@ interface ContributionParam {
     contributedAmount: number;
     tokenId: TokenIdType;
 }
-export default function sendNativeTokenPdeContribution({ accountKeySet, availableNativeCoins, nativeFee, pdeContributionPairID, tokenId, contributedAmount, }: ContributionParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendNativeTokenPdeContribution({ accountKeySet, availableNativeCoins, nativeFee, pdeContributionPairID, tokenId, contributedAmount, }: ContributionParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendNativeTokenPdeContribution.d.ts.map

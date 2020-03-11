@@ -22,7 +22,7 @@ function getMethod(methodName: string) {
     (methods as { [key: string]: any })[methodName] = func;
     return  func;
   } else {
-    throw new Error(`
+    throw new ErrorCode(`
       Can not find GO method "${methodName}", please make sure it's been implemented.
       Use "implementGoMethodUseWasm" to automatically implement on Browser & NodeJS enviroment,
       or "implementGoMethodManually" on other enviroments (React Native)
@@ -58,7 +58,7 @@ const methods = new Proxy({
     if (typeof value === 'function') {
       (obj as { [key: string]: any })[prop] = value;
     } else {
-      throw new TypeError(`${prop} must be a function`);
+      throw new ErrorCode(`${prop} must be a function`);
     }
 
     return true;

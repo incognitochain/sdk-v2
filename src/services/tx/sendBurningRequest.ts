@@ -7,6 +7,7 @@ import goMethods from '@src/go';
 import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import { createTx } from './sendPrivacyToken';
 import { BurningRequestMeta } from '@src/constants/wallet';
+import Validator from '@src/utils/validator';
 
 interface TokenInfo {
   tokenId: TokenIdType,
@@ -25,6 +26,8 @@ interface SendParam extends TokenInfo {
 };
 
 function parseOutchainAddress(outchainAddress: string) {
+  new Validator('outchainAddress', outchainAddress).required().string();
+
   if (outchainAddress.startsWith('0x')) {
     return outchainAddress.slice(2);
   }
@@ -44,6 +47,17 @@ export default async function sendBurningRequest({
   outchainAddress,
   burningAmount,
 } : SendParam) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('nativeAvailableCoins', nativeAvailableCoins).required();
+  new Validator('privacyAvailableCoins', privacyAvailableCoins).required();
+  new Validator('nativeFee', nativeFee).required().amount();
+  new Validator('privacyFee', privacyFee).required().amount();
+  new Validator('tokenId', tokenId).required().string();
+  new Validator('tokenSymbol', tokenSymbol).required().string();
+  new Validator('tokenName', tokenName).required().string();
+  new Validator('outchainAddress', outchainAddress).required().string();
+  new Validator('burningAmount', burningAmount).required().amount();
+
   const burningAmountBN = toBNAmount(burningAmount);
   const privacyFeeBN = toBNAmount(privacyFee);
   const nativeFeeBN = toBNAmount(nativeFee);

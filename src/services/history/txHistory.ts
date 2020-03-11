@@ -2,8 +2,11 @@ import TxHistoryModel from "@src/models/txHistory";
 import rpc from "../rpc";
 import { getTxHistoryCache, cacheTxHistory } from "../cache/txHistory";
 import { TX_STATUS } from "@src/constants/tx";
+import Validator from '@src/utils/validator';
 
 export async function updateTxHistory(txHistory: TxHistoryModel) {
+  new Validator('txHistory', txHistory).required();
+
   const txInfo: { [key:string]: any } = await rpc.getTransactionByHash(txHistory.txId);
 
   if (txInfo?.isInBlock) {
@@ -35,6 +38,9 @@ export async function checkCachedHistories() {
  * @param tokenId Use `null` for native token
  */
 export async function getTxHistoryByPublicKey(accountPublicKeySerialized: string, tokenId?: string) {
+  new Validator('tokenId', tokenId).required().string();
+  new Validator('accountPublicKeySerialized', accountPublicKeySerialized).required().string();
+
   const cached = await getTxHistoryCache();
   return Object.values(cached).filter(txHistory => {
     const matchPublicKey = txHistory.accountPublicKeySerialized === accountPublicKeySerialized;

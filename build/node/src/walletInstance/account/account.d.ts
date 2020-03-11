@@ -22,7 +22,7 @@ declare class Account extends BaseAccount implements AccountModelInterface {
     getBLSPublicKeyB58CheckEncode(): Promise<string>;
     followTokenById(tokenId: TokenIdType): void;
     unfollowTokenById(tokenId: TokenIdType): void;
-    issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee }: IssuePrivacyTokenInterface): Promise<import("../../models/txHistory").TxHistoryModel>;
+    issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee }: IssuePrivacyTokenInterface): Promise<import("../../..").TxHistoryModel>;
     /**
      * Find by tokenId or all if tokenId is null
      * @param {*} tokenId

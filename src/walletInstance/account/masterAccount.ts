@@ -9,6 +9,7 @@ import { getShardIDFromLastByte } from '@src/utils/common';
 import Account from './account';
 import { getKeySetFromPrivateKeyBytes } from '@src/services/key/accountKeySet';
 import PrivateKeyModel from '@src/models/key/privateKey';
+import Validator from '@src/utils/validator';
 
 const DEFAULT_MASTER_ACCOUNT_NAME = 'MASTER_ACCOUNT';
 
@@ -18,6 +19,8 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   child: Account[];
 
   constructor(name: string = DEFAULT_MASTER_ACCOUNT_NAME) {
+    new Validator('name', name).required().string();
+
     super(name);
 
     this.child = [];
@@ -25,6 +28,8 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   static restoreFromBackupData(data: any) {
+    new Validator('data', data).required();
+
     const { name, key, child } = data;
     const keyWallet = restoreKeyWalletFromBackupData(key);
     const account = new MasterAccount(name);
@@ -36,6 +41,8 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   async init(walletSeed: Uint8Array) {
+    new Validator('walletSeed', walletSeed).required();
+
     this.key = await generateMasterKey(walletSeed);
     this.serializeKeys();
     
@@ -45,16 +52,23 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   getAccountByName(name: string) {
+    new Validator('name', name).required().string();
+
     return _.find(this.getAccounts(), account => account.name === name);
   }
 
   getAccountByPrivateKey(privateKeySerialized: string) {
+    new Validator('privateKeySerialized', privateKeySerialized).required().string();
+
     return _.find(this.getAccounts(), account => account.key.keySet.privateKeySerialized === privateKeySerialized);
   }
 
   async addAccount(name: string, shardId?: number) {
+    new Validator('name', name).required().string();
+    new Validator('shardId', shardId).shardId();
+
     if (this.getAccountByName(name)) {
-      throw new Error(`Account with name ${name} was existed`);
+      throw new ErrorCode(`Account with name ${name} was existed`);
     }
 
     const lastChildAccountIndex = _.findLastIndex(this.child, account => !account.isImport && !!account.key.childNumber);
@@ -83,6 +97,8 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   removeAccount(name: string) {
+    new Validator('name', name).required().string();
+
     _.remove(this.child, account => account.name === name);
   }
 
@@ -91,12 +107,15 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   async importAccount(name: string, privateKey: string) {
+    new Validator('name', name).required().string();
+    new Validator('privateKey', privateKey).required().string();
+
     if (this.getAccountByName(name)) {
-      throw new Error(`Account with name ${name} was existed`);
+      throw new ErrorCode(`Account with name ${name} was existed`);
     }
 
     if (this.getAccountByPrivateKey(privateKey)) {
-      throw new Error('Account with this private key was existed');
+      throw new ErrorCode('Account with this private key was existed');
     }
 
     const { key, type } = base58CheckDeserialize(privateKey);
@@ -115,7 +134,7 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
 
       return account;
     } else {
-      throw new Error('Import account failed, private key is invalid');
+      throw new ErrorCode('Import account failed, private key is invalid');
     }
   }
 

@@ -18,7 +18,7 @@ const parseResponse = async (rpcService: RPCHttpService, method: string) => {
   response = await rpcService.postRequest(data);
 
   if (response.status !== 200) {
-    throw new Error('Can\'t request API ' + data.method);
+    throw new ErrorCode('Can\'t request API ' + data.method);
   } else if (response.data.Error) {
     throw new RPCError(method, response.data.Error);
   }
@@ -56,7 +56,7 @@ class RpcClient {
       response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API get all output coins');
+        throw new ErrorCode('Can\'t request API get all output coins');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -95,7 +95,7 @@ class RpcClient {
       response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API check has serial number');
+        throw new ErrorCode('Can\'t request API check has serial number');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -123,7 +123,7 @@ class RpcClient {
       response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API check has serial number derivator');
+        throw new ErrorCode('Can\'t request API check has serial number derivator');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -153,7 +153,7 @@ class RpcClient {
       response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API random commitments');
+        throw new ErrorCode('Can\'t request API random commitments');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -166,7 +166,7 @@ class RpcClient {
       //   let res = checkDecode(commitmentStrs[i]);
 
       //   if (res.version !== ENCODE_VERSION) {
-      //     throw new Error("Base58 check decode wrong version");
+      //     throw new ErrorCode("Base58 check decode wrong version");
       //   }
 
       //   commitments[i] = P256.decompress(res.bytesDecoded);
@@ -193,7 +193,7 @@ class RpcClient {
       response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API send transaction');
+        throw new ErrorCode('Can\'t request API send transaction');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -234,7 +234,7 @@ class RpcClient {
       response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API send custom token transaction');
+        throw new ErrorCode('Can\'t request API send custom token transaction');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -260,7 +260,7 @@ class RpcClient {
       response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API send privacy custom token transaction');
+        throw new ErrorCode('Can\'t request API send privacy custom token transaction');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -344,7 +344,7 @@ class RpcClient {
 
       //todo:
       // if (response.status !== 200) {
-      //   throw new Error("Can't request API get list of unspent custom tokens");
+      //   throw new ErrorCode("Can't request API get list of unspent custom tokens");
       // } else if (response.data.Error) {
       //   throw response.data.Error;
       // }
@@ -371,7 +371,7 @@ class RpcClient {
       let response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API get estimate fee per kilibyte');
+        throw new ErrorCode('Can\'t request API get estimate fee per kilibyte');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -394,7 +394,7 @@ class RpcClient {
       let response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API get transaction by hash');
+        throw new ErrorCode('Can\'t request API get transaction by hash');
       } else if (response.data.Result === null && response.data.Error) {
         return {
           isInBlock: false,
@@ -525,7 +525,7 @@ class RpcClient {
       let response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API get image from hash string');
+        throw new ErrorCode('Can\'t request API get image from hash string');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -546,7 +546,7 @@ class RpcClient {
         let response = await this.rpcHttpService.postRequest(data);
 
         if (response.status !== 200) {
-          throw new Error('Can\'t request API get beacon best state');
+          throw new ErrorCode('Can\'t request API get beacon best state');
         } else if (response.data.Error) {
           throw response.data.Error;
         }
@@ -566,7 +566,7 @@ class RpcClient {
 
         let response = await this.rpcHttpService.postRequest(data);
         if (response.status !== 200) {
-          throw new Error('Can\'t request API get public key role');
+          throw new ErrorCode('Can\'t request API get public key role');
         } else if (response.data.Error) {
           throw response.data.Error;
         }
@@ -589,7 +589,7 @@ class RpcClient {
         let response = await this.rpcHttpService.postRequest(data);
 
         if (response.status !== 200) {
-          throw new Error('Can\'t request API get PDE state');
+          throw new ErrorCode('Can\'t request API get PDE state');
         } else if (response.data.Error) {
           throw response.data.Error;
         }
@@ -614,7 +614,7 @@ class RpcClient {
         let response = await this.rpcHttpService.postRequest(data);
 
         if (response.status !== 200) {
-          throw new Error('Can\'t request API get PDE state');
+          throw new ErrorCode('Can\'t request API get PDE state');
         } else if (response.data.Error) {
           throw response.data.Error;
         }
@@ -639,7 +639,7 @@ class RpcClient {
         let response = await this.rpcHttpService.postRequest(data);
 
         if (response.status !== 200) {
-          throw new Error('Can\'t request API getPDEContributionStatus');
+          throw new ErrorCode('Can\'t request API getPDEContributionStatus');
         } else if (response.data.Error) {
           throw response.data.Error;
         }
@@ -664,7 +664,7 @@ class RpcClient {
         let response = await this.rpcHttpService.postRequest(data);
 
         if (response.status !== 200) {
-          throw new Error('Can\'t request API getPDEContributionStatus');
+          throw new ErrorCode('Can\'t request API getPDEContributionStatus');
         } else if (response.data.Error) {
           throw response.data.Error;
         }
@@ -689,7 +689,7 @@ class RpcClient {
         let response = await this.rpcHttpService.postRequest(data);
 
         if (response.status !== 200) {
-          throw new Error('Can\'t request API getPDEWithdrawalStatus');
+          throw new ErrorCode('Can\'t request API getPDEWithdrawalStatus');
         } else if (response.data.Error) {
           throw response.data.Error;
         }
@@ -768,7 +768,7 @@ class RpcClient {
       let response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API get all output coins');
+        throw new ErrorCode('Can\'t request API get all output coins');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -790,7 +790,7 @@ class RpcClient {
       let response = await this.rpcHttpService.postRequest(data);
 
       if (response.status !== 200) {
-        throw new Error('Can\'t request API get list privacy custom token balance');
+        throw new ErrorCode('Can\'t request API get list privacy custom token balance');
       } else if (response.data.Error) {
         throw response.data.Error;
       }
@@ -814,7 +814,7 @@ class RpcClient {
       }
 
       if (response.status !== 200) {
-          throw new Error("Can't request API get burning address");
+          throw new ErrorCode("Can't request API get burning address");
       } else if (response.data.Error) {
           throw response.data.Error;
       }

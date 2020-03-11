@@ -1,4 +1,4 @@
-import { TxHistoryModel } from "../../models/txHistory";
+import TxHistoryModel from "../../models/txHistory";
 interface TxHistoryCache {
     [txId: string]: TxHistoryModel;
 }

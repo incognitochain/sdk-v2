@@ -1,8 +1,8 @@
-import CoinModel from "@src/models/coin";
 import storage from '@src/services/storage';
 import KEYS from '@src/constants/keys';
 import _ from "lodash";
 import TxHistoryModel from "@src/models/txHistory";
+import Validator from '@src/utils/validator';
 
 interface TxHistoryCache {
   [txId: string]: TxHistoryModel,
@@ -32,6 +32,9 @@ export async function getTxHistoryCache() {
 }
 
 export async function cacheTxHistory(txId: string, history: TxHistoryModel) {
+  new Validator('txId', txId).string().required();
+  new Validator('history', history).required();
+
   const prevCached = await getTxHistoryCache();
   const txIds = Object.keys(prevCached);
   const data: {[key: string]: object} = {};

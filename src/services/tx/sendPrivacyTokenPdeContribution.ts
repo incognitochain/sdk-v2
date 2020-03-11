@@ -8,6 +8,7 @@ import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx'
 import { extractInfoFromInitedTxBytes as customExtractInfoFromInitedTxBytes } from '@src/services/tx/sendNativeToken';
 import { createTx } from './sendPrivacyToken';
 import { PDEContributionMeta } from '@src/constants/wallet';
+import Validator from '@src/utils/validator';
 
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
@@ -34,6 +35,17 @@ export default async function sendPrivacyTokenPdeContribution({
   tokenSymbol,
   contributedAmount,
 } : ContributionParam) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('availableNativeCoins', availableNativeCoins).required();
+  new Validator('privacyAvailableCoins', privacyAvailableCoins).required();
+  new Validator('nativeFee', nativeFee).required().amount();
+  new Validator('privacyFee', privacyFee).required().amount();
+  new Validator('pdeContributionPairID', pdeContributionPairID).required().string();
+  new Validator('tokenId', tokenId).required().string();
+  new Validator('tokenName', tokenName).required().string();
+  new Validator('tokenSymbol', tokenSymbol).required().string();
+  new Validator('contributedAmount', contributedAmount).required().amount();
+
   const usePrivacyForPrivacyToken = false;
   const usePrivacyForNativeToken = false;
   const nativePaymentInfoList = <PaymentInfoModel[]>[];

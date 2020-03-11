@@ -1,4 +1,4 @@
-import { TxHistoryModel } from "../../models/txHistory";
+import TxHistoryModel from "../../models/txHistory";
 export declare function updateTxHistory(txHistory: TxHistoryModel): Promise<TxHistoryModel>;
 export declare function checkCachedHistories(): Promise<boolean>;
 /**

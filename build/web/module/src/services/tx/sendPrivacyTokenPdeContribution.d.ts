@@ -12,6 +12,6 @@ interface ContributionParam {
     tokenName: TokenNameType;
     tokenSymbol: TokenSymbolType;
 }
-export default function sendPrivacyTokenPdeContribution({ accountKeySet, availableNativeCoins, privacyAvailableCoins, nativeFee, privacyFee, pdeContributionPairID, tokenId, tokenName, tokenSymbol, contributedAmount, }: ContributionParam): Promise<import("../../models/txHistory").TxHistoryModel>;
+export default function sendPrivacyTokenPdeContribution({ accountKeySet, availableNativeCoins, privacyAvailableCoins, nativeFee, privacyFee, pdeContributionPairID, tokenId, tokenName, tokenSymbol, contributedAmount, }: ContributionParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendPrivacyTokenPdeContribution.d.ts.map

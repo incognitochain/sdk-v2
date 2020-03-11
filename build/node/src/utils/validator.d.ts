@@ -1,4 +1,3 @@
-declare function isPaymentAddress(paymentAddrStr: string): boolean;
 declare class Validator {
     value: any;
     label: string;
@@ -9,6 +8,7 @@ declare class Validator {
     _onCondition(condition: Function, message: string): this;
     required(message?: string): this;
     string(message?: string): this;
+    function(message?: string): this;
     boolean(message?: string): this;
     number(message?: string): this;
     array(message?: string): this;
@@ -26,4 +26,5 @@ declare class Validator {
     amount(message?: string): this;
     receivers(message?: string): void;
 }
+export default Validator;
 //# sourceMappingURL=validator.d.ts.map

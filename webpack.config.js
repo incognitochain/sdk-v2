@@ -8,6 +8,13 @@ const envProd = require('./env/production.env');
 const isProd = process.env.NODE_ENV === 'production';
 const target = process.env.TARGET || 'all';
 
+const errorCodeLoader = errorFilePath => ({
+  loader: 'errorcode-loader',
+  options: {
+    errorFilePath,
+  }
+});
+
 const getEnv = otherEnv => ({
   __IS_WEB__: false,
   __IS_NODE__: false,
@@ -78,24 +85,28 @@ const baseConfig = {
       // rules for modules (configure loaders, parser options, etc.)
       {
         test: /\.ts?$/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            compiler: 'ttypescript',
-            compilerOptions: {
-              outDir: path.resolve(__dirname, buildDir),
-              plugins: [{ 'transform': 'typescript-transform-paths', 'afterDeclarations': true  }]
-            }
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              compiler: 'ttypescript',
+              compilerOptions: {
+                outDir: path.resolve(__dirname, buildDir),
+                plugins: [{ 'transform': 'typescript-transform-paths', 'afterDeclarations': true  }]
+              }
+            },
           },
-        },
+          errorCodeLoader(`${buildDir}/DevelopmentErrorCode.json`)
+        ],
         exclude: /node_modules/,
       },
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'babel-loader',
-        }
+        use: [
+          'babel-loader',
+          errorCodeLoader(`${buildDir}/DevelopmentErrorCode.json`)
+        ]
       },
       {
         test: /\.wasm$/,

@@ -5,6 +5,7 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import goMethods from '@src/go';
 import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
+import Validator from '@src/utils/validator';
 import { createTx } from './sendPrivacyToken';
 
 interface TokenInfo {
@@ -27,6 +28,13 @@ export default async function initPrivacyToken({
   tokenName,
   supplyAmount
 } : InitParam) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('availableNativeCoins', availableNativeCoins).required();
+  new Validator('nativeFee', nativeFee).required().amount();
+  new Validator('tokenSymbol', tokenSymbol).required().string();
+  new Validator('tokenName', tokenName).required().string();
+  new Validator('supplyAmount', supplyAmount).required().amount();
+
   const usePrivacyForPrivacyToken = false;
   const usePrivacyForNativeToken = true;
   const privacyPaymentInfoList = [

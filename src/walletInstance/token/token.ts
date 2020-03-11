@@ -5,6 +5,7 @@ import { getTotalBalance, getUnspentCoins, getAvailableCoins, getAvailableBalanc
 import { getTxHistoryByPublicKey } from '@src/services/history/txHistory';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendWithdrawReward from '@src/services/tx/sendWithdrawReward';
+import Validator from '@src/utils/validator';
 
 interface NativeTokenParam {
   tokenId: string,
@@ -30,10 +31,14 @@ class Token implements BaseTokenModel {
   }
 
   async getAllOutputCoins(tokenId: TokenIdType) {
+    new Validator('tokenId', tokenId).string();
+    
     return await getAllOutputCoins(this.accountKeySet, tokenId);
   }
 
   async deriveSerialNumbers(tokenId: TokenIdType) {
+    new Validator('tokenId', tokenId).string();
+
     const allCoins = await this.getAllOutputCoins(tokenId);
 
     // return { serialNumberList, coins }
@@ -45,6 +50,8 @@ class Token implements BaseTokenModel {
    * @param tokenId use `null` for native token
    */
   async getAvailableCoins(tokenId: TokenIdType = this.tokenId) {
+    new Validator('tokenId', tokenId).string();
+    
     return getAvailableCoins(this.accountKeySet, tokenId, this.isNativeToken);
   }
 
@@ -53,6 +60,8 @@ class Token implements BaseTokenModel {
    * @param tokenId use `null` for native token
    */
   async getUnspentCoins(tokenId: TokenIdType) {
+    new Validator('tokenId', tokenId).string();
+
     return getUnspentCoins(this.accountKeySet, tokenId);
   }
 
@@ -61,6 +70,8 @@ class Token implements BaseTokenModel {
    * @param tokenId use `null` for native token
    */
   async getAvaiableBalance(tokenId: TokenIdType = this.tokenId) {
+    new Validator('tokenId', tokenId).string();
+
     const availableCoins = await this.getAvailableCoins(tokenId);
     return getAvailableBalance(availableCoins);
   }
@@ -70,6 +81,8 @@ class Token implements BaseTokenModel {
    * @param tokenId use `null` for native token
    */
   async getTotalBalance(tokenId: TokenIdType = this.tokenId) {
+    new Validator('tokenId', tokenId).string();
+
     const unspentCoins = await this.getUnspentCoins(tokenId);
     return getTotalBalance(unspentCoins);
   }
