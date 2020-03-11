@@ -1,12 +1,14 @@
-interface AuthInterface {
-    username: string;
-    password: string;
-}
-export default class RPCHttpService {
-    auth: AuthInterface;
-    url: string;
-    constructor(username: string, password: string);
-    postRequest: (data: any) => Promise<import("axios").AxiosResponse<any>>;
-}
-export {};
+declare const instance: import("axios").AxiosInstance;
+export default instance;
+/**
+ * Document: https://github.com/axios/axios#instance-methodsaxios#request(config)
+    axios#get(url[, config])
+    axios#delete(url[, config])
+    axios#head(url[, config])
+    axios#options(url[, config])
+    axios#post(url[, data[, config]])
+    axios#put(url[, data[, config]])
+    axios#patch(url[, data[, config]])
+    axios#getUri([config])
+ */
 //# sourceMappingURL=http.d.ts.map

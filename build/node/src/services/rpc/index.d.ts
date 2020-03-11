@@ -1,12 +1,9 @@
-import RPCHttpService from "../http";
 import CoinModel from "../../models/coin";
 declare class RpcClient {
-    rpcHttpService: RPCHttpService;
-    constructor(url?: string, user?: string, password?: string);
     getOutputCoin: (paymentAdrr: string, viewingKey?: string, tokenID?: string) => Promise<{
         outCoins: CoinModel[];
     }>;
-    hasSerialNumber: (paymentAddr: string, serialNumberStrs: any, tokenID?: string) => Promise<any>;
+    hasSerialNumber: (paymentAddr: string, serialNumberStrs: any, tokenID?: string) => Promise<boolean[]>;
     hasSNDerivator: (paymentAddr: string, snds: any, tokenID?: any) => Promise<{
         existed: any;
     }>;
@@ -38,6 +35,10 @@ declare class RpcClient {
         isInBlock: any;
         isInMempool: any;
         err: any;
+    } | {
+        isInBlock: boolean;
+        isInMempool: boolean;
+        err?: undefined;
     }>;
     getStakingAmount: (type: any) => Promise<{
         res: number;

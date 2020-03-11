@@ -1,32 +1,49 @@
-import Axios from 'axios';
+import axios from 'axios';
 import { getConfig } from '@src/config';
 
-interface AuthInterface {
-  username: string,
-  password: string
-};
+const TIMEOUT = 20000;
+const instance = axios.create({
+  baseURL: getConfig().chainURL,
+  timeout: TIMEOUT,
+  headers: {
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Access-Control-Allow-Headers': 'Content-Type, Cache-Control, X-Requested-With, X-CSRF-Token, Discourse-Visible, User-Api-Key, User-Api-Client-Id, *',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, PUT, GET, OPTIONS, DELETE',
+  }
+});
 
-export default class RPCHttpService {
-  auth: AuthInterface;
-  url: string;
-  
-  constructor(username: string, password: string) {
-    this.auth = {
-      username: username,
-      password: password,
-    };
+instance.interceptors.response.use(res => {
+  const result = res?.data?.Result;
+  const error = res?.data?.Error;
+
+  if (error) {
+    return Promise.reject(error);
   }
 
-  postRequest = async (data: any) => {
-    const response = await Axios.post(getConfig().chainURL, data, {
-      auth: this.auth, headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        'Access-Control-Allow-Headers': 'Content-Type, Cache-Control, X-Requested-With, X-CSRF-Token, Discourse-Visible, User-Api-Key, User-Api-Client-Id, *',
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, PUT, GET, OPTIONS, DELETE',
-      }
-    });
-    return response;
+  return Promise.resolve(result);
+}, errorData => {
+  const errResponse = errorData?.response;
+
+  // can not get response, alert to user
+  if (errorData?.isAxiosError && !errResponse) {
+    throw new ErrorCode('Send request RPC failed');
   }
-}
+
+  return Promise.reject(errorData);
+});
+
+export default instance;
+
+/**
+ * Document: https://github.com/axios/axios#instance-methodsaxios#request(config)
+    axios#get(url[, config])
+    axios#delete(url[, config])
+    axios#head(url[, config])
+    axios#options(url[, config])
+    axios#post(url[, data[, config]])
+    axios#put(url[, data[, config]])
+    axios#patch(url[, data[, config]])
+    axios#getUri([config])
+ */
