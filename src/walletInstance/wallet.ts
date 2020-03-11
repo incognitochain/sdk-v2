@@ -23,31 +23,45 @@ class Wallet implements WalletModel {
   }
 
   static async restore(encryptedWallet: string, password: string) {
-    new Validator('encryptedWallet', encryptedWallet).required().string();
-    new Validator('password', password).required().string();
-
-    const data: any = await decryptWalletData(encryptedWallet, password);
-    const { masterAccount, name, mnemonic, seed, entropy, passPhrase } = data;
-    const wallet = new Wallet();
-
-    wallet.import(name, passPhrase, mnemonic, entropy, Uint8Array.from(seed), MasterAccount.restoreFromBackupData(masterAccount));
-
-    return wallet;
+    try {
+      new Validator('encryptedWallet', encryptedWallet).required().string();
+      new Validator('password', password).required().string();
+  
+      const data: any = await decryptWalletData(encryptedWallet, password);
+      const { masterAccount, name, mnemonic, seed, entropy, passPhrase } = data;
+      const wallet = new Wallet();
+  
+      wallet.import(name, passPhrase, mnemonic, entropy, Uint8Array.from(seed), MasterAccount.restoreFromBackupData(masterAccount));
+  
+      L.info(`Restored wallet "${name}"`);
+  
+      return wallet;
+    } catch (e) {
+      L.error('Restored wallet failed', e);
+      throw e;
+    }
   }
 
   async init(passPhrase: string, name?: string) {
-    new Validator('passPhrase', passPhrase).required().string();
-    new Validator('name', name).string();
-
-    const { entropy, mnemonic, seed } = initWalletData(passPhrase);
-    this.passPhrase = passPhrase;
-    this.name = name || this.name;
-    this.seed = seed;
-    this.mnemonic = mnemonic;
-    this.entropy = entropy;
-    this.masterAccount = await new MasterAccount('MASTER').init(seed);
-    
-    return this;
+    try {
+      new Validator('passPhrase', passPhrase).required().string();
+      new Validator('name', name).string();
+  
+      const { entropy, mnemonic, seed } = initWalletData(passPhrase);
+      this.passPhrase = passPhrase;
+      this.name = name || this.name;
+      this.seed = seed;
+      this.mnemonic = mnemonic;
+      this.entropy = entropy;
+      this.masterAccount = await new MasterAccount('MASTER').init(seed);
+  
+      L.info(`Initialized new wallet "${this.name}"`);
+  
+      return this;
+    } catch(e) {
+      L.error('Initialized wallet failed', e);
+      throw e;
+    }
   }
 
   import(name: string, passPhrase: string, mnemonic: string, entropy: number[], seed: Uint8Array, masterAccount: MasterAccount) {
@@ -67,18 +81,25 @@ class Wallet implements WalletModel {
   }
 
   backup(password: string) {
-    new Validator('password', password).required().string();
+    try {
+      new Validator('password', password).required().string();
 
-    const data = {
-      masterAccount: this.masterAccount.getBackupData(),
-      name: this.name,
-      mnemonic: this.mnemonic,
-      passPhrase: this.passPhrase,
-      entropy: this.entropy,
-      seed: Array.from(this.seed)
-    };
-
-    return encryptWalletData(data, password);
+      const data = {
+        masterAccount: this.masterAccount.getBackupData(),
+        name: this.name,
+        mnemonic: this.mnemonic,
+        passPhrase: this.passPhrase,
+        entropy: this.entropy,
+        seed: Array.from(this.seed)
+      };
+  
+      L.info('Created wallet backup string successfully');
+  
+      return encryptWalletData(data, password);
+    } catch (e) {
+      L.error('Created wallet backup string failed', e);
+      throw e;
+    }
   }
 }
 

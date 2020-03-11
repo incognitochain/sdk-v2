@@ -1,15 +1,18 @@
-type ConfigName = 'chainURL';
+type ConfigName = 'chainURL' | 'logMethod';
 
 type Config = {
-  [k in ConfigName]: string;
+  logMethod: Function;
+  chainURL: string;
 };
 
 type SetConfigName = {
-  [k in ConfigName]?: string;
+  logMethod?: Function;
+  chainURL?: string;
 };
 
 let config: Config = {
-  chainURL: ENV.CHAIN_URL
+  chainURL: ENV.CHAIN_URL,
+  logMethod: console.log
 };
 
 export function getConfig() {

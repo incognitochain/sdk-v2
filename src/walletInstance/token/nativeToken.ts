@@ -28,57 +28,101 @@ class NativeToken extends Token implements NativeTokenModel {
   }
 
   async transfer(paymentInfoList: PaymentInfoModel[], nativeFee = DEFAULT_NATIVE_FEE) {
-    new Validator('paymentInfoList', paymentInfoList).required();
-    new Validator('nativeFee', nativeFee).required().amount();
-
-    return sendNativeToken({ nativePaymentInfoList: paymentInfoList, nativeFee: nativeFee, accountKeySet: this.accountKeySet, availableCoins: await this.getAvailableCoins() });
+    try {
+      new Validator('paymentInfoList', paymentInfoList).required();
+      new Validator('nativeFee', nativeFee).required().amount();
+  
+      L.info('Native token transfer', { paymentInfoList, nativeFee });
+  
+      const history = await sendNativeToken({ nativePaymentInfoList: paymentInfoList, nativeFee: nativeFee, accountKeySet: this.accountKeySet, availableCoins: await this.getAvailableCoins() });
+      
+      L.info(`Native token transfered successfully with tx id ${history.txId}`);
+  
+      return history;
+    } catch (e) {
+      L.error('Native token transfer failed', e);
+      throw e;
+    }
   }
 
   async requestStaking(rewardReceiverPaymentAddress: string, nativeFee: number) {
-    new Validator('rewardReceiverPaymentAddress', rewardReceiverPaymentAddress).required().string();
-    new Validator('nativeFee', nativeFee).required().amount();
+    try {
+      new Validator('rewardReceiverPaymentAddress', rewardReceiverPaymentAddress).required().string();
+      new Validator('nativeFee', nativeFee).required().amount();
 
-    return sendStakingRequest({
-      candidateAccountKeySet: this.accountKeySet,
-      availableNativeCoins: await this.getAvailableCoins(),
-      nativeFee,
-      rewardReceiverPaymentAddress,
-      autoReStaking: true
-    });
+      L.info('Native token request staking', { rewardReceiverPaymentAddress, nativeFee });
+  
+      const history = await sendStakingRequest({
+        candidateAccountKeySet: this.accountKeySet,
+        availableNativeCoins: await this.getAvailableCoins(),
+        nativeFee,
+        rewardReceiverPaymentAddress,
+        autoReStaking: true
+      });
+  
+      L.info(`Native token sent request staking successfully with tx id ${history.txId}`);
+  
+      return history;
+    } catch (e) {
+      L.error('Native send request staking failed', e);
+      throw e;
+    }
   }
 
   async pdeContribution(pdeContributionPairID: string, contributedAmount: number, nativeFee: number) {
-    new Validator('pdeContributionPairID', pdeContributionPairID).required().string();
-    new Validator('contributedAmount', contributedAmount).required().amount();
-    new Validator('nativeFee', nativeFee).required().amount();
+    try {
+      new Validator('pdeContributionPairID', pdeContributionPairID).required().string();
+      new Validator('contributedAmount', contributedAmount).required().amount();
+      new Validator('nativeFee', nativeFee).required().amount();
+  
+      L.info('Native token sent PDE contribution', { pdeContributionPairID, contributedAmount, nativeFee });
 
-    return sendNativeTokenPdeContribution({
-      accountKeySet: this.accountKeySet,
-      availableNativeCoins: await this.getAvailableCoins(),
-      nativeFee,
-      pdeContributionPairID,
-      tokenId: this.tokenId,
-      contributedAmount
-    });
+      const history = await sendNativeTokenPdeContribution({
+        accountKeySet: this.accountKeySet,
+        availableNativeCoins: await this.getAvailableCoins(),
+        nativeFee,
+        pdeContributionPairID,
+        tokenId: this.tokenId,
+        contributedAmount
+      });
+  
+      L.info(`Native token sent PDE contribution successfully with tx id ${history.txId}`);
+  
+      return history;
+    } catch (e) {
+      L.error('Native token sent PDE contribution failed', e);
+      throw e;
+    }
   }
 
   async requestTrade(tokenIdBuy: TokenIdType, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, tradingFee: number) {
-    new Validator('tokenIdBuy', tokenIdBuy).required().string();
-    new Validator('sellAmount', sellAmount).required().amount();
-    new Validator('minimumAcceptableAmount', minimumAcceptableAmount).required().amount();
-    new Validator('nativeFee', nativeFee).required().amount();
-    new Validator('tradingFee', tradingFee).required().amount();
+    try {
+      new Validator('tokenIdBuy', tokenIdBuy).required().string();
+      new Validator('sellAmount', sellAmount).required().amount();
+      new Validator('minimumAcceptableAmount', minimumAcceptableAmount).required().amount();
+      new Validator('nativeFee', nativeFee).required().amount();
+      new Validator('tradingFee', tradingFee).required().amount();
+  
+      L.info('Native token send trade request', {tokenIdBuy, sellAmount, minimumAcceptableAmount, nativeFee, tradingFee});
 
-    return sendNativeTokenPdeTradeRequest({
-      accountKeySet: this.accountKeySet,
-      availableNativeCoins: await this.getAvailableCoins(),
-      nativeFee,
-      tradingFee,
-      tokenIdBuy,
-      tokenIdSell: this.tokenId,
-      sellAmount,
-      minimumAcceptableAmount
-    });
+      const history = await sendNativeTokenPdeTradeRequest({
+        accountKeySet: this.accountKeySet,
+        availableNativeCoins: await this.getAvailableCoins(),
+        nativeFee,
+        tradingFee,
+        tokenIdBuy,
+        tokenIdSell: this.tokenId,
+        sellAmount,
+        minimumAcceptableAmount
+      });
+  
+      L.info(`Native token sent trade request successfully with tx id ${history.txId}`);
+  
+      return history;
+    } catch (e) {
+      L.error('Native token sent trade request failed', e);
+      throw e;
+    }
   }
 }
 

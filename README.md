@@ -122,6 +122,7 @@ incognitoJs.storageService.implement({
 
 ### Config param <a name="configparam"></a>
 * chainURL: string
+* logMethod: (message: string) => void (pass `null` to disable log)
 
 #### Go method name <a name="gomethodparam"></a>
 * deriveSerialNumber: (data: string) => string;

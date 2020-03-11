@@ -64,36 +64,43 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   async addAccount(name: string, shardId?: number) {
-    new Validator('name', name).required().string();
-    new Validator('shardId', shardId).shardId();
+    try {
+      new Validator('name', name).required().string();
+      new Validator('shardId', shardId).shardId();
 
-    if (this.getAccountByName(name)) {
-      throw new ErrorCode(`Account with name ${name} was existed`);
+      L.info('Add new account', { name, shardId });
+  
+      if (this.getAccountByName(name)) {
+        throw new ErrorCode(`Account with name ${name} was existed`);
+      }
+  
+      const lastChildAccountIndex = _.findLastIndex(this.child, account => !account.isImport && !!account.key.childNumber);
+      const lastChildAccount = lastChildAccountIndex !== -1 && this.child[lastChildAccountIndex];
+      let newIndex = lastChildAccount ? new bn(lastChildAccount.key.childNumber).add(new bn(1)).toNumber() : 0;
+      let keyData, lastByte;
+      do {
+        keyData = await generateChildKeyData(newIndex, this.key.depth, this.key.chainCode);
+        const publicKeyBytes = keyData.keySet.paymentAddress.publicKeyBytes;
+  
+        lastByte = publicKeyBytes[publicKeyBytes.length - 1];
+        newIndex += 1;
+      } while(typeof shardId === 'number' && getShardIDFromLastByte(lastByte) !== shardId);
+  
+      const childAccountKeyWallet = new KeyWalletModel();
+  
+      childAccountKeyWallet.chainCode = keyData.chainCode;
+      childAccountKeyWallet.childNumber = keyData.childNumber;
+      childAccountKeyWallet.depth = keyData.depth;
+      childAccountKeyWallet.keySet = keyData.keySet;
+  
+      const account = new Account(name, childAccountKeyWallet, false);
+      this.child.push(account);
+  
+      return account;
+    } catch (e) {
+      L.error('Add new account failed', e)
+      throw e;
     }
-
-    const lastChildAccountIndex = _.findLastIndex(this.child, account => !account.isImport && !!account.key.childNumber);
-    const lastChildAccount = lastChildAccountIndex !== -1 && this.child[lastChildAccountIndex];
-    let newIndex = lastChildAccount ? new bn(lastChildAccount.key.childNumber).add(new bn(1)).toNumber() : 0;
-    let keyData, lastByte;
-    do {
-      keyData = await generateChildKeyData(newIndex, this.key.depth, this.key.chainCode);
-      const publicKeyBytes = keyData.keySet.paymentAddress.publicKeyBytes;
-
-      lastByte = publicKeyBytes[publicKeyBytes.length - 1];
-      newIndex += 1;
-    } while(typeof shardId === 'number' && getShardIDFromLastByte(lastByte) !== shardId);
-
-    const childAccountKeyWallet = new KeyWalletModel();
-
-    childAccountKeyWallet.chainCode = keyData.chainCode;
-    childAccountKeyWallet.childNumber = keyData.childNumber;
-    childAccountKeyWallet.depth = keyData.depth;
-    childAccountKeyWallet.keySet = keyData.keySet;
-
-    const account = new Account(name, childAccountKeyWallet, false);
-    this.child.push(account);
-
-    return account;
   }
 
   removeAccount(name: string) {
@@ -107,34 +114,41 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   }
 
   async importAccount(name: string, privateKey: string) {
-    new Validator('name', name).required().string();
-    new Validator('privateKey', privateKey).required().string();
-
-    if (this.getAccountByName(name)) {
-      throw new ErrorCode(`Account with name ${name} was existed`);
-    }
-
-    if (this.getAccountByPrivateKey(privateKey)) {
-      throw new ErrorCode('Account with this private key was existed');
-    }
-
-    const { key, type } = base58CheckDeserialize(privateKey);
-    if (type === 'PRIVATE_KEY') {
-      const privateKeyData = <{[key: string]: any}>key;
-      const childAccountKeyWallet = new KeyWalletModel();
-      const keySet = await getKeySetFromPrivateKeyBytes((<PrivateKeyModel>privateKeyData.privateKey).privateKeyBytes);
-      
-      childAccountKeyWallet.chainCode = <Uint8Array>privateKeyData.chainCode;
-      childAccountKeyWallet.childNumber = <Uint8Array>privateKeyData.childNumber;
-      childAccountKeyWallet.depth = <number>privateKeyData.depth;
-      childAccountKeyWallet.keySet = keySet;
-      
-      const account = new Account(name, childAccountKeyWallet, true);
-      this.child.push(account);
-
-      return account;
-    } else {
-      throw new ErrorCode('Import account failed, private key is invalid');
+    try {
+      new Validator('name', name).required().string();
+      new Validator('privateKey', privateKey).required().string();
+  
+      L.info('Import account', { name, privateKey: privateKey.substring(0, 10) });
+  
+      if (this.getAccountByName(name)) {
+        throw new ErrorCode(`Account with name ${name} was existed`);
+      }
+  
+      if (this.getAccountByPrivateKey(privateKey)) {
+        throw new ErrorCode('Account with this private key was existed');
+      }
+  
+      const { key, type } = base58CheckDeserialize(privateKey);
+      if (type === 'PRIVATE_KEY') {
+        const privateKeyData = <{[key: string]: any}>key;
+        const childAccountKeyWallet = new KeyWalletModel();
+        const keySet = await getKeySetFromPrivateKeyBytes((<PrivateKeyModel>privateKeyData.privateKey).privateKeyBytes);
+        
+        childAccountKeyWallet.chainCode = <Uint8Array>privateKeyData.chainCode;
+        childAccountKeyWallet.childNumber = <Uint8Array>privateKeyData.childNumber;
+        childAccountKeyWallet.depth = <number>privateKeyData.depth;
+        childAccountKeyWallet.keySet = keySet;
+        
+        const account = new Account(name, childAccountKeyWallet, true);
+        this.child.push(account);
+  
+        return account;
+      } else {
+        throw new ErrorCode('Import account failed, private key is invalid');
+      }
+    } catch (e) {
+      L.error('Import account failed', e);
+      throw e;
     }
   }
 

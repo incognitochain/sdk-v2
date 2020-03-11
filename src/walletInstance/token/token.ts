@@ -73,7 +73,11 @@ class Token implements BaseTokenModel {
     new Validator('tokenId', tokenId).string();
 
     const availableCoins = await this.getAvailableCoins(tokenId);
-    return getAvailableBalance(availableCoins);
+    const balanceBN = await getAvailableBalance(availableCoins);
+
+    L.info(`Token ${this.tokenId} load available balance = ${balanceBN.toNumber()}`);
+
+    return balanceBN;
   }
 
   /**
@@ -84,7 +88,11 @@ class Token implements BaseTokenModel {
     new Validator('tokenId', tokenId).string();
 
     const unspentCoins = await this.getUnspentCoins(tokenId);
-    return getTotalBalance(unspentCoins);
+    const balanceBN = await getTotalBalance(unspentCoins);
+
+    L.info(`Token ${this.tokenId} load total balance = ${balanceBN.toNumber()}`);
+
+    return balanceBN;
   }
 
   async getTxHistories() {
@@ -95,11 +103,20 @@ class Token implements BaseTokenModel {
   transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: number, privacyFee?: number) {}
 
   async withdrawNodeReward() {
-    return sendWithdrawReward({
-      accountKeySet: this.accountKeySet,
-      availableNativeCoins: await this.getAvailableCoins(),
-      tokenId: this.tokenId,
-    });
+    try {
+      const history = await sendWithdrawReward({
+        accountKeySet: this.accountKeySet,
+        availableNativeCoins: await this.getAvailableCoins(),
+        tokenId: this.tokenId,
+      });
+  
+      L.info(`Token ${this.tokenId} send withdraw node reward request successfully with tx id ${history.txId}`);
+  
+      return history;
+    } catch (e) {
+      L.error(`Token ${this.tokenId} sent withdraw node reward failed`, e);
+      throw e;
+    }
   }
 }
 

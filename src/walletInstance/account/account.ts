@@ -86,27 +86,36 @@ class Account extends BaseAccount implements AccountModelInterface {
   }
   
   async issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee = DEFAULT_NATIVE_FEE } : IssuePrivacyTokenInterface) {
-    const missingError = 'Please make sure your params are following format { tokenName, tokenSymbol, supplyAmount, nativeTokenFee }';
-    new Validator('tokenName', tokenName).required(missingError).string();
-    new Validator('tokenSymbol', tokenSymbol).required(missingError).string();
-    new Validator('supplyAmount', supplyAmount).required(missingError).amount();
-    new Validator('nativeTokenFee', nativeTokenFee).required(missingError).amount();
+    try {
+      const missingError = 'Please make sure your params are following format { tokenName, tokenSymbol, supplyAmount, nativeTokenFee }';
+      new Validator('tokenName', tokenName).required(missingError).string();
+      new Validator('tokenSymbol', tokenSymbol).required(missingError).string();
+      new Validator('supplyAmount', supplyAmount).required(missingError).amount();
+      new Validator('nativeTokenFee', nativeTokenFee).required(missingError).amount();
 
-    const availableCoins = await this.nativeToken.getAvailableCoins();
-    
-    const txHistory = await initPrivacyToken({
-      accountKeySet: this.key.keySet,
-      availableNativeCoins: availableCoins,
-      nativeFee: nativeTokenFee,
-      tokenName,
-      tokenSymbol,
-      supplyAmount
-    });
+      L.info('Issued token', { tokenName, tokenSymbol, supplyAmount, nativeTokenFee });
+  
+      const availableCoins = await this.nativeToken.getAvailableCoins();
+      
+      const txHistory = await initPrivacyToken({
+        accountKeySet: this.key.keySet,
+        availableNativeCoins: availableCoins,
+        nativeFee: nativeTokenFee,
+        tokenName,
+        tokenSymbol,
+        supplyAmount
+      });
+  
+      // follow this new token
+      this.followTokenById(txHistory.privacyTokenInfo.tokenId);
+      
+      L.info(`Issued token successfully with tx id ${txHistory.txId}`);
 
-    // follow this new token
-    this.followTokenById(txHistory.privacyTokenInfo.tokenId);
-
-    return txHistory;
+      return txHistory;
+    } catch (e) {
+      L.error('Issue token failed', e);
+      throw e;
+    }
   }
 
   /**

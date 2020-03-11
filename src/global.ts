@@ -1,7 +1,8 @@
 export {};
 
 interface ENV {
-  CHAIN_URL: string
+  CHAIN_URL: string,
+  IS_PROD: boolean
 };
 
 declare global {
@@ -16,6 +17,15 @@ declare global {
 
   class ErrorCode {
     constructor(message: string);
+  }
+
+  /**
+   * Log
+   */
+  const L : {
+    info: (message: string, info?: any) => void;
+    error: (message: string, error?: any) => void;
+    warning: (message: string) => void;
   }
 
   const __IS_WEB__: boolean;

@@ -1,2 +1,5 @@
-declare function log(...params: any[]): void;
+/**
+ * Extend Javascript console.* methods
+ */
+export {};
 //# sourceMappingURL=log.d.ts.map

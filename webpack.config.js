@@ -43,7 +43,7 @@ const optimization = {
         warnings: false,
         compress: {
           comparisons: false,
-          pure_funcs: ['console.log', 'console.info'],
+          drop_console: true
         },
         parse: {},
         mangle: getDataByTarget(true, false, true),
