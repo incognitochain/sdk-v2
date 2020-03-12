@@ -12,7 +12,7 @@ import {
   ChainCodeSize,
 } from '@src/constants/wallet';
 import { addChecksumToBytes } from './utils';
-import { checkEncode, checkDecode, checkSumFirst4Bytes } from '@src/utils/base58';
+import { checkEncode, checkSumFirst4Bytes } from '@src/utils/base58';
 import { ENCODE_VERSION, ED25519_KEY_SIZE } from '@src/constants/constants';
 import PrivateKeyModel from '@src/models/key//privateKey';
 import PaymentAddressKeyModel from '@src/models/key/paymentAddress';
@@ -22,6 +22,7 @@ import CryptoJS from 'crypto-js';
 import { wordArrayToByteArray, byteArrayToWordArray } from '@src/services/key/utils';
 import KeyWalletModel from '@src/models/key/keyWallet';
 import Validator from '@src/utils/validator';
+import { getKeyBytes, extractPaymentAddressKey, extractPrivateKey, extractViewingKey } from '@src/utils/key';
 
 type AllKeyModelType = PrivateKeyModel | PaymentAddressKeyModel | ViewingKeyModel;
 type KeyTypeString = 'PRIVATE_KEY' | 'PAYMENT_ADDRESS' | 'PUBLIC_KEY' | 'VIEWING_KEY';
@@ -119,10 +120,7 @@ export function deserializePrivateKeyBytes(bytes: KeyBytes) : {
 } {
   new Validator('bytes', bytes).required();
 
-  const depth = bytes[1];
-  const childNumber = bytes.slice(2, 6);
-  const chainCode = bytes.slice(6, 38);
-  const keyLength = bytes[38];
+  const { depth, childNumber, chainCode, keyLength} = extractPrivateKey(bytes);
 
   const privateKey = new PrivateKeyModel(bytes.slice(39, 39 + keyLength));
 
@@ -141,11 +139,10 @@ export function deserializePaymentAddressKeyBytes(bytes: KeyBytes) : PaymentAddr
 
   const paymentAddress = new PaymentAddressKeyModel();
 
-  const publicKeyLength = bytes[1];
-  paymentAddress.publicKeyBytes = bytes.slice(2, 2 + publicKeyLength);
+  const { publicKeyBytes, transmissionKeyBytes } = extractPaymentAddressKey(bytes);
 
-  const transmisionKeyLength = bytes[publicKeyLength + 2];
-  paymentAddress.transmissionKeyBytes = bytes.slice(publicKeyLength + 3, publicKeyLength + 3 + transmisionKeyLength);
+  paymentAddress.publicKeyBytes = publicKeyBytes;
+  paymentAddress.transmissionKeyBytes = transmissionKeyBytes;
 
   deserializeKeyValidate(bytes);
 
@@ -157,11 +154,10 @@ export function deserializeViewingKeyBytes(bytes: KeyBytes) : ViewingKeyModel{
 
   const viewingKey = new ViewingKeyModel();
 
-  const publicKeyLength = bytes[1];
-  viewingKey.publicKeyBytes = bytes.slice(2, 2 + publicKeyLength);
+  const { publicKeyBytes, receivingKeyBytes } = extractViewingKey(bytes);
 
-  const receivingKeyLength = bytes[publicKeyLength + 2];
-  viewingKey.receivingKeyBytes = bytes.slice(publicKeyLength + 3, publicKeyLength + 3 + receivingKeyLength);
+  viewingKey.publicKeyBytes = publicKeyBytes;
+  viewingKey.receivingKeyBytes = receivingKeyBytes;
   
   deserializeKeyValidate(bytes);
 
@@ -189,18 +185,10 @@ export function base58CheckSerialize(key: AllKeyModelType, depth: KeyWalletDepth
   return checkEncode(serializedKey, ENCODE_VERSION);
 }
 
-export function getKeyTypeFromKeyBytes(keyBytes: KeyBytes) {
-  new Validator('keyBytes', keyBytes).required();
-
-  const keyType = keyBytes[0];
-  return keyType;
-}
-
 export function base58CheckDeserialize(keyStr: string) {
   new Validator('keyStr', keyStr).required().string();
 
-  let keyBytes = checkDecode(keyStr).bytesDecoded;
-  const keyType = getKeyTypeFromKeyBytes(keyBytes);
+  const { keyBytes, keyType } = getKeyBytes(keyStr);
 
   let type: KeyTypeString;
   let key;

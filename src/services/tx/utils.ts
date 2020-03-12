@@ -71,7 +71,7 @@ async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinMo
   new Validator('paymentAddress', paymentAddress).required().string();
   new Validator('coinsToSpend', coinsToSpend).required().array();
   new Validator('usePrivacy', usePrivacy).required().boolean();
-  new Validator('tokenId', tokenId).required().string();
+  new Validator('tokenId', tokenId).string();
 
   let commitmentIndices = [];
   let myCommitmentIndices = [];

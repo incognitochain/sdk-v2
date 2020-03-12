@@ -1,12 +1,12 @@
 type ConfigName = 'chainURL' | 'logMethod';
 
 type Config = {
-  logMethod: Function;
+  logMethod: (message: string) => void;
   chainURL: string;
 };
 
 type SetConfigName = {
-  logMethod?: Function;
+  logMethod?: (message: string) => void;
   chainURL?: string;
 };
 

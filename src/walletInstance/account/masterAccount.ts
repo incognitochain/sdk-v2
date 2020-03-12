@@ -116,9 +116,9 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   async importAccount(name: string, privateKey: string) {
     try {
       new Validator('name', name).required().string();
-      new Validator('privateKey', privateKey).required().string();
+      new Validator('privateKey', privateKey).required().privateKey();
   
-      L.info('Import account', { name, privateKey: privateKey.substring(0, 10) });
+      L.info('Import account', { name, privateKey: `${privateKey.substring(0, 15)}...` });
   
       if (this.getAccountByName(name)) {
         throw new ErrorCode(`Account with name ${name} was existed`);

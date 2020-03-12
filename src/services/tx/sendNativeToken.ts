@@ -60,7 +60,7 @@ export async function createTx({
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
   new Validator('nativeTxInput', nativeTxInput).required();
-  new Validator('nativePaymentInfoList', nativePaymentInfoList).required();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList).required().paymentInfoList();
   new Validator('privateKeySerialized', privateKeySerialized).required().string();
   new Validator('usePrivacyForNativeToken', usePrivacyForNativeToken).required().boolean();
   new Validator('initTxMethod', initTxMethod).required();
@@ -97,6 +97,11 @@ export async function createTx({
 }
 
 export default async function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins } : SendParam) {
+  new Validator('accountKeySet', accountKeySet).required();
+  new Validator('availableCoins', availableCoins).required();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList).required().paymentInfoList();
+  new Validator('nativeFee', nativeFee).required().amount();
+
   const usePrivacyForNativeToken = true;
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTokenFeeBN = toBNAmount(nativeFee);

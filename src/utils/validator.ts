@@ -1,18 +1,34 @@
 // TODO: Update it
 
-function isPaymentAddress(paymentAddrStr: string) {
-  return !!paymentAddrStr;
-  // try {
-  //   const key = KeyWallet.base58CheckDeserialize(paymentAddrStr);
-  //   const paymentAddressObj = key.KeySet.PaymentAddress || {};
-  //   if (paymentAddressObj.Pk.length === 32 && paymentAddressObj.Tk.length === 32) {
-  //     return true;
-  //   }
-  // } catch (e) {
-  //   return false;
-  // }
+import { getKeyBytes } from "./key";
+import { PaymentAddressType, PriKeyType } from "@src/constants/wallet";
 
-  // return false;
+function isPaymentAddress(paymentAddrStr: string) {
+  try {
+    const { keyType } = getKeyBytes(paymentAddrStr);
+
+    if (keyType === PaymentAddressType) {
+      return true;
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return false;
+}
+
+function isPrivateKey(privateKeyStr: string) {
+  try {
+    const { keyType } = getKeyBytes(privateKeyStr);
+
+    if (keyType === PriKeyType) {
+      return true;
+    }
+  } catch (e) {
+    return false;
+  }
+
+  return false;
 }
 
 
@@ -83,20 +99,15 @@ class Validator {
   }
   
   paymentAddress(message = 'Invalid payment address') {
-    return this._onCondition(() => isPaymentAddress(this.value), message);
+    return this._onCondition(() => this.string() && isPaymentAddress(this.value), message);
   }
 
   privateKey(message = 'Invalid private key') {
-    return this._onCondition(() => this.string(), message);
+    return this._onCondition(() => this.string() && isPrivateKey(this.value), message);
   }
 
   shardId(message = 'Shard ID must be between 0 to 7') {
     return this._onCondition(() => this.intergerNumber() && this.inList([0, 1, 2, 3, 4, 5, 6, 7]), message);
-  }
-
-  // TODO: Update it
-  accountWallet(message = 'Invalid account wallet') {
-    return this._onCondition(() => !!this.value, message);
   }
   
   /**
@@ -105,22 +116,23 @@ class Validator {
    * @param {string} message error message
    */
   amount(message = 'Invalid amount') {
-    return this._onCondition(() => this.intergerNumber(), message);
+    return this._onCondition(() => (this.value >= 0 && this.intergerNumber()), message);
   }
 
-  receivers(message = 'Invalid receivers, must be array of receiver [receiverAddress, receiverAmount] (max 30 receivers)') {
-    // return this._onCondition(() => {
-    //   if (!(this.value instanceof Array) || this.value.length === 0 || this.length > 30) return false;
-    //   return this.value.every(receiver => {
-    //     new Validator('receiver', receiver).required().array();
+  paymentInfoList(message = 'Invalid paymentInfoList, must be array of payment info "{ paymentAddressStr: string, amount: number, message: string }" (max 30 payment info)') {
+    return this._onCondition(() => {
+      if (!(this.value instanceof Array) || this.value.length === 0 || this.value.length > 30) return false;
+      return this.value.every(paymentInfo => {
+        new Validator('payment info', paymentInfo).required();
 
-    //     const [paymentAddress, amount] = receiver;
+        const { paymentAddressStr, amount, message } = paymentInfo;
 
-    //     new Validator('receiver paymentAddress', paymentAddress).required().paymentAddress();
-    //     new Validator('receiver amount', amount).required().amount();
-    //     return true;
-    //   });
-    // }, message);
+        new Validator('payment info paymentAddressStr', paymentAddressStr).required().paymentAddress();
+        new Validator('payment info amount', amount).required().amount();
+        new Validator('payment info message', message).required().string();
+        return true;
+      });
+    }, message);
   }
 }
 

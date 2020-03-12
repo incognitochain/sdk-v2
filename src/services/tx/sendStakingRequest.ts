@@ -27,7 +27,7 @@ export default async function sendStakingRequest({
   autoReStaking = true
 } : StakingParam) {
   new Validator('candidateAccountKeySet', candidateAccountKeySet).required();
-  new Validator('rewardReceiverPaymentAddress', rewardReceiverPaymentAddress).required().string();
+  new Validator('rewardReceiverPaymentAddress', rewardReceiverPaymentAddress).required().paymentAddress();
   new Validator('availableNativeCoins', availableNativeCoins).required();
   new Validator('nativeFee', nativeFee).required().amount();
   new Validator('autoReStaking', autoReStaking).required().boolean();

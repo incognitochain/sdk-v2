@@ -17,14 +17,13 @@ declare class Validator {
     paymentAddress(message?: string): this;
     privateKey(message?: string): this;
     shardId(message?: string): this;
-    accountWallet(message?: string): this;
     /**
      *
      * @param {number} value amount in nano (must be an integer number)
      * @param {string} message error message
      */
     amount(message?: string): this;
-    receivers(message?: string): void;
+    paymentInfoList(message?: string): this;
 }
 export default Validator;
 //# sourceMappingURL=validator.d.ts.map

@@ -20,7 +20,7 @@
     "test:node": "node sample/test-node.js",
     "stats": "TARGET='node' webpack --json > stats.json"
   },
-  "author": "vuongdao@autonomous.nyc",
+  "author": "vuong@autonomous.nyc",
   "license": "ISC",
   "dependencies": {
     "@types/base64-js": "^1.2.5",

@@ -1,9 +1,9 @@
 declare type Config = {
-    logMethod: Function;
+    logMethod: (message: string) => void;
     chainURL: string;
 };
 declare type SetConfigName = {
-    logMethod?: Function;
+    logMethod?: (message: string) => void;
     chainURL?: string;
 };
 export declare function getConfig(): Config;
