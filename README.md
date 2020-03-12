@@ -357,7 +357,7 @@ const balance = balanceBN.toNumber();
 ### PaymentInfoModel <a name='api_paymentinfomodel'></a>
 |Public Property|Type|Default value|Description|
 |----------|:-------------:|------:|------:|
-|paymentAddress|string|||
+|paymentAddressStr|string|||
 |amount|number||||
 |message|string|||
 

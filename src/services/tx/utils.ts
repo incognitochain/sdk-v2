@@ -62,9 +62,9 @@ export function toBNAmount(amount: number) {
  * @param paymentInfoList 
  */
 export function getTotalAmountFromPaymentList(paymentInfoList: PaymentInfoModel[]) : bn {
-  new Validator('paymentInfoList', paymentInfoList).required().array();
+  new Validator('paymentInfoList', paymentInfoList).paymentInfoList();
 
-  return paymentInfoList.reduce((totalAmount: bn, paymentInfo: PaymentInfoModel) => totalAmount.add(new bn(paymentInfo.amount)), new bn(0));
+  return paymentInfoList?.reduce((totalAmount: bn, paymentInfo: PaymentInfoModel) => totalAmount.add(new bn(paymentInfo.amount)), new bn(0)) || new bn(0);
 }
 
 async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinModel[], usePrivacy: boolean, tokenId?: TokenIdType) {
@@ -219,13 +219,13 @@ export async function initTx(handler: Function, param: object) {
 export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]) {
   new Validator('totalAmountToTransferBN', totalAmountToTransferBN).required();
   new Validator('totalAmountToSpendBN', totalAmountToSpendBN).required();
-  new Validator('paymentInfoList', paymentInfoList).required().array();
+  new Validator('paymentInfoList', paymentInfoList).paymentInfoList();
 
   if (totalAmountToSpendBN.lt(totalAmountToTransferBN)) {
     throw new ErrorCode('Amount uses to spend must larger than or equal amount uses to transfer');
   }
 
-  let numberOutput = paymentInfoList.length;
+  let numberOutput = paymentInfoList?.length || 0;
   if (totalAmountToSpendBN.gt(totalAmountToTransferBN)) {
     numberOutput++;
   }
@@ -252,7 +252,7 @@ export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountT
 }
 
 export function encryptPaymentMessage(paymentInfoList: PaymentInfoModel[]) {
-  new Validator('paymentInfoList', paymentInfoList).required().array();
+  new Validator('paymentInfoList', paymentInfoList).paymentInfoList();
 
   // TODO
   return paymentInfoList;

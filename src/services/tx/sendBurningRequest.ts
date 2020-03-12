@@ -65,7 +65,7 @@ export default async function sendBurningRequest({
 
   const usePrivacyForNativeToken = true;
   const usePrivacyForPrivacyToken = false;
-  const nativePaymentInfoList: PaymentInfoModel[] = [];
+  const nativePaymentInfoList: PaymentInfoModel[] = null;
   const outchainAddressParsed = parseOutchainAddress(outchainAddress);
   const burningAddress = await getBurningAddress();
   const privacyPaymentInfoList = [

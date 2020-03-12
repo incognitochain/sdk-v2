@@ -45,7 +45,7 @@ export default async function initPrivacyToken({
     })
   ];
   const tokenId = <string>'';
-  const nativePaymentInfoList = <PaymentInfoModel[]>[];
+  const nativePaymentInfoList = <PaymentInfoModel[]>null;
   const nativeTokenFeeBN = toBNAmount(nativeFee);
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const privacyTokenFeeBN = toBNAmount(0);

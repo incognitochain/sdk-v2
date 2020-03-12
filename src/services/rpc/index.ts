@@ -1,4 +1,4 @@
-import httpService from '@src/services/http';
+import httpService from '@src/services/rpc/rpcHttp';
 import { checkDecode, checkEncode } from '@src/utils/base58';
 import { stringToBytes, bytesToString } from '@src/privacy/utils';
 import { ENCODE_VERSION } from '@src/constants/constants';

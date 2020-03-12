@@ -1,13 +1,23 @@
 const incognito = require('../build/node');
 
+const logTask = {
+  success: [],
+  failed: [],
+};
 
 async function section(label, f) {
   if (typeof f === 'function') {
-    console.time(label);
-    console.log(`=========\t${label}\t=========`);
-    await f();
-    console.timeEnd(label);
-    console.log('\n\n');
+    try {
+      console.time(label);
+      console.log(`=========\t${label}\t=========`);
+      await f();
+      console.timeEnd(label);
+      console.log('\n\n');
+
+      logTask.success.push(label);
+    } catch(e) {
+      logTask.failed.push(label);
+    }
   }
 }
 
@@ -77,18 +87,18 @@ async function main() {
             console.log(await account.getFollowingPrivacyToken());
           });
 
-          await section('TRANSFER PRIVACY TOKEN', async () => {
-            const token = await account.getFollowingPrivacyToken('8fb58c65541b62a3eb8d99f62f4a9e2f8eaf99b9860f566674b3989e521594b2');
-            if (token instanceof incognito.PrivacyTokenInstance) {
-              console.log(await token.transfer([
-                {
-                  paymentAddressStr: newAccount.key.keySet.paymentAddressKeySerialized,
-                  amount: 10,
-                  message: ''
-                }
-              ], 10, 0));
-            }
-          });
+          // await section('TRANSFER PRIVACY TOKEN', async () => {
+          //   const token = await account.getFollowingPrivacyToken('8fb58c65541b62a3eb8d99f62f4a9e2f8eaf99b9860f566674b3989e521594b2');
+          //   if (token instanceof incognito.PrivacyTokenInstance) {
+          //     console.log(await token.transfer([
+          //       {
+          //         paymentAddressStr: newAccount.key.keySet.paymentAddressKeySerialized,
+          //         amount: 10,
+          //         message: ''
+          //       }
+          //     ], 10, 0));
+          //   }
+          // });
 
           await section('ACCOUNT UNFOLLOW TOKEN', async () => {
             account.unfollowTokenById('8fb58c65541b62a3eb8d99f62f4a9e2f8eaf99b9860f566674b3989e521594b2');
@@ -96,9 +106,9 @@ async function main() {
           });
         });
 
-        // await section('ACCOUNT ISSUE NEW TOKEN', async () => {
-        //   console.log(await account.issuePrivacyToken({ tokenName: 'TETS', tokenSymbol: 'TTT',supplyAmount: 1000000, nativeTokenFee: 10 }));
-        // });
+        await section('ACCOUNT ISSUE NEW TOKEN', async () => {
+          console.log(await account.issuePrivacyToken({ tokenName: 'TETS', tokenSymbol: 'TTT',supplyAmount: 1000000, nativeTokenFee: 10 }));
+        });
 
         await section('ACCOUNT GET REWARDS', async () => {
           console.log(await account.getNodeRewards());
@@ -127,6 +137,9 @@ async function main() {
         await wallet.masterAccount.removeAccount('Imported acc');
       });
     });
+
+    console.log('SUCCESS TASKS:', logTask.success.join(', '));
+    console.log('FAILED TASKS:', logTask.failed.join(', '));
   } else {
     throw new Error('Incognito module load failed');
   }

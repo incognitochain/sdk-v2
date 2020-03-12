@@ -12,14 +12,14 @@ interface SendParam extends TokenInfo {
     accountKeySet: AccountKeySetModel;
     nativeAvailableCoins: CoinModel[];
     privacyAvailableCoins: CoinModel[];
-    nativePaymentInfoList: PaymentInfoModel[];
+    nativePaymentInfoList?: PaymentInfoModel[];
     privacyPaymentInfoList: PaymentInfoModel[];
     nativeFee: number;
     privacyFee: number;
 }
 interface CreateTxParam extends TokenInfo {
     nativeTxInput: TxInputType;
-    nativePaymentInfoList: PaymentInfoModel[];
+    nativePaymentInfoList?: PaymentInfoModel[];
     nativeTokenFeeBN: bn;
     privacyTxInput: TxInputType;
     privacyPaymentInfoList: PaymentInfoModel[];

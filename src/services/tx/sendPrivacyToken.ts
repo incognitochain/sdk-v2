@@ -22,7 +22,7 @@ interface SendParam extends TokenInfo {
   accountKeySet: AccountKeySetModel,
   nativeAvailableCoins: CoinModel[],
   privacyAvailableCoins: CoinModel[],
-  nativePaymentInfoList: PaymentInfoModel[],
+  nativePaymentInfoList?: PaymentInfoModel[],
   privacyPaymentInfoList: PaymentInfoModel[],
   nativeFee: number,
   privacyFee: number,
@@ -30,7 +30,7 @@ interface SendParam extends TokenInfo {
 
 interface CreateTxParam  extends TokenInfo {
   nativeTxInput: TxInputType,
-  nativePaymentInfoList: PaymentInfoModel[],
+  nativePaymentInfoList?: PaymentInfoModel[],
   nativeTokenFeeBN: bn,
   privacyTxInput: TxInputType,
   privacyPaymentInfoList: PaymentInfoModel[],
@@ -97,7 +97,7 @@ export async function createTx({
   customExtractInfoFromInitedTxMethod,
 } : CreateTxParam) {
   new Validator('nativeTxInput', nativeTxInput).required();
-  new Validator('nativePaymentInfoList', nativePaymentInfoList).required().paymentInfoList();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList).paymentInfoList();
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
   new Validator('privacyTxInput', privacyTxInput).required();
@@ -133,7 +133,7 @@ export async function createTx({
   const paramInitTx = {
     privacyTokenParam,
     senderSK: privateKeySerialized,
-    paramPaymentInfos: nativePaymentInfoList,
+    paramPaymentInfos: nativePaymentInfoList || [],
     inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
     fee: nativeTokenFeeBN.toNumber(),
     isPrivacy: usePrivacyForNativeToken,
@@ -178,7 +178,7 @@ export default async function sendPrivacyToken({
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('nativeAvailableCoins', nativeAvailableCoins).required();
   new Validator('privacyAvailableCoins', privacyAvailableCoins).required();
-  new Validator('nativePaymentInfoList', nativePaymentInfoList).required().paymentInfoList();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList).paymentInfoList();
   new Validator('privacyPaymentInfoList', privacyPaymentInfoList).required().paymentInfoList();
   new Validator('nativeFee', nativeFee).required().amount();
   new Validator('privacyFee', privacyFee).required().amount();

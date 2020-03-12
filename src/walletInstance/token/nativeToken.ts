@@ -29,7 +29,7 @@ class NativeToken extends Token implements NativeTokenModel {
 
   async transfer(paymentInfoList: PaymentInfoModel[], nativeFee = DEFAULT_NATIVE_FEE) {
     try {
-      new Validator('paymentInfoList', paymentInfoList).required();
+      new Validator('paymentInfoList', paymentInfoList).required().paymentInfoList();
       new Validator('nativeFee', nativeFee).required().amount();
   
       L.info('Native token transfer', { paymentInfoList, nativeFee });

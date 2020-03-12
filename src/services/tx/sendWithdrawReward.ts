@@ -26,7 +26,7 @@ export default async function sendWithdrawReward({
 
   const usePrivacyForNativeToken = false;
   const nativeFeeBN = toBNAmount(0);
-  const nativePaymentInfoList: PaymentInfoModel[] = [];
+  const nativePaymentInfoList: PaymentInfoModel[] = null;
   
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeFeeBN, usePrivacyForNativeToken);

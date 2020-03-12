@@ -48,7 +48,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
 
   async transfer(paymentList: PaymentInfoModel[], nativeFee: number, privacyFee: number) {
     try {
-      new Validator('paymentList', paymentList).required();
+      new Validator('paymentList', paymentList).required().paymentInfoList();
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('privacyFee', privacyFee).required().amount();
   
@@ -61,7 +61,6 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         nativeFee,
         privacyFee,
         privacyPaymentInfoList: paymentList,
-        nativePaymentInfoList: [],
         tokenId: this.tokenId,
         tokenName: this.name,
         tokenSymbol: this.symbol,

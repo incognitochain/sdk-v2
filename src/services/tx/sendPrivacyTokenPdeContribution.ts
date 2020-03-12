@@ -48,7 +48,7 @@ export default async function sendPrivacyTokenPdeContribution({
 
   const usePrivacyForPrivacyToken = false;
   const usePrivacyForNativeToken = false;
-  const nativePaymentInfoList = <PaymentInfoModel[]>[];
+  const nativePaymentInfoList = <PaymentInfoModel[]>null;
   const nativeTokenFeeBN = toBNAmount(nativeFee);
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const privacyTokenFeeBN = toBNAmount(privacyFee);

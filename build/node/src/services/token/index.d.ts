@@ -4,7 +4,7 @@ import CoinModel from "../../models/coin";
 /**
  * Return list of coins that not existed in chain (not use yet)
  */
-export declare function getUnspentCoins(accountKeySet: AccountKeySetModel, tokenId: string): Promise<CoinModel[]>;
+export declare function getUnspentCoins(accountKeySet: AccountKeySetModel, tokenId?: string): Promise<CoinModel[]>;
 /**
  * Coins can use to create tx (excluding spent coins, spending coins)
  */

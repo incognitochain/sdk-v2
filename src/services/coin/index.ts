@@ -14,7 +14,7 @@ import Validator from '@src/utils/validator';
    */
 export async function getAllOutputCoins(accountKeySet: AccountKeySetModel, tokenId: string): Promise<CoinModel[]> {
   new Validator('accountKeySet', accountKeySet).required();
-  new Validator('tokenId', tokenId).required().string();
+  new Validator('tokenId', tokenId).string();
 
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const viewingKey = accountKeySet.viewingKeySerialized;
