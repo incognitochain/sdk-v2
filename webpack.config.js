@@ -18,7 +18,7 @@ const errorCodeLoader = errorFilePath => ({
 const getEnv = otherEnv => ({
   __IS_WEB__: false,
   __IS_NODE__: false,
-  ENV: { ...isProd ? envProd : envDev },
+  ENV: JSON.stringify({ ...isProd ? envProd : envDev }),
   ...otherEnv
 });
 

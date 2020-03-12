@@ -9,6 +9,7 @@ interface PrivacyTokenModelData {
 
 class PrivacyTokenModel extends BaseTokenModel {
   totalSupply: number;
+
   
   constructor({ tokenId, name, symbol, totalSupply } : PrivacyTokenModelData) {
     super({ tokenId, name, symbol });

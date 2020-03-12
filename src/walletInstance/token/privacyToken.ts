@@ -2,20 +2,17 @@ import Token from './token';
 import PrivacyTokenModel from '@src/models/token/privacyToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import sendPrivacyToken from '@src/services/tx/sendPrivacyToken';
-import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendBurningRequest from '@src/services/tx/sendBurningRequest';
 import { hasExchangeRate } from '@src/services/token';
 import sendPrivacyTokenPdeContribution from '@src/services/tx/sendPrivacyTokenPdeContribution';
 import sendPrivacyTokenPdeTradeRequest from '@src/services/tx/sendPrivacyTokenPdeTradeRequest';
 import Validator from '@src/utils/validator';
+import PrivacyTokenApiModel, { BridgeInfoInterface } from '@src/models/api/privacyTokenApi';
 
 interface PrivacyTokenParam {
-  tokenId: string,
-  name: string,
-  symbol: string,
-  totalSupply: number,
-  accountKeySet: AccountKeySetModel
+  privacyTokenApi: PrivacyTokenApiModel,
+  accountKeySet: AccountKeySetModel,
 };
 
 class PrivacyToken extends Token implements PrivacyTokenModel {
@@ -24,18 +21,17 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
   symbol: string;
   isPrivacyToken: boolean;
   totalSupply: number;
+  bridgeInfo: BridgeInfoInterface
 
-  constructor({ accountKeySet, tokenId, name, symbol, totalSupply }: PrivacyTokenParam) {
+  constructor({ accountKeySet, privacyTokenApi }: PrivacyTokenParam) {
     new Validator('accountKeySet', accountKeySet).required();
-    new Validator('tokenId', tokenId).required().string();
-    new Validator('name', name).required().string();
-    new Validator('symbol', symbol).required().string();
-    new Validator('totalSupply', totalSupply).required().amount();
+    new Validator('privacyTokenApi', privacyTokenApi).required();
 
-    super({ accountKeySet, tokenId, name, symbol });
+    super({ accountKeySet, tokenId: privacyTokenApi.tokenId, name: privacyTokenApi.name, symbol: privacyTokenApi.symbol });
 
-    this.totalSupply = totalSupply;
+    this.totalSupply = privacyTokenApi.supplyAmount;
     this.isPrivacyToken = true;
+    this.bridgeInfo = privacyTokenApi.bridgeInfo;
   }
 
   async hasExchangeRate() {

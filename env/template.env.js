@@ -1,8 +1,8 @@
-function value(v = '') {
-  return JSON.stringify(v);
-}
-
 module.exports = {
-  CHAIN_URL: value('http://localhost:9334'),
-  IS_PROD: value('false')
+  DEFAULT_CHAIN_URL_MAINNET: 'https://',
+  DEFAULT_CHAIN_URL_TESTNET: 'https://',
+  DEFAULT_API_URL_MAINNET: 'https://',
+  DEFAULT_API_URL_TESTNET: 'https://',
+  IS_PROD: false,
+  MAINNET: false
 };

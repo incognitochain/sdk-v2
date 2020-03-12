@@ -10,6 +10,7 @@ import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import { getBLSPublicKeyB58CheckEncode } from '@src/services/key/accountKeySet';
 import { getRewardAmount, getStakerStatus } from '@src/services/node';
 import Validator from '@src/utils/validator';
+import { getPrivacyTokenList } from '@src/services/api/token';
 
 interface AccountModelInterface extends AccountModel {
   nativeToken: NativeToken;
@@ -125,18 +126,16 @@ class Account extends BaseAccount implements AccountModelInterface {
   async getFollowingPrivacyToken(tokenId: TokenIdType) {
     new Validator('tokenId', tokenId).string();
 
-    // TODO filter invalid token
-    const tokens = await rpc.listPrivacyCustomTokens();
+    const tokens = await getPrivacyTokenList();
     const privacyTokens = (tokenId ? [tokenId] : this.privacyTokenIds).map(id => {
-      const token = tokens.find((token: { [key: string]: any }) => token.ID === id);
+      const token = tokens.find((token) => token.tokenId === id);
       if (token) {
         return new PrivacyToken({
           accountKeySet: this.key.keySet,
-          tokenId: token.ID,
-          name: token.Name,
-          symbol: token.Symbol,
-          totalSupply: token.Amount,
+          privacyTokenApi: token
         });
+      } else {
+        L.warning(`Can not find token with id ${id}`);
       }
     });
 

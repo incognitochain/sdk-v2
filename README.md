@@ -311,10 +311,22 @@ const balance = balanceBN.toNumber();
 |isPrivacyToken|boolean|true|Is privacy token|
 |name|string||Token name|
 |tokenId|string||Token ID|
-|symbol|string||Token symbol|
+|symbol|string||Token symbol in Incognito chain|
 |accountKeySet|[AccountKeySetModel ](#api_accountketsetmodel)||Account Key set|
 |totalSupply|number||Total supply amount was issued|
+|bridgeInfo|object||External infomations from other chain for this token (only tokens have the `bridgeInfo` can deposit/withdraw)|
 
+#### bridgeInfo
+* symbol: string; `// symbol in other chain`
+* pSymbol: string; `// bridge token symbol`
+* name: string; `// bridge token name`
+* decimals: number; `// decimals in other chain`
+* pDecimals: number; `// decimals in Incognito chain`
+* contractID: string;
+* verified: boolean; `// verified by Incognito`
+* type: number; `defined in TOKEN_INFO_CONSTANT.BRIDGE_PRIVACY_TOKEN.TYPE`
+* currencyType: number; `defined in TOKEN_INFO_CONSTANT.BRIDGE_PRIVACY_TOKEN.CURRENCY_TYPE`
+* status: number;
 
 #
 ### KeyWalletModel <a name='api_keywalletmodel'></a>

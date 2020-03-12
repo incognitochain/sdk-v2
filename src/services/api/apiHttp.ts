@@ -3,15 +3,16 @@ import { getConfig } from '@src/config';
 
 const TIMEOUT = 20000;
 const instance = axios.create({
-  baseURL: getConfig().chainURL,
   timeout: TIMEOUT,
   headers: {
-    'Content-Type': 'application/json;charset=UTF-8',
-    'Access-Control-Allow-Headers': 'Content-Type, Cache-Control, X-Requested-With, X-CSRF-Token, Discourse-Visible, User-Api-Key, User-Api-Client-Id, *',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, PUT, GET, OPTIONS, DELETE',
+    'Content-Type': 'application/json',
   }
+});
+
+instance.interceptors.request.use((req) => {
+  req.baseURL = getConfig().apiURL;
+
+  return req;
 });
 
 instance.interceptors.response.use(res => {
