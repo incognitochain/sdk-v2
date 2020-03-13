@@ -8,9 +8,10 @@ import { hasExchangeRate } from '@src/services/token';
 import sendPrivacyTokenPdeContribution from '@src/services/tx/sendPrivacyTokenPdeContribution';
 import sendPrivacyTokenPdeTradeRequest from '@src/services/tx/sendPrivacyTokenPdeTradeRequest';
 import Validator from '@src/utils/validator';
-import PrivacyTokenApiModel, { BridgeInfoInterface } from '@src/models/api/privacyTokenApi';
+import PrivacyTokenApiModel, { BridgeInfoInterface } from '@src/models/bridge/privacyTokenApi';
 import { TokenInfo } from '@src/constants';
-import { genETHDepositAddress, genERC20DepositAddress, genCentralizedDepositAddress } from '@src/services/api/deposit';
+import { genETHDepositAddress, genERC20DepositAddress, genCentralizedDepositAddress } from '@src/services/bridge/deposit';
+import { getBridgeHistory } from '@src/services/bridge/history';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel,
@@ -36,11 +37,11 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     this.bridgeInfo = privacyTokenApi.bridgeInfo;
   }
 
-  get isBridgeErc20Token() {
+  get bridgeErc20Token() {
     return this.bridgeInfo?.currencyType === TokenInfo.BRIDGE_PRIVACY_TOKEN.CURRENCY_TYPE.ERC20;
   }
 
-  get isBridgeEthereum() {
+  get bridgeEthereum() {
     return this.bridgeInfo && this.tokenId === TokenInfo.BRIDGE_PRIVACY_TOKEN.DEFINED_TOKEN_ID.ETHEREUM;
   }
 
@@ -178,7 +179,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
-  async generateDepositAddress() {
+  async bridgeGenerateDepositAddress() {
     try {
       if (!this.bridgeInfo) {
         throw new ErrorCode(`Token ${this.tokenId} does not support deposit function`);
@@ -198,9 +199,9 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         currencyType: this.bridgeInfo.currencyType
       };
 
-      if (this.isBridgeEthereum) {
+      if (this.bridgeEthereum) {
         tempAddress = await genETHDepositAddress(commonParams);
-      } else if (this.isBridgeErc20Token) {
+      } else if (this.bridgeErc20Token) {
         tempAddress = await genERC20DepositAddress({
           ...commonParams,
           tokenContractID: this.bridgeInfo.contractID
@@ -216,6 +217,26 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       return tempAddress;
     } catch (e) {
       L.error('Generated temp deposit address failed', e);
+      throw e;
+    }
+  }
+
+  async bridgeGetHistory() {
+    try {
+      if (!this.bridgeInfo) {
+        throw new ErrorCode(`Token ${this.tokenId} does not support bridge history function`);
+      }
+
+      const histories = await getBridgeHistory({
+        paymentAddress: this.accountKeySet.paymentAddressKeySerialized,
+        tokenId: this.tokenId
+      });
+
+      L.info('Get bridge history successfully');
+
+      return histories;
+    } catch (e) {
+      L.error('Get bridge history failed', e);
       throw e;
     }
   }
