@@ -6,6 +6,7 @@ const instance = axios.create({
   timeout: TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFhQUBpbmNvZ25pdG8ub3JnIiwiZXhwIjoxODk4NTg1MzEwLCJpZCI6NjM5Nywib3JpZ19pYXQiOjE1ODQwODkzMTB9.vT600Op7gpa5467RI6APJj9UREj9_olhg_v-57FtZUk'
   }
 });
 

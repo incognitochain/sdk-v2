@@ -9,6 +9,8 @@ import sendPrivacyTokenPdeContribution from '@src/services/tx/sendPrivacyTokenPd
 import sendPrivacyTokenPdeTradeRequest from '@src/services/tx/sendPrivacyTokenPdeTradeRequest';
 import Validator from '@src/utils/validator';
 import PrivacyTokenApiModel, { BridgeInfoInterface } from '@src/models/api/privacyTokenApi';
+import { TokenInfo } from '@src/constants';
+import { genETHDepositAddress, genERC20DepositAddress, genCentralizedDepositAddress } from '@src/services/api/deposit';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel,
@@ -32,6 +34,14 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     this.totalSupply = privacyTokenApi.supplyAmount;
     this.isPrivacyToken = true;
     this.bridgeInfo = privacyTokenApi.bridgeInfo;
+  }
+
+  get isBridgeErc20Token() {
+    return this.bridgeInfo?.currencyType === TokenInfo.BRIDGE_PRIVACY_TOKEN.CURRENCY_TYPE.ERC20;
+  }
+
+  get isBridgeEthereum() {
+    return this.bridgeInfo && this.tokenId === TokenInfo.BRIDGE_PRIVACY_TOKEN.DEFINED_TOKEN_ID.ETHEREUM;
   }
 
   async hasExchangeRate() {
@@ -164,6 +174,48 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       return history;
     } catch (e) {
       L.error(`Privacy token ${this.tokenId} sent trade request failed`, e);
+      throw e;
+    }
+  }
+
+  async generateDepositAddress() {
+    try {
+      if (!this.bridgeInfo) {
+        throw new ErrorCode(`Token ${this.tokenId} does not support deposit function`);
+      }
+
+      L.info('Create deposit request', {
+        tokenId: this.tokenId,
+        currencyType: this.bridgeInfo.currencyType,
+        paymentAddress: this.accountKeySet.paymentAddressKeySerialized,
+      });
+
+      let tempAddress;
+      const commonParams = {
+        paymentAddress: this.accountKeySet.paymentAddressKeySerialized,
+        walletAddress: this.accountKeySet.paymentAddressKeySerialized,
+        tokenId: this.tokenId,
+        currencyType: this.bridgeInfo.currencyType
+      };
+
+      if (this.isBridgeEthereum) {
+        tempAddress = await genETHDepositAddress(commonParams);
+      } else if (this.isBridgeErc20Token) {
+        tempAddress = await genERC20DepositAddress({
+          ...commonParams,
+          tokenContractID: this.bridgeInfo.contractID
+        });
+      } else {
+        tempAddress = await genCentralizedDepositAddress(commonParams);
+      }
+
+      L.info(`Generated temp deposit address successfully: ${tempAddress}`);
+
+      L.warning(`The temp deposit address (${tempAddress}) is only available in 60 mins from now`);
+
+      return tempAddress;
+    } catch (e) {
+      L.error('Generated temp deposit address failed', e);
       throw e;
     }
   }
