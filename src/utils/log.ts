@@ -18,7 +18,8 @@ if (ENV.IS_PROD) {
 class Log {
   constructor(logName: string) {
 
-    this.info(`${logName} was started.`)
+    this.info(`${logName} was started.`);
+    this.info('SDK CONFIG', getConfig());
   }
 
   _getTime() {

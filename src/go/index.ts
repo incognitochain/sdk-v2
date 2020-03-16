@@ -51,7 +51,6 @@ const methods = new Proxy({
   generateBLSKeyPairFromSeed: null,
 }, {
   get: function(obj, prop: string) {
-    console.log('get', prop);
     return (obj as { [key: string]: any })[prop] || getMethod(prop);
   },
   set: function(obj, prop: string, value: any) {
