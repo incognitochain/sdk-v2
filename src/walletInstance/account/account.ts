@@ -10,7 +10,7 @@ import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import { getBLSPublicKeyB58CheckEncode } from '@src/services/key/accountKeySet';
 import { getRewardAmount, getStakerStatus } from '@src/services/node';
 import Validator from '@src/utils/validator';
-import { getPrivacyTokenList } from '@src/services/api/token';
+import { getPrivacyTokenList } from '@src/services/bridge/token';
 
 interface AccountModelInterface extends AccountModel {
   nativeToken: NativeToken;

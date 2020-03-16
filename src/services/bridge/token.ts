@@ -1,10 +1,10 @@
-import http from './apiHttp';
-import BridgeTokenApiModel from '@src/models/api/bridgeTokenApi';
-import ChainTokenApiModel from '@src/models/api/chainTokenApi';
-import PrivacyTokenApiModel from '@src/models/api/privacyTokenApi';
+import http from './bridgeHttp';
+import BridgeTokenApiModel from '@src/models/bridge/bridgeTokenApi';
+import ChainTokenApiModel from '@src/models/bridge/chainTokenApi';
+import PrivacyTokenApiModel from '@src/models/bridge/privacyTokenApi';
 
 /**
- * All bridge tokens
+ * All tokens have bridge info
  */
 function getBridgeTokenList() {
   return http.get('ptoken/list')
@@ -33,7 +33,7 @@ function getChainTokenList() {
 }
 
 /**
- * All tokens that were merged from bridge tokens & tokens in incognito chain
+ * All tokens in Incognito chain with bridge info (if any)
  */
 export async function getPrivacyTokenList() {
   const [bridgeTokens, chainTokens] = await Promise.all([
