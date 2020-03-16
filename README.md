@@ -16,6 +16,7 @@
 	8. [AccountKeySetModel](#api_accountketsetmodel)
 	9. [TxHistoryModel](#api_txhistorymodel)
 	10. [PaymentInfoModel](#api_paymentinfomodel)
+	11. [BridgeHistoryModel](#api_bridgehistorymodel)
 4. [Examples](#examples)
 
 
@@ -106,6 +107,7 @@ incognitoJs.storageService.implement({
 |goServices|implementGoMethodManually([set of go methods](#gomethodparam))|void|Implement go methods manually (for React Native)|
 |goServices|GO_METHOD_NAMES||All of Go method name|
 |storageService|implement([set of methods](#implementstorageparam))|void|Implement storage|
+|bridgeServices|removeBridgeHistory({ historyId: number, currencyType: number, isDecentralized: boolean })||Cancel/remove a deposit/withrawal history|
 |setConfig([config param](#configparam))||void|Set config|
 |getConfig()|[config param](#configparam)||Get config|
 |CONSTANT||||
@@ -305,6 +307,8 @@ const balance = balanceBN.toNumber();
 |pdeContribution|pdeContributionPairID: string, contributedAmount: number, nativeFee: number, privacyFee: number|Promise\<[TxHistoryModel](#api_txhistorymodel)>|[pDEX] Send PDE contribution|
 |requestTrade|tokenIdBuy: string, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, privacyFee: number, tradingFee: number|Promise\<[TxHistoryModel](#api_txhistorymodel)>|Send trade request|
 |withdrawNodeReward||Promise\<[TxHistoryModel](#api_txhistorymodel)>|[Node] Withdraw reward from node|
+|bridgeGenerateDepositAddress||Promise\<string>|Get a temporary deposit address (expired after 60 minutes)|
+|bridgeGetHistory||Promise\<[BridgeHistoryModel](#api_bridgehistorymodel)[]>|Get deposit/withdrawal history|
 
 |Public Property|Type|Default value|Description|
 |----------|:-------------:|------:|------:|
@@ -352,6 +356,7 @@ const balance = balanceBN.toNumber();
 
 #
 ### TxHistoryModel <a name='api_txhistorymodel'></a>
+Tx histories include all transaction histories, not deposit and withdraw and stored in client storage.
 |Public Property|Type|Default value|Description|
 |----------|:-------------:|------:|------:|
 |txId|string|||
@@ -372,6 +377,35 @@ const balance = balanceBN.toNumber();
 |paymentAddressStr|string|||
 |amount|number||||
 |message|string|||
+
+#
+### BridgeHistoryModel <a name='api_bridgehistorymodel'></a>
+Bridge histories include deposit and withdraw transactions and stored in backend.
+|Public Property|Type|Default value|Description|
+|----------|:-------------:|------:|------:|
+|id|number|||
+|userID|number||||
+|address|string|||
+|expiredAt|string|||
+|addressType|number||defined in TOKEN_INFO_CONSTANT.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE|
+|status|number||defined in TOKEN_INFO_CONSTANT.BRIDGE_PRIVACY_TOKEN.HISTORY_STATUS|
+|currencyType|number||defined in TOKEN_INFO_CONSTANT.BRIDGE_PRIVACY_TOKEN.CURRENCY_TYPE|
+|walletAddress|string|||
+|userPaymentAddress|string|||
+|requestedAmount|string|||
+|receivedAmount|string|||
+|incognitoAmount|string|||
+|ethereumTx|string|||
+|incognitoTx|string|||
+|erc20TokenTx|string|||
+|privacyTokenAddress|string|||
+|erc20TokenAddress|string|||
+|createdAt|string|||
+|updatedAt|string|||
+|decentralized|number||0 is centralized, 1 is decentralized|
+|outChainTx|string|||
+|inChainTx|string|||
+
 
 ## Examples <a name="examples"></a>
 ### NodeJS
