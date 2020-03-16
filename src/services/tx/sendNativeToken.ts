@@ -8,7 +8,7 @@ import goMethods from '@src/go';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
-import { TX_TYPE } from '@src/constants/tx';
+import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
 
 interface SendParam {
@@ -137,6 +137,7 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
+    historyType: HISTORY_TYPE.SEND_NATIVE_TOKEN
   });
 
   return history;

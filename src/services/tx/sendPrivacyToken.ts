@@ -9,7 +9,7 @@ import { convertHashToStr } from '@src/utils/common';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel, { CoinRawData } from '@src/models/coin';
-import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE } from '@src/constants/tx';
+import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
 
 interface TokenInfo {
@@ -236,6 +236,7 @@ export default async function sendPrivacyToken({
     privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForPrivacyToken,
-    usePrivacyForNativeToken
+    usePrivacyForNativeToken,
+    historyType: HISTORY_TYPE.SEND_PRIVACY_TOKEN
   });
 }
