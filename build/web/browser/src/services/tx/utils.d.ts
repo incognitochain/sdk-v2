@@ -30,7 +30,7 @@ export interface CreateHistoryParam {
     txType?: any;
     privacyTokenTxType?: any;
     accountPublicKeySerialized: string;
-    historyType?: number;
+    historyType: number;
     usePrivacyForPrivacyToken?: boolean;
     usePrivacyForNativeToken: boolean;
 }

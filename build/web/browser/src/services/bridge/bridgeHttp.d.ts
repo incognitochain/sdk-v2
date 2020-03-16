@@ -11,4 +11,4 @@ export default instance;
     axios#patch(url[, data[, config]])
     axios#getUri([config])
  */
-//# sourceMappingURL=apiHttp.d.ts.map
+//# sourceMappingURL=bridgeHttp.d.ts.map

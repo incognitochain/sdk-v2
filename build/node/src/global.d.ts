@@ -1,7 +1,11 @@
 export {};
 interface ENV {
-    CHAIN_URL: string;
+    DEFAULT_CHAIN_URL_MAINNET: string;
+    DEFAULT_CHAIN_URL_TESTNET: string;
+    DEFAULT_API_URL_MAINNET: string;
+    DEFAULT_API_URL_TESTNET: string;
     IS_PROD: boolean;
+    MAINNET: boolean;
 }
 declare global {
     interface Array<T> {
