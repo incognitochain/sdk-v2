@@ -28,6 +28,13 @@ export declare const goServices: {
     implementGoMethodUseWasm: typeof implementGoMethodUseWasm;
     GO_METHOD_NAMES: string[];
 };
+export declare const bridgeServices: {
+    removeBridgeHistory: ({ historyId, currencyType, isDecentralized }: {
+        historyId: number;
+        currencyType: number;
+        isDecentralized: boolean;
+    }) => Promise<import("axios").AxiosResponse<any>>;
+};
 export declare const CONSTANT: {
     TX_CONSTANT: typeof _TX_CONSTANT;
     WALLET_CONSTANT: typeof _WALLET_CONSTANT;
@@ -40,6 +47,7 @@ export declare const CONSTANT: {
         BRIDGE_PRIVACY_TOKEN: {
             DEFINED_TOKEN_ID: {
                 ETHEREUM: string;
+                BINANCE: string;
             };
             TYPE: {
                 COIN: number;
@@ -56,6 +64,39 @@ export declare const CONSTANT: {
             ADDRESS_TYPE: {
                 DEPOSIT: number;
                 WITHDRAW: number;
+            };
+            HISTORY_STATUS: {
+                CENTRALIZED: {
+                    ReceivedDepositAmount: number;
+                    MintingPrivacyToken: number;
+                    MintedPrivacyToken: number;
+                    SendingToMasterAccount: number;
+                    SendedToMasterAccount: number;
+                    ReceivedWithdrawAmount: number;
+                    BurningPrivacyToken: number;
+                    BurnedPrivacyToken: number;
+                    SendingToUserAddress: number;
+                    SendedToUserAddress: number;
+                    RejectedIssueFromIncognito: number;
+                    RejectedBurnFromIncognito: number;
+                    OtaExpired: number;
+                };
+                DECENTRALIZED: {
+                    EthReceivedDepositAmount: number;
+                    EthRequestAcceptWithDraw: number;
+                    EthAcceptedWithDraw: number;
+                    EthSendingToContract: number;
+                    SentToIncognito: number;
+                    RejectedFromIncognito: number;
+                    EthMintedPrivacyToken: number;
+                    EthReceivedWithdrawTx: number;
+                    FailedGettingBurnProof: number;
+                    BurnProofInvalid: number;
+                    ReleasingToken: number;
+                    ReleaseTokenSucceed: number;
+                    ReleaseTokenFailed: number;
+                    EtaExpired: number;
+                };
             };
         };
     };

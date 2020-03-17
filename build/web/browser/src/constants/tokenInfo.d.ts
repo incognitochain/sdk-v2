@@ -7,6 +7,7 @@ declare const _default: {
     BRIDGE_PRIVACY_TOKEN: {
         DEFINED_TOKEN_ID: {
             ETHEREUM: string;
+            BINANCE: string;
         };
         TYPE: {
             COIN: number;
@@ -23,6 +24,39 @@ declare const _default: {
         ADDRESS_TYPE: {
             DEPOSIT: number;
             WITHDRAW: number;
+        };
+        HISTORY_STATUS: {
+            CENTRALIZED: {
+                ReceivedDepositAmount: number;
+                MintingPrivacyToken: number;
+                MintedPrivacyToken: number;
+                SendingToMasterAccount: number;
+                SendedToMasterAccount: number;
+                ReceivedWithdrawAmount: number;
+                BurningPrivacyToken: number;
+                BurnedPrivacyToken: number;
+                SendingToUserAddress: number;
+                SendedToUserAddress: number;
+                RejectedIssueFromIncognito: number;
+                RejectedBurnFromIncognito: number;
+                OtaExpired: number;
+            };
+            DECENTRALIZED: {
+                EthReceivedDepositAmount: number;
+                EthRequestAcceptWithDraw: number;
+                EthAcceptedWithDraw: number;
+                EthSendingToContract: number;
+                SentToIncognito: number;
+                RejectedFromIncognito: number;
+                EthMintedPrivacyToken: number;
+                EthReceivedWithdrawTx: number;
+                FailedGettingBurnProof: number;
+                BurnProofInvalid: number;
+                ReleasingToken: number;
+                ReleaseTokenSucceed: number;
+                ReleaseTokenFailed: number;
+                EtaExpired: number;
+            };
         };
     };
 };

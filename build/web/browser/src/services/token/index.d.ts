@@ -18,5 +18,4 @@ export declare function getSpendingSerialCoins(): Promise<{
 }>;
 export declare function getTotalBalance(unspentCoins: CoinModel[]): import("bn.js");
 export declare function getAvailableBalance(availableCoins: CoinModel[]): import("bn.js");
-export declare function hasExchangeRate(tokenId: string): Promise<boolean>;
 //# sourceMappingURL=index.d.ts.map
