@@ -52,6 +52,10 @@
             const wallet = await initWallet(incognitoJs);
             window.wallet = wallet;
           });
+
+          await section('IMPORT ACCOUNT', async () => {
+            window.account = await window.wallet.masterAccount.importAccount('Imported Account', '112t8rnX54YTL75HRsg6o7zjxLpYKL72iNQTaP5RRWY3VWcGEugSu1be8ApJYVFoW6wy9JeJFjBbodPCchexYTzjLdVYEBFE6XWEggHhKFyd');
+          });
         } else {
           throw new Error('Incognito module load failed');
         }
