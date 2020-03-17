@@ -1,10 +1,9 @@
 import Token from './token';
 import PrivacyTokenModel from '@src/models/token/privacyToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
-import sendPrivacyToken from '@src/services/tx/sendPrivacyToken';
+import sendPrivacyToken, { hasExchangeRate } from '@src/services/tx/sendPrivacyToken';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendBurningRequest from '@src/services/tx/sendBurningRequest';
-import { hasExchangeRate } from '@src/services/token';
 import sendPrivacyTokenPdeContribution from '@src/services/tx/sendPrivacyTokenPdeContribution';
 import sendPrivacyTokenPdeTradeRequest from '@src/services/tx/sendPrivacyTokenPdeTradeRequest';
 import Validator from '@src/utils/validator';
@@ -12,6 +11,8 @@ import PrivacyTokenApiModel, { BridgeInfoInterface } from '@src/models/bridge/pr
 import { TokenInfo } from '@src/constants';
 import { genETHDepositAddress, genERC20DepositAddress, genCentralizedDepositAddress } from '@src/services/bridge/deposit';
 import { getBridgeHistory } from '@src/services/bridge/history';
+import { genCentralizedWithdrawAddress, updatePTokenFee, addETHTxWithdraw, addERC20TxWithdraw } from '@src/services/bridge/withdraw';
+import { convertDecimalToNanoAmount } from '@src/utils/common';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel,
@@ -43,6 +44,10 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
 
   get bridgeEthereum() {
     return this.bridgeInfo && this.tokenId === TokenInfo.BRIDGE_PRIVACY_TOKEN.DEFINED_TOKEN_ID.ETHEREUM;
+  }
+
+  get bridgeBinance() {
+    return this.bridgeInfo && this.tokenId === TokenInfo.BRIDGE_PRIVACY_TOKEN.DEFINED_TOKEN_ID.BINANCE;
   }
 
   async hasExchangeRate() {
@@ -179,6 +184,12 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
+  /**
+   * Convert your crypto from other chains to privacy version from the Incognito chain - private 100%.
+   * This method will generate a temporary address, this temp address will be expired in 60 minutes.
+   * Then, send/transfer you crypto to this temp address, the process will be completed in several minutes.
+   * Use `bridgeGetHistory` method to check the histories.
+   */
   async bridgeGenerateDepositAddress() {
     try {
       if (!this.bridgeInfo) {
@@ -237,6 +248,129 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       return histories;
     } catch (e) {
       L.error('Get bridge history failed', e);
+      throw e;
+    }
+  }
+
+  private async bridgeWithdrawCentralized(outchainAddress: string, decimalAmount: number, nanoAmount: number, nativeFee: number = 0, privacyFee: number = 0, memo?: string) {
+    try {
+      L.info(`Bridge withdraw centralized token ${this.tokenId}`, { decimalAmount, nanoAmount, nativeFee, privacyFee, memo });
+      // get temp address
+      const tempAddress = await genCentralizedWithdrawAddress({
+        amount: decimalAmount,
+        paymentAddress: outchainAddress,
+        walletAddress: this.accountKeySet.paymentAddressKeySerialized,
+        tokenId: this.tokenId,
+        currencyType: this.bridgeInfo.currencyType,
+        memo
+      });
+
+      L.info(`Bridge withdraw centralized token ${this.tokenId} get temporary address`, { tempAddress, outchainAddress });
+
+      const privacyPaymentInfoList = [new PaymentInfoModel({ paymentAddress: tempAddress, amount: nanoAmount + privacyFee, message: '' })];
+      const nativePaymentInfoList = nativeFee && [new PaymentInfoModel({ paymentAddress: tempAddress, amount: nativeFee, message: '' })];
+
+      // transfer coin to master account
+      const history = await sendPrivacyToken({
+        accountKeySet: this.accountKeySet,
+        nativeAvailableCoins: await this.getNativeAvailableCoins(),
+        privacyAvailableCoins: await this.getAvailableCoins(),
+        nativeFee,
+        privacyFee,
+        tokenId: this.tokenId,
+        tokenName: this.name,
+        tokenSymbol: this.symbol,
+        privacyPaymentInfoList,
+        ...nativePaymentInfoList ? { nativePaymentInfoList }: {},
+      });
+
+      L.info(`Bridge withdraw centralized token ${this.tokenId} transfered with tx id ${history.txId}`, { privacyPaymentInfoList, nativePaymentInfoList });
+
+      if (privacyFee) {
+        await updatePTokenFee({ fee: privacyFee, paymentAddress: this.accountKeySet.paymentAddressKeySerialized });
+        L.info(`Bridge withdraw centralized token ${this.tokenId} updated privacy fee`, { privacyFee, paymentAddress: this.accountKeySet.paymentAddressKeySerialized });
+      }
+    } catch (e) {
+      L.error(`Bridge withdraw centralized token ${this.tokenId} failed`, e);
+      throw e;
+    } 
+  }
+
+  private async bridgeWithdrawDecentralized(outchainAddress: string, decimalAmount: number, nanoAmount: number, nativeFee: number = 0, privacyFee: number = 0) {
+    try {
+      L.info(`Bridge withdraw decentralized token ${this.tokenId}`, { outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee });
+
+      const burningHistory = await this.burning(outchainAddress, nanoAmount + privacyFee, nativeFee, privacyFee);
+
+      L.info(`Bridge withdraw decentralized token ${this.tokenId} burned with id ${burningHistory.txId}`, { outchainAddress, amount: nanoAmount + privacyFee, nativeFee, privacyFee });
+
+      if (this.bridgeEthereum) {
+        await addETHTxWithdraw({
+          amount: decimalAmount,
+          originalAmount: nanoAmount,
+          paymentAddress: outchainAddress,
+          walletAddress: this.accountKeySet.paymentAddressKeySerialized,
+          tokenId: this.tokenId,
+          currencyType: this.bridgeInfo.currencyType,
+          burningTxId: burningHistory.txId,
+        });
+        L.info(`Bridge withdraw decentralized token ${this.tokenId} added ETH withraw info`);
+      } else if (this.bridgeErc20Token) {
+        await addERC20TxWithdraw({
+          amount: decimalAmount,
+          originalAmount: nanoAmount,
+          paymentAddress: outchainAddress,
+          walletAddress: this.accountKeySet.paymentAddressKeySerialized,
+          tokenId: this.tokenId,
+          currencyType: this.bridgeInfo.currencyType,
+          burningTxId: burningHistory.txId,
+          tokenContractID: this.bridgeInfo.contractID
+        });
+        L.info(`Bridge withdraw decentralized token ${this.tokenId} added ERC20 withraw info`);
+      }
+    } catch (e) {
+      L.error(`Bridge withdraw decentralized token ${this.tokenId} failed`, e);
+      throw e;
+    }
+  }
+
+  /**
+   * Convert privacy token to origin, your privacy token will be burned and the origin will be returned
+   * @param {number} decimalAmount accept amount in decimal number (ex: 1.2 ETH, 0.5 BTC,...)
+   * @note aaa
+   */
+  async bridgeWithdraw(outchainAddress: string, decimalAmount: number, nativeFee: number = 0, privacyFee: number = 0, memo?: string) {
+    try {
+      new Validator('decimalAmount', decimalAmount).required().number().largerThan(0);
+      new Validator('nativeFee', nativeFee).required().amount();
+      new Validator('outchainAddress', outchainAddress).required().string();
+      new Validator('privacyFee', privacyFee).required().amount();
+
+      const memoValidator = new Validator('memo', memo).string();
+
+      if (this.bridgeBinance) {
+        memoValidator.required('Binance memo is required').maxLength(125);
+      }
+
+      const nanoAmount = convertDecimalToNanoAmount(decimalAmount, this.bridgeInfo.pDecimals);
+      new Validator('nanoAmount', nanoAmount).required().amount();
+      
+      L.info(`Bridge withraw token ${this.tokenId}`, { outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee, memo });
+
+      if (!this.bridgeInfo) {
+        throw new ErrorCode(`Token ${this.tokenId} does not support withdraw function`);
+      }
+
+      if (this.bridgeEthereum || this.bridgeErc20Token) {
+        // DECENTRALIZED COINS (eth && ERC-20 tokens)
+        await this.bridgeWithdrawDecentralized(outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee);    
+      } else {
+        // CENTRALIZED COINS 
+        await this.bridgeWithdrawCentralized(outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee, memo);        
+      }
+      L.info(`Bridge withraw token ${this.tokenId} successfully`);
+    } catch (e) {
+      L.error(`Bridge withraw token ${this.tokenId} failed`, e);
       throw e;
     }
   }

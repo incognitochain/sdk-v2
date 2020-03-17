@@ -108,7 +108,12 @@ function base64ArrayBuffer(arrayBuffer: any) {
   return base64;
 }
 
+function convertDecimalToNanoAmount(decimalAmount: number, decimals: number) {
+  return decimalAmount * (10 ** decimals);
+}
+
 export {
+  convertDecimalToNanoAmount,
   getShardIDFromLastByte,
   newHashFromStr,
   convertHashToStr,

@@ -66,6 +66,10 @@ class Validator {
     return this._onCondition(() => this._isDefined(), message);
   }
 
+  maxLength(length: number, message?: string) {
+    return this._onCondition(() => this.value.length <= length, message || `Max length is ${length}`);
+  }
+
   string(message = 'Must be string') {
     return this._onCondition(() => typeof this.value === 'string', message);
   }
@@ -86,6 +90,29 @@ class Validator {
     return this._onCondition(() => this.value instanceof Array, message);
   }
 
+  min(min: number, message?: string) {
+    new Validator('min', min).required().number();
+
+    return this._onCondition(() => this.value >= min, message || `Minimum is ${min}`);
+  }
+
+  max(max: number, message?: string) {
+    new Validator('max', max).required().number();
+
+    return this._onCondition(() => this.value <= max, message || `Maximum is ${max}`);
+  }
+
+  largerThan(number: number, message?: string) {
+    new Validator('number', number).required().number();
+
+    return this._onCondition(() => this.value > number, message || `Must be larger than ${number}`);
+  }
+
+  lessThan(number: number, message?: string) {
+    new Validator('number', number).required().number();
+
+    return this._onCondition(() => this.value < number, message || `Must be less than ${number}`);
+  }
 
   inList(list: any[], message = 'Must be in provided list') {
     new Validator('list', list).required().array();
@@ -116,7 +143,7 @@ class Validator {
    * @param {string} message error message
    */
   amount(message = 'Invalid amount') {
-    return this._onCondition(() => (this.value >= 0 && this.intergerNumber()), message);
+    return this._onCondition(() => (this.intergerNumber() && this.value >= 0), message);
   }
 
   paymentInfoList(message = 'Invalid paymentInfoList, must be array of payment info "{ paymentAddressStr: string, amount: number, message: string }" (max 30 payment info)') {

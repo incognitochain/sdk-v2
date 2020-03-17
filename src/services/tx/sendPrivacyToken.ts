@@ -162,6 +162,9 @@ export async function createTx({
   return (customExtractInfoFromInitedTxMethod ? customExtractInfoFromInitedTxMethod : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
+export function hasExchangeRate(tokenId: string) {
+  return rpc.isExchangeRatePToken(tokenId).catch(() => false);
+}
 
 export default async function sendPrivacyToken({
   accountKeySet,
@@ -185,6 +188,10 @@ export default async function sendPrivacyToken({
   new Validator('tokenId', tokenId).required().string();
   new Validator('tokenName', tokenName).required().string();
   new Validator('tokenSymbol', tokenSymbol).required().string();
+
+  if (privacyFee && !(await hasExchangeRate(tokenId))) {
+    throw new ErrorCode(`Token ${tokenId} can not use for paying fee, has no exchange rate!`);
+  }
 
   const usePrivacyForPrivacyToken = true;
   const usePrivacyForNativeToken = true;

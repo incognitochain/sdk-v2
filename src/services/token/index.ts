@@ -73,9 +73,3 @@ export function getAvailableBalance(availableCoins: CoinModel[]) {
 
   return getValueFromCoins(availableCoins);
 }
-
-export async function hasExchangeRate(tokenId: string) {
-  new Validator('tokenId', tokenId).required().string();
-
-  return await rpc.isExchangeRatePToken(tokenId).catch(() => false);
-}
