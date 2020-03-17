@@ -10,10 +10,10 @@ const originMethod = {
   log: console.log
 };
 
-// remove built-in console.log in Production
-if (ENV.IS_PROD) {
-  console.log = function(){};
-}
+// // remove built-in console.log in Production
+// if (ENV.IS_PROD) {
+//   console.log = function(){};
+// }
 
 class Log {
   constructor(logName: string) {
