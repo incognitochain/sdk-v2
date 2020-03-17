@@ -16,7 +16,7 @@ async function section(label, f) {
 
       logTask.success.push(label);
     } catch(e) {
-      logTask.failed.push(label);
+      logTask.failed.push({label, message: e && e.message});
     }
   }
 }
@@ -34,6 +34,12 @@ async function main() {
     };
 
     console.log('Incognito module', incognito);
+
+    await section('SET CONFIG', () => {
+      incognito.setConfig({ mainnet: false });
+      console.log('Config after updating', incognito.getConfig());
+    });
+
     await section('LOAD WASM', incognito.goServices.implementGoMethodUseWasm);
 
     await section('STORAGE IMPLEMENTATION', () => {
@@ -159,8 +165,10 @@ async function main() {
       await state.wallet.masterAccount.removeAccount('Imported acc');
     });
 
-    console.log('SUCCESS TASKS:', logTask.success.join(', '));
-    console.log('FAILED TASKS:', logTask.failed.join(', '));
+    console.log('SUCCESS TASKS:\n', logTask.success.join(', '));
+    console.log('\nFAILED TASKS:\n', logTask.failed.map(({ label, message}) => {
+      return `${label}: ${message}`;
+    }).join('\n'));
   } else {
     throw new Error('Incognito module load failed');
   }
