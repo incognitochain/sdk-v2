@@ -308,6 +308,7 @@ const balance = balanceBN.toNumber();
 |requestTrade|tokenIdBuy: string, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, privacyFee: number, tradingFee: number|Promise\<[TxHistoryModel](#api_txhistorymodel)>|Send trade request|
 |withdrawNodeReward||Promise\<[TxHistoryModel](#api_txhistorymodel)>|[Node] Withdraw reward from node|
 |bridgeGenerateDepositAddress||Promise\<string>|Get a temporary deposit address (expired after 60 minutes)|
+|bridgeWithdraw|outchainAddress: string, decimalAmount: number, nativeFee: number = 0, privacyFee: number = 0, memo?: string|Promise|Withdraw bridged coins (Convert privacy token to origin, your privacy token will be burned and the origin will be returned). Please notice: withdrawal uses the fee (nativeFee or privacyFee) for burning coins|
 |bridgeGetHistory||Promise\<[BridgeHistoryModel](#api_bridgehistorymodel)[]>|Get deposit/withdrawal history|
 
 |Public Property|Type|Default value|Description|
