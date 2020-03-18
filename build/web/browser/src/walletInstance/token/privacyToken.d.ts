@@ -18,6 +18,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     get bridgeErc20Token(): boolean;
     get bridgeEthereum(): boolean;
     get bridgeBinance(): boolean;
+    get bridgeBEP2(): boolean;
     hasExchangeRate(): Promise<boolean>;
     getNativeAvailableCoins(): Promise<import("../../models/coin").default[]>;
     transfer(paymentList: PaymentInfoModel[], nativeFee: number, privacyFee: number): Promise<import("../../..").TxHistoryModel>;

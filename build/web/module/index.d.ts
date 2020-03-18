@@ -45,10 +45,6 @@ export declare const CONSTANT: {
             symbol: string;
         };
         BRIDGE_PRIVACY_TOKEN: {
-            DEFINED_TOKEN_ID: {
-                ETHEREUM: string;
-                BINANCE: string;
-            };
             TYPE: {
                 COIN: number;
                 TOKEN: number;
