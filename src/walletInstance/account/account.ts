@@ -6,7 +6,6 @@ import KeyWalletModel from '@src/models/key/keyWallet';
 import rpc from '@src/services/rpc';
 import initPrivacyToken from '@src/services/tx/initPrivacyToken';
 import { restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
-import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import { getBLSPublicKeyB58CheckEncode } from '@src/services/key/accountKeySet';
 import { getRewardAmount, getStakerStatus } from '@src/services/node';
 import Validator from '@src/utils/validator';
@@ -86,7 +85,7 @@ class Account extends BaseAccount implements AccountModelInterface {
     _.remove(this.privacyTokenIds, id => id === tokenId);
   }
   
-  async issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee = DEFAULT_NATIVE_FEE } : IssuePrivacyTokenInterface) {
+  async issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee } : IssuePrivacyTokenInterface) {
     try {
       const missingError = 'Please make sure your params are following format { tokenName, tokenSymbol, supplyAmount, nativeTokenFee }';
       new Validator('tokenName', tokenName).required(missingError).string();

@@ -8,6 +8,7 @@ import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx'
 import { createTx } from './sendPrivacyToken';
 import { BurningRequestMeta } from '@src/constants/wallet';
 import Validator from '@src/utils/validator';
+import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface TokenInfo {
   tokenId: TokenIdType,
@@ -39,7 +40,7 @@ export default async function sendBurningRequest({
   accountKeySet,
   nativeAvailableCoins,
   privacyAvailableCoins,
-  nativeFee,
+  nativeFee = DEFAULT_NATIVE_FEE,
   privacyFee,
   tokenId,
   tokenSymbol,

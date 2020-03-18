@@ -9,6 +9,7 @@ import { extractInfoFromInitedTxBytes as customExtractInfoFromInitedTxBytes } fr
 import { createTx } from './sendPrivacyToken';
 import { PDEContributionMeta } from '@src/constants/wallet';
 import Validator from '@src/utils/validator';
+import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
@@ -27,7 +28,7 @@ export default async function sendPrivacyTokenPdeContribution({
   accountKeySet,
   availableNativeCoins,
   privacyAvailableCoins,
-  nativeFee,
+  nativeFee = DEFAULT_NATIVE_FEE,
   privacyFee,
   pdeContributionPairID,
   tokenId,

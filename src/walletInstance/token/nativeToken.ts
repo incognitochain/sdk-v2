@@ -3,7 +3,6 @@ import Token from './token';
 import NativeTokenModel from '@src/models/token/nativeToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import sendNativeToken from '@src/services/tx/sendNativeToken';
-import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendStakingRequest from '@src/services/tx/sendStakingRequest';
 import sendNativeTokenPdeContribution from '@src/services/tx/sendNativeTokenPdeContribution';
@@ -27,7 +26,7 @@ class NativeToken extends Token implements NativeTokenModel {
     this.isNativeToken = true;
   }
 
-  async transfer(paymentInfoList: PaymentInfoModel[], nativeFee = DEFAULT_NATIVE_FEE) {
+  async transfer(paymentInfoList: PaymentInfoModel[], nativeFee: number) {
     try {
       new Validator('paymentInfoList', paymentInfoList).required().paymentInfoList();
       new Validator('nativeFee', nativeFee).required().amount();

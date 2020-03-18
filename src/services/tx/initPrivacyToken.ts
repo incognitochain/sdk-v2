@@ -7,6 +7,7 @@ import goMethods from '@src/go';
 import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
 import { createTx } from './sendPrivacyToken';
+import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface TokenInfo {
   tokenSymbol: TokenSymbolType,
@@ -23,7 +24,7 @@ interface InitParam extends TokenInfo {
 export default async function initPrivacyToken({
   accountKeySet,
   availableNativeCoins,
-  nativeFee,
+  nativeFee = DEFAULT_NATIVE_FEE,
   tokenSymbol,
   tokenName,
   supplyAmount

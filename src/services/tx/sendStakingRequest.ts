@@ -10,6 +10,7 @@ import { checkDecode } from '@src/utils/base58';
 import { generateCommitteeKeyFromHashPrivateKey } from '../key/generator';
 import { MetaStakingShard } from '@src/constants/wallet';
 import Validator from '@src/utils/validator';
+import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface StakingParam {
   candidateAccountKeySet: AccountKeySetModel,
@@ -23,7 +24,7 @@ export default async function sendStakingRequest({
   candidateAccountKeySet,
   rewardReceiverPaymentAddress,
   availableNativeCoins,
-  nativeFee,
+  nativeFee = DEFAULT_NATIVE_FEE,
   autoReStaking = true
 } : StakingParam) {
   new Validator('candidateAccountKeySet', candidateAccountKeySet).required();

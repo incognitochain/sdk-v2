@@ -3,7 +3,7 @@ import { getTotalAmountFromPaymentList, createOutputCoin, TxInputType, initTx, g
 import rpc from '@src/services/rpc';
 import { base64Decode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
-import { ENCODE_VERSION } from '@src/constants/constants';
+import { ENCODE_VERSION, DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import goMethods from '@src/go';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
@@ -96,7 +96,7 @@ export async function createTx({
   return (customExtractInfoFromInitedTxMethod ? customExtractInfoFromInitedTxMethod : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
-export default async function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins } : SendParam) {
+export default async function sendNativeToken({ nativePaymentInfoList, nativeFee = DEFAULT_NATIVE_FEE, accountKeySet, availableCoins } : SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('availableCoins', availableCoins).required();
   new Validator('nativePaymentInfoList', nativePaymentInfoList).required().paymentInfoList();

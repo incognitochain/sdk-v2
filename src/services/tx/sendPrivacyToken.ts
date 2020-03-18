@@ -3,7 +3,7 @@ import { getTotalAmountFromPaymentList, createOutputCoin, TxInputType, initTx, g
 import rpc from '@src/services/rpc';
 import { base64Decode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
-import { ENCODE_VERSION } from '@src/constants/constants';
+import { ENCODE_VERSION, DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import goMethods from '@src/go';
 import { convertHashToStr } from '@src/utils/common';
 import PaymentInfoModel from '@src/models/paymentInfo';
@@ -172,7 +172,7 @@ export default async function sendPrivacyToken({
   privacyAvailableCoins,
   nativePaymentInfoList,
   privacyPaymentInfoList,
-  nativeFee,
+  nativeFee = DEFAULT_NATIVE_FEE,
   privacyFee,
   tokenId,
   tokenSymbol,

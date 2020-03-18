@@ -8,6 +8,7 @@ import { createTx } from './sendNativeToken';
 import { PDEContributionMeta } from '@src/constants/wallet';
 import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
+import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
@@ -21,7 +22,7 @@ interface ContributionParam {
 export default async function sendNativeTokenPdeContribution({
   accountKeySet,
   availableNativeCoins,
-  nativeFee,
+  nativeFee = DEFAULT_NATIVE_FEE,
   pdeContributionPairID,
   tokenId,
   contributedAmount,

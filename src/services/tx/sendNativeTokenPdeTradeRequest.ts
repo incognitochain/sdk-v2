@@ -8,6 +8,7 @@ import { createTx } from './sendNativeToken';
 import { PDETradeRequestMeta } from '@src/constants/wallet';
 import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
+import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 
 interface TradeParam {
   accountKeySet: AccountKeySetModel,
@@ -23,7 +24,7 @@ interface TradeParam {
 export default async function sendNativeTokenPdeTradeRequest({
   accountKeySet,
   availableNativeCoins,
-  nativeFee,
+  nativeFee = DEFAULT_NATIVE_FEE,
   tradingFee,
   tokenIdBuy,
   tokenIdSell,

@@ -337,7 +337,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         });
 
         if (!isAdded) {
-          throw new ErrorCode('Add ETH tx withdraw failed');
+          throw new ErrorCode('Add ERC20 tx withdraw failed');
         }
 
         L.info(`Bridge withdraw decentralized token ${this.tokenId} added ERC20 withraw info`);
