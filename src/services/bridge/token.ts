@@ -2,6 +2,7 @@ import http from './bridgeHttp';
 import BridgeTokenApiModel from '@src/models/bridge/bridgeTokenApi';
 import ChainTokenApiModel from '@src/models/bridge/chainTokenApi';
 import PrivacyTokenApiModel from '@src/models/bridge/privacyTokenApi';
+import _ from 'lodash';
 
 /**
  * All tokens have bridge info
@@ -43,9 +44,9 @@ export async function getPrivacyTokenList() {
 
   // merging 
   const privacyTokens = chainTokens.map(chainToken => {
-    const bridgeToken = bridgeTokens.find(bridgeToken => bridgeToken.tokenId === chainToken.tokenId);
-    return new PrivacyTokenApiModel({ chainTokenInfo: chainToken, bridgeTokenInfo: bridgeToken });
+    const bridgeToken = _.remove(bridgeTokens, (bridgeToken => bridgeToken.tokenId === chainToken.tokenId));
+    return new PrivacyTokenApiModel({ chainTokenInfo: chainToken, bridgeTokenInfo: bridgeToken && bridgeToken[0] });
   });
 
-  return privacyTokens;
+  return privacyTokens.concat(bridgeTokens.map(bridgeToken => new PrivacyTokenApiModel({ chainTokenInfo: null, bridgeTokenInfo: bridgeToken })));
 }

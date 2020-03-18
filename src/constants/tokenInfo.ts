@@ -5,11 +5,6 @@ const NATIVE_TOKEN = {
 };
 
 const BRIDGE_PRIVACY_TOKEN = {
-  DEFINED_TOKEN_ID: {
-    // use to detect some special tokens (maybe different between testnet & mainnet)
-    ETHEREUM: 'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f',
-    BINANCE: 'b2655152784e8639fa19521a7035f331eea1f1e911b2f3200a507ebb4554387b'
-  },
   TYPE: {
     COIN: 0,
     TOKEN: 1 // including ERC20, BEP1, BEP2,...

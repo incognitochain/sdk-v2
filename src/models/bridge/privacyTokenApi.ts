@@ -30,8 +30,8 @@ class PrivacyTokenApiModel extends BaseModel {
   constructor(data: PrivacyTokenApiModelParam = <PrivacyTokenApiModelParam>{}) {
     super();
 
-    this.tokenId = data.chainTokenInfo.tokenId;
-    this.symbol = data.chainTokenInfo.symbol;
+    this.tokenId = data.chainTokenInfo?.tokenId || data.bridgeTokenInfo?.tokenId;
+    this.symbol = data.chainTokenInfo?.symbol || data.bridgeTokenInfo?.symbol;
     this.bridgeInfo = data.bridgeTokenInfo && {
       name: data.bridgeTokenInfo.name,
       pSymbol: data.bridgeTokenInfo.pSymbol,
@@ -44,8 +44,8 @@ class PrivacyTokenApiModel extends BaseModel {
       contractID: data.bridgeTokenInfo.contractID,
       verified: data.bridgeTokenInfo.verified,
     };
-    this.name = data.chainTokenInfo.name;
-    this.supplyAmount = data.chainTokenInfo.supplyAmount;
+    this.name = data.chainTokenInfo?.name || data.bridgeTokenInfo?.name;
+    this.supplyAmount = data.chainTokenInfo?.supplyAmount;
   }
 }
 

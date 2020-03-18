@@ -43,11 +43,15 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
   }
 
   get bridgeEthereum() {
-    return this.bridgeInfo && this.tokenId === TokenInfo.BRIDGE_PRIVACY_TOKEN.DEFINED_TOKEN_ID.ETHEREUM;
+    return this.bridgeInfo?.currencyType === TokenInfo.BRIDGE_PRIVACY_TOKEN.CURRENCY_TYPE.ETH;
   }
 
   get bridgeBinance() {
-    return this.bridgeInfo && this.tokenId === TokenInfo.BRIDGE_PRIVACY_TOKEN.DEFINED_TOKEN_ID.BINANCE;
+    return this.bridgeInfo?.currencyType === TokenInfo.BRIDGE_PRIVACY_TOKEN.CURRENCY_TYPE.BNB;
+  }
+
+  get bridgeBEP2() {
+    return this.bridgeInfo?.currencyType === TokenInfo.BRIDGE_PRIVACY_TOKEN.CURRENCY_TYPE.BNB_BEP2;
   }
 
   async hasExchangeRate() {
@@ -305,7 +309,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       L.info(`Bridge withdraw decentralized token ${this.tokenId} burned with id ${burningHistory.txId}`, { outchainAddress, amount: nanoAmount + privacyFee, nativeFee, privacyFee });
 
       if (this.bridgeEthereum) {
-        await addETHTxWithdraw({
+        const isAdded = await addETHTxWithdraw({
           amount: decimalAmount,
           originalAmount: nanoAmount,
           paymentAddress: outchainAddress,
@@ -314,9 +318,14 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
           currencyType: this.bridgeInfo.currencyType,
           burningTxId: burningHistory.txId,
         });
+
+        if (!isAdded) {
+          throw new ErrorCode('Add ETH tx withdraw failed');
+        }
+
         L.info(`Bridge withdraw decentralized token ${this.tokenId} added ETH withraw info`);
       } else if (this.bridgeErc20Token) {
-        await addERC20TxWithdraw({
+        const isAdded = await addERC20TxWithdraw({
           amount: decimalAmount,
           originalAmount: nanoAmount,
           paymentAddress: outchainAddress,
@@ -326,6 +335,11 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
           burningTxId: burningHistory.txId,
           tokenContractID: this.bridgeInfo.contractID
         });
+
+        if (!isAdded) {
+          throw new ErrorCode('Add ETH tx withdraw failed');
+        }
+
         L.info(`Bridge withdraw decentralized token ${this.tokenId} added ERC20 withraw info`);
       }
     } catch (e) {

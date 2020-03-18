@@ -3,7 +3,6 @@ import { getConfig } from '@src/config';
 
 const TIMEOUT = 20000;
 const instance = axios.create({
-  baseURL: getConfig().chainURL,
   timeout: TIMEOUT,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8',
@@ -12,6 +11,12 @@ const instance = axios.create({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, PUT, GET, OPTIONS, DELETE',
   }
+});
+
+instance.interceptors.request.use((req) => {
+  req.baseURL = getConfig().chainURL;
+
+  return req;
 });
 
 instance.interceptors.response.use(res => {
