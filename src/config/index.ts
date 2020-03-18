@@ -16,16 +16,16 @@ type SetConfigName = {
 
 // default config
 let config: Config = {
-  chainURL: ENV.MAINNET ? ENV.DEFAULT_CHAIN_URL_MAINNET : ENV.DEFAULT_CHAIN_URL_TESTNET,
-  apiURL: ENV.MAINNET ? ENV.DEFAULT_API_URL_MAINNET : ENV.DEFAULT_API_URL_TESTNET,
+  chainURL: null,
+  apiURL: null,
   logMethod: console.log,
   mainnet: ENV.MAINNET,
 };
 
 export function getConfig() {
-  const apiURL = config.mainnet ? ENV.DEFAULT_API_URL_MAINNET : ENV.DEFAULT_API_URL_TESTNET;
-  const chainURL = config.mainnet ? ENV.DEFAULT_CHAIN_URL_MAINNET : ENV.DEFAULT_CHAIN_URL_TESTNET;
-
+  const apiURL = config.apiURL || (config.mainnet ? ENV.DEFAULT_API_URL_MAINNET : ENV.DEFAULT_API_URL_TESTNET);
+  const chainURL = config.chainURL || (config.mainnet ? ENV.DEFAULT_CHAIN_URL_MAINNET : ENV.DEFAULT_CHAIN_URL_TESTNET);
+  
   return {
     ...config,
     apiURL,

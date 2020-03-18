@@ -124,6 +124,8 @@ incognitoJs.storageService.implement({
 
 ### Config param <a name="configparam"></a>
 * chainURL: string
+* apiURL: string
+* mainnet: boolean `// update this property will change apiURL & chainURL if they are not defined`
 * logMethod: (message: string) => void (pass `null` to disable log)
 
 #### Go method name <a name="gomethodparam"></a>
