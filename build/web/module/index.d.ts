@@ -117,6 +117,6 @@ export declare const CONSTANT: {
     INPUT_COINS_PRIVACY_SIZE: 39;
     OUTPUT_COINS_PRIVACY_SIZE: 221;
     ED25519_KEY_SIZE: 32;
-    DEFAULT_NATIVE_FEE: 10;
+    DEFAULT_NATIVE_FEE: 100;
 };
 //# sourceMappingURL=index.d.ts.map

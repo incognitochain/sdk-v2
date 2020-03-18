@@ -321,9 +321,9 @@ const balance = balanceBN.toNumber();
 |symbol|string||Token symbol in Incognito chain|
 |accountKeySet|[AccountKeySetModel ](#api_accountketsetmodel)||Account Key set|
 |totalSupply|number||Total supply amount was issued|
-|bridgeInfo|object||External infomations from other chain for this token (only tokens have the `bridgeInfo` can deposit/withdraw)|
+|[bridgeInfo](#api_bridgeInfo)|object||External infomations from other chain for this token (only tokens have the `bridgeInfo` can deposit/withdraw)|
 
-#### bridgeInfo
+#### bridgeInfo <a name='api_bridgeInfo'></a>
 * symbol: string; `// symbol in other chain`
 * pSymbol: string; `// bridge token symbol`
 * name: string; `// bridge token name`
