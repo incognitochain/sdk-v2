@@ -38,6 +38,7 @@ export async function checkCachedHistories() {
  * @param tokenId Use `null` for native token
  */
 export async function getTxHistoryByPublicKey(accountPublicKeySerialized: string, tokenId?: string) {
+  debugger
   new Validator('tokenId', tokenId).string();
   new Validator('accountPublicKeySerialized', accountPublicKeySerialized).required().string();
 
