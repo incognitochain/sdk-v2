@@ -2120,10 +2120,10 @@ error-ex@^1.2.0:
   dependencies:
     is-arrayish "^0.2.1"
 
-errorcode-loader@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/errorcode-loader/-/errorcode-loader-0.0.1.tgz#3d6df85cd7305b844a77a66c88504835e641c043"
-  integrity sha512-tjMiUC/m+Xq/UDICbaPP1nuxaX7XXYVscr7PuyydaQDn1MbTRuHrYapxU9Kcl8s1vEfBxhRxlZiWPAlV06R1hw==
+errorcode-loader@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/errorcode-loader/-/errorcode-loader-0.0.3.tgz#78e2a3fbd5102bdcfa8d400d6dcd7f8fbff1382e"
+  integrity sha512-ReIf4PCK3IqG6bnX5SEtKiK7j2QOUd1FREnVoBFWrrR2hAgeK71Vb3dPd4b+L2SBcovoPfN8zzkJkuhF8ibN2Q==
 
 es-abstract@^1.17.0, es-abstract@^1.17.0-next.1:
   version "1.17.0"
