@@ -1,4 +1,5 @@
 import './wasm_exec';
+import { getConfig } from '@src/config';
 
 //load WASM
 let isWASMRunned = false;
@@ -9,7 +10,7 @@ async function _loadWasmOnNode(resolve: Function, reject: Function) {
     const path = require('path');
     const fs = require('fs');
 
-    let pathName = path.resolve(path.dirname(`./${fileName}`), fileName);
+    let pathName = getConfig().wasmPath || path.resolve(path.dirname(`./${fileName}`), fileName);
 
     const go = new Go();
     let inst;
@@ -39,7 +40,7 @@ async function _loadWasmOnBrowser(resolve: Function, reject: Function) {
         }
       };
     }
-    const result = await WebAssembly.instantiateStreaming(fetch(fileName).catch(e => reject(e)), go.importObject);
+    const result = await WebAssembly.instantiateStreaming(fetch(getConfig().wasmPath || fileName).catch(e => reject(e)), go.importObject);
     const inst = result.instance;
     go.run(inst);
     isWASMRunned = true;

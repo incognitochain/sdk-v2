@@ -1,4 +1,5 @@
 const incognito = require('../build/node');
+const path = require('path');
 
 const logTask = {
   success: [],
@@ -36,7 +37,7 @@ async function main() {
     console.log('Incognito module', incognito);
 
     await section('SET CONFIG', () => {
-      incognito.setConfig({ mainnet: false });
+      incognito.setConfig({ mainnet: false, wasmPath: path.resolve(__dirname, 'wasm', 'privacy.wasm') });
       console.log('Config after updating', incognito.getConfig());
     });
 
