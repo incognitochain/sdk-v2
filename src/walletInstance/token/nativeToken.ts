@@ -8,6 +8,7 @@ import sendStakingRequest from '@src/services/tx/sendStakingRequest';
 import sendNativeTokenPdeContribution from '@src/services/tx/sendNativeTokenPdeContribution';
 import sendNativeTokenPdeTradeRequest from '@src/services/tx/sendNativeTokenPdeTradeRequest';
 import Validator from '@src/utils/validator';
+import sendNativeTokenDefragment from '@src/services/tx/sendNativeTokenDefragment';
 
 class NativeToken extends Token implements NativeTokenModel {
   tokenId: string;
@@ -120,6 +121,28 @@ class NativeToken extends Token implements NativeTokenModel {
       return history;
     } catch (e) {
       L.error('Native token sent trade request failed', e);
+      throw e;
+    }
+  }
+
+  async defragment(defragmentAmount: number, nativeFee: number, maxCoinNumberToDefragment?: number) {
+    try {
+      new Validator('defragmentAmount', defragmentAmount).required().amount();
+      new Validator('nativeFee', nativeFee).required().amount();
+  
+      L.info('Native token defragment', { defragmentAmount, nativeFee });
+  
+      const history = await sendNativeTokenDefragment({ defragmentAmount, nativeFee: nativeFee, accountKeySet: this.accountKeySet, availableNativeCoins: await this.getAvailableCoins(), maxCoinNumber: maxCoinNumberToDefragment });
+      
+      if (history) {
+        L.info(`Native token defragmented successfully with tx id ${history.txId}`);
+      } else {
+        L.info('Not much coins need to defragment');
+      }
+
+      return history;
+    } catch (e) {
+      L.error('Native token defragmented failed', e);
       throw e;
     }
   }

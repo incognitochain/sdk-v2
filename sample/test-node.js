@@ -166,6 +166,10 @@ async function main() {
       await state.wallet.masterAccount.removeAccount('Imported acc');
     });
 
+    await section('DEFRAGMENT NATIVE TOKEN', async () => {
+      await state.importedAccount.nativeToken.defragment(1 * (10**9), 0.6 * (10**9), 5);
+    });
+
     console.log('SUCCESS TASKS:\n', logTask.success.join(', '));
     console.log('\nFAILED TASKS:\n', logTask.failed.map(({ label, message}) => {
       return `${label}: ${message}`;

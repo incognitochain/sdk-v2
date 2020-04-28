@@ -8,6 +8,7 @@ import { hybridDecryption } from '@src/privacy/hybridEncryption';
 import CoinModel from '@src/models/coin';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import Validator from '@src/utils/validator';
+import { MaxInputNumberForDefragment } from '@src/constants/tx';
 
 /** getAllOutputCoins returns all output coins with tokenID, for native token: tokenId is null
    *
@@ -95,6 +96,26 @@ export function getValueFromCoins(coins: CoinModel[]): bn {
   new Validator('coins', coins).required().array();
 
   return coins?.reduce((totalAmount, coin) => totalAmount.add(new bn(coin.value)), new bn(0)) || new bn(0);
+}
+
+export function chooseCoinToDefragment(coins: CoinModel[], defragmentAmount: bn, maxCoinNumber: number = 5) {
+  new Validator('coins', coins).required().array();
+  new Validator('defragmentAmount', defragmentAmount).required();
+  new Validator('maxCoinNumber', maxCoinNumber).number().max(MaxInputNumberForDefragment);
+
+  const selectedCoins = [];
+
+  for (let coin of coins) {
+    // select coin has value less than or equal `defragmentAmount`, max selected values should be defined in MaxInputNumberForDefragment
+    if (selectedCoins.length < maxCoinNumber) {
+      new bn(coin.value).lte(defragmentAmount) && selectedCoins.push(coin);
+      continue;
+    } 
+
+    break;
+  }
+
+  return selectedCoins || [];
 }
 
 export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {

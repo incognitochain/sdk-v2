@@ -48,6 +48,13 @@ export interface CreateHistoryParam {
   usePrivacyForNativeToken: boolean
 };
 
+export interface NativeTokenTxInputOptions {
+  chooseCoinStrategy: (params?: {
+    availabelCoins?: CoinModel[],
+    totalAmountBN?: bn
+  }) => CoinModel[]
+};
+
 /**
  * Parse number to bn (big number), min value is bn(0) (zero)
  * @param amount 
@@ -108,7 +115,14 @@ async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinMo
  * @param nativePaymentAmountBN Amount to send
  * @param nativeTokenFeeBN Fee to send (native fee)
  */
-export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, availableNativeCoins: CoinModel[], nativePaymentAmountBN: bn, nativeTokenFeeBN: bn, usePrivacy: boolean = true) : Promise<TxInputType> {
+export async function getNativeTokenTxInput(
+  accountKeySet: AccountKeySetModel,
+  availableNativeCoins: CoinModel[],
+  nativePaymentAmountBN: bn,
+  nativeTokenFeeBN: bn,
+  usePrivacy: boolean = true,
+  options?: NativeTokenTxInputOptions
+) : Promise<TxInputType> {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('availableNativeCoins', availableNativeCoins).required().array();
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
@@ -118,7 +132,9 @@ export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, a
 
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const totalAmountBN = nativePaymentAmountBN.add(nativeTokenFeeBN);
-  const bestCoins = chooseBestCoinToSpent(availableNativeCoins, totalAmountBN);
+  const bestCoins = options?.chooseCoinStrategy
+    ? { resultInputCoins: options?.chooseCoinStrategy({ availabelCoins: availableNativeCoins, totalAmountBN }) }
+    : chooseBestCoinToSpent(availableNativeCoins, totalAmountBN);
   const coinsToSpend: CoinModel[] = bestCoins.resultInputCoins;
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
   
@@ -151,7 +167,14 @@ export async function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, a
  * @param privacyPaymentAmountBN Amount to send
  * @param privacyTokenFeeBN Fee to send (privacy token fee)
  */
-export async function getPrivacyTokenTxInput(accountKeySet: AccountKeySetModel, privacyAvailableCoins: CoinModel[], tokenId: TokenIdType, privacyPaymentAmountBN: bn, privacyTokenFeeBN: bn, usePrivacy: boolean = true) : Promise<TxInputType> {
+export async function getPrivacyTokenTxInput(
+    accountKeySet: AccountKeySetModel,
+    privacyAvailableCoins: CoinModel[],
+    tokenId: TokenIdType,
+    privacyPaymentAmountBN: bn,
+    privacyTokenFeeBN: bn,
+    usePrivacy: boolean = true,
+  ) : Promise<TxInputType> {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('privacyAvailableCoins', privacyAvailableCoins).required().array();
   new Validator('tokenId', tokenId).required().string();
