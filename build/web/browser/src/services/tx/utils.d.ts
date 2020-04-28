@@ -34,6 +34,12 @@ export interface CreateHistoryParam {
     usePrivacyForPrivacyToken?: boolean;
     usePrivacyForNativeToken: boolean;
 }
+export interface NativeTokenTxInputOptions {
+    chooseCoinStrategy: (params?: {
+        availabelCoins?: CoinModel[];
+        totalAmountBN?: bn;
+    }) => CoinModel[];
+}
 /**
  * Parse number to bn (big number), min value is bn(0) (zero)
  * @param amount
@@ -52,7 +58,7 @@ export declare function getTotalAmountFromPaymentList(paymentInfoList: PaymentIn
  * @param nativePaymentAmountBN Amount to send
  * @param nativeTokenFeeBN Fee to send (native fee)
  */
-export declare function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, availableNativeCoins: CoinModel[], nativePaymentAmountBN: bn, nativeTokenFeeBN: bn, usePrivacy?: boolean): Promise<TxInputType>;
+export declare function getNativeTokenTxInput(accountKeySet: AccountKeySetModel, availableNativeCoins: CoinModel[], nativePaymentAmountBN: bn, nativeTokenFeeBN: bn, usePrivacy?: boolean, options?: NativeTokenTxInputOptions): Promise<TxInputType>;
 /***
  * Prepare data for send privacy token
  *
