@@ -40,11 +40,9 @@ export const HISTORY_TYPE = {
   PDE_TRADE_REQUEST_PRIVACY_TOKEN: 7,
   STAKING_REQUEST: 8,
   WITHDRAW_REWARD: 9,
+  DEFRAGMENT_NATIVE_TOKEN: 10
 };
 
-// todo: 0xkraken
-// NumUTXO must be 255
-// because tx zise is exceed 100kb with NumUTXO = 255
-export const MaxInputNumberForDefragment = 50;
+export const MaxInputNumberForDefragment = 32;
 
 export const MaxInfoSize = 512;

@@ -10,6 +10,10 @@
 
 ### Nodejs
 
+Copy wasm binary to your root project: 
+
+`cp node_modules/incognito-js/privacy.wasm .`
+
 ```javascript
 const incognitoJs = require('incognito-js/build/node');
 
@@ -21,6 +25,10 @@ Follow this step to [implement storage.](#Implement storage)
 
 -------------
 ### Browser 
+
+Copy wasm binary to your root project: 
+
+`cp node_modules/incognito-js/privacy.wasm .`
 
 Module
 ```javascript
@@ -90,6 +98,7 @@ setConfig (
 	chainURL: string // 
 	apiURL: string
 	mainnet: boolean // update this property will change apiURL & chainURL if they are not defined
+	wasmPath: string // path to the binary file, the SDK will find the wasm in where it was executed
 ) => void
 ```
 

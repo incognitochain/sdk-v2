@@ -5,6 +5,7 @@ type Config = {
   chainURL: string;
   apiURL: string;
   mainnet: boolean;
+  wasmPath: string;
 };
 
 type SetConfigName = {
@@ -12,6 +13,7 @@ type SetConfigName = {
   chainURL?: string;
   apiURL?: string;
   mainnet?: boolean;
+  wasmPath?: string;
 };
 
 // default config
@@ -20,6 +22,7 @@ let config: Config = {
   apiURL: null,
   logMethod: console.log,
   mainnet: ENV.MAINNET,
+  wasmPath: null
 };
 
 export function getConfig() {

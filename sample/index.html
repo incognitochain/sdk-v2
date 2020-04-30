@@ -42,6 +42,11 @@
       async function main() {
         if (incognitoJs) {
           console.log('Incognito module', incognitoJs);
+          await section('SET CONFIG', () => {
+            incognitoJs.setConfig({ mainnet: false, wasmPath: 'wasm/privacy.wasm' });
+            console.log('Config after updating', incognitoJs.getConfig());
+          });
+          
           await section('LOAD WASM', incognitoJs.goServices.implementGoMethodUseWasm);
 
           await section('SET STORAGE', async () => {

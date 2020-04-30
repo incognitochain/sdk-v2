@@ -14,6 +14,7 @@ export declare function deriveSerialNumbers(accountKeySet: AccountKeySetModel, c
     serialNumberList: string[];
 }>;
 export declare function getValueFromCoins(coins: CoinModel[]): bn;
+export declare function chooseCoinToDefragment(coins: CoinModel[], defragmentAmount: bn, maxCoinNumber?: number): CoinModel[];
 export declare function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
     resultInputCoins: CoinModel[];
     remainInputCoins: CoinModel[];

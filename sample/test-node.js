@@ -1,4 +1,5 @@
 const incognito = require('../build/node');
+const path = require('path');
 
 const logTask = {
   success: [],
@@ -36,7 +37,7 @@ async function main() {
     console.log('Incognito module', incognito);
 
     await section('SET CONFIG', () => {
-      incognito.setConfig({ mainnet: false });
+      incognito.setConfig({ mainnet: false, wasmPath: path.resolve(__dirname, 'wasm', 'privacy.wasm') });
       console.log('Config after updating', incognito.getConfig());
     });
 
@@ -163,6 +164,10 @@ async function main() {
 
     await section('REMOVE ACCOUNT', async () => {
       await state.wallet.masterAccount.removeAccount('Imported acc');
+    });
+
+    await section('DEFRAGMENT NATIVE TOKEN', async () => {
+      await state.importedAccount.nativeToken.defragment(1 * (10**9), 0.6 * (10**9), 5);
     });
 
     console.log('SUCCESS TASKS:\n', logTask.success.join(', '));
