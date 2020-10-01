@@ -1,1 +1,0 @@
-{"version":3,"file":"baseAccount.d.ts","sourceRoot":"","sources":["../../../../../src/models/account/baseAccount.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,qBAAqB;AACrC,OAAO,cAAc,yBAAyB;AAE9C,cAAM,gBAAiB,SAAQ,SAAS;IACtC,IAAI,EAAE,MAAM,CAAC;IACb,GAAG,EAAE,cAAc,CAAC;gBAER,IAAI,EAAE,MAAM,EAAE,GAAG,EAAE,cAAc;CAM9C;AAED,eAAe,gBAAgB,CAAC"}

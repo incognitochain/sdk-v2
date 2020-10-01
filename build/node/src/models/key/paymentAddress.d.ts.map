@@ -1,1 +1,0 @@
-{"version":3,"file":"paymentAddress.d.ts","sourceRoot":"","sources":["../../../../../src/models/key/paymentAddress.ts"],"names":[],"mappings":"AAAA,OAAO,YAAY,kBAAkB;AAIrC,cAAM,sBAAuB,SAAQ,YAAY;IAC/C,cAAc,EAAE,QAAQ,CAAC;IACzB,oBAAoB,EAAE,QAAQ,CAAC;;IAU/B,OAAO;CAMR;AAED,eAAe,sBAAsB,CAAC"}

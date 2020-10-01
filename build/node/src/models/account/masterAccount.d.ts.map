@@ -1,1 +1,0 @@
-{"version":3,"file":"masterAccount.d.ts","sourceRoot":"","sources":["../../../../../src/models/account/masterAccount.ts"],"names":[],"mappings":"AAAA,OAAO,gBAAgB,sBAAsB;AAC7C,OAAO,YAAY,kBAAkB;AACrC,OAAO,cAAc,yBAAyB;AAE9C,cAAM,kBAAmB,SAAQ,gBAAgB;IAC/C,KAAK,EAAE,YAAY,EAAE,CAAC;gBAEV,IAAI,EAAE,MAAM,EAAE,GAAG,EAAE,cAAc,EAAE,KAAK,EAAE,YAAY,EAAE;CAKrE;AAED,eAAe,kBAAkB,CAAC"}

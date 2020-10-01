@@ -1,1 +1,0 @@
-{"version":3,"file":"nativeToken.d.ts","sourceRoot":"","sources":["../../../../../src/models/token/nativeToken.ts"],"names":[],"mappings":"AAAA,OAAO,cAAc,oBAAoB;AAEzC,UAAU,qBAAqB;IAC7B,OAAO,EAAE,MAAM,CAAC;IAChB,IAAI,EAAE,MAAM,CAAC;IACb,MAAM,EAAE,MAAM,CAAA;CACf;AAED,cAAM,gBAAiB,SAAQ,cAAc;gBAC/B,EAAE,OAAO,EAAE,IAAI,EAAE,MAAM,EAAE,EAAG,qBAAqB;CAK9D;AAED,eAAe,gBAAgB,CAAC"}
