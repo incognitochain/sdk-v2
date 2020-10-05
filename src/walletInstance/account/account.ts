@@ -18,8 +18,8 @@ interface AccountModelInterface extends AccountModel {
 interface IssuePrivacyTokenInterface {
   tokenName: string,
   tokenSymbol: string,
-  supplyAmount: number,
-  nativeTokenFee: number
+  supplyAmount: string,
+  nativeTokenFee: string
 };
 
 class Account extends BaseAccount implements AccountModelInterface {
@@ -27,7 +27,7 @@ class Account extends BaseAccount implements AccountModelInterface {
   nativeToken: NativeToken;
   privacyTokenIds: string[];
   private _blsPublicKeyB58CheckEncode: string;
-  
+
 
   constructor(name: string, key: KeyWalletModel, isImport: boolean) {
     new Validator('name', name).required().string();
@@ -84,7 +84,7 @@ class Account extends BaseAccount implements AccountModelInterface {
 
     _.remove(this.privacyTokenIds, id => id === tokenId);
   }
-  
+
   async issuePrivacyToken({ tokenName, tokenSymbol, supplyAmount, nativeTokenFee } : IssuePrivacyTokenInterface) {
     try {
       const missingError = 'Please make sure your params are following format { tokenName, tokenSymbol, supplyAmount, nativeTokenFee }';
@@ -94,9 +94,9 @@ class Account extends BaseAccount implements AccountModelInterface {
       new Validator('nativeTokenFee', nativeTokenFee).required(missingError).amount();
 
       L.info('Issued token', { tokenName, tokenSymbol, supplyAmount, nativeTokenFee });
-  
+
       const availableCoins = await this.nativeToken.getAvailableCoins();
-      
+
       const txHistory = await initPrivacyToken({
         accountKeySet: this.key.keySet,
         availableNativeCoins: availableCoins,
@@ -105,10 +105,10 @@ class Account extends BaseAccount implements AccountModelInterface {
         tokenSymbol,
         supplyAmount
       });
-  
+
       // follow this new token
       this.followTokenById(txHistory.privacyTokenInfo.tokenId);
-      
+
       L.info(`Issued token successfully with tx id ${txHistory.txId}`);
 
       return txHistory;
@@ -120,7 +120,7 @@ class Account extends BaseAccount implements AccountModelInterface {
 
   /**
    * Find by tokenId or all if tokenId is null
-   * @param {*} tokenId 
+   * @param {*} tokenId
    */
   async getFollowingPrivacyToken(tokenId: TokenIdType) {
     new Validator('tokenId', tokenId).string();

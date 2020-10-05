@@ -13,6 +13,7 @@ import { genETHDepositAddress, genERC20DepositAddress, genCentralizedDepositAddr
 import { getBridgeHistory } from '@src/services/bridge/history';
 import { genCentralizedWithdrawAddress, updatePTokenFee, addETHTxWithdraw, addERC20TxWithdraw } from '@src/services/bridge/withdraw';
 import { convertDecimalToNanoAmount } from '@src/utils/common';
+import BN from 'bn.js';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel,
@@ -24,8 +25,8 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
   name: string;
   symbol: string;
   isPrivacyToken: boolean;
-  totalSupply: number;
-  bridgeInfo: BridgeInfoInterface
+  totalSupply: string;
+  bridgeInfo: BridgeInfoInterface;
 
   constructor({ accountKeySet, privacyTokenApi }: PrivacyTokenParam) {
     new Validator('accountKeySet', accountKeySet).required();
@@ -62,12 +63,12 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     return this.getAvailableCoins(null);
   }
 
-  async transfer(paymentList: PaymentInfoModel[], nativeFee: number, privacyFee: number) {
+  async transfer(paymentList: PaymentInfoModel[], nativeFee: string, privacyFee: string) {
     try {
       new Validator('paymentList', paymentList).required().paymentInfoList();
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('privacyFee', privacyFee).required().amount();
-  
+
       L.info(`Privacy token ${this.tokenId} transfer`, { paymentList, nativeFee, privacyFee });
 
       const history = await sendPrivacyToken({
@@ -81,9 +82,9 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         tokenName: this.name,
         tokenSymbol: this.symbol,
       });
-  
+
       L.info(`Privacy token ${this.tokenId} transfered successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error(`Privacy token ${this.tokenId} transfered failed`, e);
@@ -91,13 +92,13 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
-  async burning(outchainAddress: string, burningAmount: number, nativeFee: number, privacyFee: number) {
+  async burning(outchainAddress: string, burningAmount: string, nativeFee: string, privacyFee: string) {
     try {
       new Validator('outchainAddress', outchainAddress).required().string();
       new Validator('burningAmount', burningAmount).required().amount();
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('privacyFee', privacyFee).required().amount();
-  
+
       L.info(`Privacy token ${this.tokenId} send burning request`, {outchainAddress, burningAmount, nativeFee, privacyFee});
 
       const history = await sendBurningRequest({
@@ -112,23 +113,23 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         outchainAddress,
         burningAmount
       });
-  
+
       L.info(`Privacy token ${this.tokenId} send burning request successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error(`Privacy token ${this.tokenId} sent burning request failed`, e);
       throw e;
-    } 
+    }
   }
 
-  async pdeContribution(pdeContributionPairID: string, contributedAmount: number, nativeFee: number, privacyFee: number) {
+  async pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string) {
     try {
       new Validator('pdeContributionPairID', pdeContributionPairID).required().string();
       new Validator('contributedAmount', contributedAmount).required().amount();
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('privacyFee', privacyFee).required().amount();
-  
+
       L.info(`Privacy token ${this.tokenId} sent PDE contribution request`, {pdeContributionPairID, contributedAmount, nativeFee, privacyFee});
 
       const history = await sendPrivacyTokenPdeContribution({
@@ -143,9 +144,9 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         tokenSymbol: this.symbol,
         tokenName: this.name
       });
-  
+
       L.info(`Privacy token ${this.tokenId} sent PDE contribution request successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error(`Privacy token ${this.tokenId} sent PDE contribution request failed`, e);
@@ -153,7 +154,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
-  async requestTrade(tokenIdBuy: TokenIdType, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, privacyFee: number, tradingFee: number) {
+  async requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string) {
     try {
       new Validator('tokenIdBuy', tokenIdBuy).required().string();
       new Validator('sellAmount', sellAmount).required().amount();
@@ -161,7 +162,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('privacyFee', privacyFee).required().amount();
       new Validator('tradingFee', tradingFee).required().amount();
-  
+
       L.info(`Privacy token ${this.tokenId} sent trade request`, {tokenIdBuy, sellAmount, minimumAcceptableAmount, nativeFee, privacyFee, tradingFee});
 
       const history = await sendPrivacyTokenPdeTradeRequest({
@@ -178,9 +179,9 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         tokenSymbol: this.symbol,
         tokenId: this.tokenId,
       });
-  
+
       L.info(`Privacy token ${this.tokenId} sent trade request successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error(`Privacy token ${this.tokenId} sent trade request failed`, e);
@@ -256,7 +257,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
-  private async bridgeWithdrawCentralized(outchainAddress: string, decimalAmount: number, nanoAmount: number, nativeFee: number = 0, privacyFee: number = 0, memo?: string) {
+  private async bridgeWithdrawCentralized(outchainAddress: string, decimalAmount: string, nanoAmount: string, nativeFee: string = '0', privacyFee: string = '0', memo?: string) {
     try {
       L.info(`Bridge withdraw centralized token ${this.tokenId}`, { decimalAmount, nanoAmount, nativeFee, privacyFee, memo });
       // get temp address
@@ -297,14 +298,14 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     } catch (e) {
       L.error(`Bridge withdraw centralized token ${this.tokenId} failed`, e);
       throw e;
-    } 
+    }
   }
 
-  private async bridgeWithdrawDecentralized(outchainAddress: string, decimalAmount: number, nanoAmount: number, nativeFee: number = 0, privacyFee: number = 0) {
+  private async bridgeWithdrawDecentralized(outchainAddress: string, decimalAmount: string, nanoAmount: string, nativeFee: string = '0', privacyFee: string = '0') {
     try {
       L.info(`Bridge withdraw decentralized token ${this.tokenId}`, { outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee });
 
-      const burningHistory = await this.burning(outchainAddress, nanoAmount + privacyFee, nativeFee, privacyFee);
+      const burningHistory = await this.burning(outchainAddress, new BN(nanoAmount).add(new BN(privacyFee)).toString(), nativeFee, privacyFee);
 
       L.info(`Bridge withdraw decentralized token ${this.tokenId} burned with id ${burningHistory.txId}`, { outchainAddress, amount: nanoAmount + privacyFee, nativeFee, privacyFee });
 
@@ -353,7 +354,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
    * @param {number} decimalAmount accept amount in decimal number (ex: 1.2 ETH, 0.5 BTC,...)
    * @note aaa
    */
-  async bridgeWithdraw(outchainAddress: string, decimalAmount: number, nativeFee: number = 0, privacyFee: number = 0, memo?: string) {
+  async bridgeWithdraw(outchainAddress: string, decimalAmount: string, nativeFee: string = '0', privacyFee: string = '0', memo?: string) {
     try {
       new Validator('decimalAmount', decimalAmount).required().number().largerThan(0);
       new Validator('nativeFee', nativeFee).required().amount();
@@ -368,7 +369,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
 
       const nanoAmount = convertDecimalToNanoAmount(decimalAmount, this.bridgeInfo.pDecimals);
       new Validator('nanoAmount', nanoAmount).required().amount();
-      
+
       L.info(`Bridge withraw token ${this.tokenId}`, { outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee, memo });
 
       if (!this.bridgeInfo) {
@@ -377,10 +378,10 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
 
       if (this.bridgeEthereum || this.bridgeErc20Token) {
         // DECENTRALIZED COINS (eth && ERC-20 tokens)
-        await this.bridgeWithdrawDecentralized(outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee);    
+        await this.bridgeWithdrawDecentralized(outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee);
       } else {
-        // CENTRALIZED COINS 
-        await this.bridgeWithdrawCentralized(outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee, memo);        
+        // CENTRALIZED COINS
+        await this.bridgeWithdrawCentralized(outchainAddress, decimalAmount, nanoAmount, nativeFee, privacyFee, memo);
       }
       L.info(`Bridge withraw token ${this.tokenId} successfully`);
     } catch (e) {

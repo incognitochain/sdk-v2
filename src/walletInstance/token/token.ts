@@ -32,7 +32,7 @@ class Token implements BaseTokenModel {
 
   async getAllOutputCoins(tokenId: TokenIdType) {
     new Validator('tokenId', tokenId).string();
-    
+
     return await getAllOutputCoins(this.accountKeySet, tokenId);
   }
 
@@ -46,17 +46,17 @@ class Token implements BaseTokenModel {
   }
 
   /**
-   * 
+   *
    * @param tokenId use `null` for native token
    */
   async getAvailableCoins(tokenId: TokenIdType = this.tokenId) {
     new Validator('tokenId', tokenId).string();
-    
+
     return getAvailableCoins(this.accountKeySet, tokenId, this.isNativeToken);
   }
 
    /**
-   * 
+   *
    * @param tokenId use `null` for native token
    */
   async getUnspentCoins(tokenId: TokenIdType) {
@@ -66,7 +66,7 @@ class Token implements BaseTokenModel {
   }
 
   /**
-   * 
+   *
    * @param tokenId use `null` for native token
    */
   async getAvaiableBalance(tokenId: TokenIdType = this.tokenId) {
@@ -81,7 +81,7 @@ class Token implements BaseTokenModel {
   }
 
   /**
-   * 
+   *
    * @param tokenId use `null` for native token
    */
   async getTotalBalance(tokenId: TokenIdType = this.tokenId) {
@@ -90,7 +90,7 @@ class Token implements BaseTokenModel {
     const unspentCoins = await this.getUnspentCoins(tokenId);
     const balanceBN = await getTotalBalance(unspentCoins);
 
-    L.info(`Token ${this.tokenId} load total balance = ${balanceBN.toNumber()}`);
+    L.info(`Token ${this.tokenId} load total balance = ${balanceBN.toString()}`);
 
     return balanceBN;
   }
@@ -100,7 +100,7 @@ class Token implements BaseTokenModel {
     return sentTx;
   }
 
-  transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: number, privacyFee?: number) {}
+  transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: string, privacyFee?: string) {}
 
   async withdrawNodeReward() {
     try {
@@ -109,9 +109,9 @@ class Token implements BaseTokenModel {
         availableNativeCoins: await this.getAvailableCoins(),
         tokenId: this.tokenId,
       });
-  
+
       L.info(`Token ${this.tokenId} send withdraw node reward request successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error(`Token ${this.tokenId} sent withdraw node reward failed`, e);

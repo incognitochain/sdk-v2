@@ -11,6 +11,7 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel, { CoinRawData } from '@src/models/coin';
 import { PRIVACY_TOKEN_TX_TYPE, TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
+import BN from 'bn.js';
 
 interface TokenInfo {
   tokenId: TokenIdType,
@@ -24,8 +25,8 @@ interface SendParam extends TokenInfo {
   privacyAvailableCoins: CoinModel[],
   nativePaymentInfoList?: PaymentInfoModel[],
   privacyPaymentInfoList: PaymentInfoModel[],
-  nativeFee: number,
-  privacyFee: number,
+  nativeFee: string,
+  privacyFee: string,
 };
 
 interface CreateTxParam  extends TokenInfo {
@@ -50,9 +51,9 @@ interface PrivacyTokenParam {
   propertyID?: TokenIdType,
   propertyName?: TokenNameType,
   propertySymbol?: TokenSymbolType,
-  amount?: number,
+  amount?: string,
   tokenTxType?: TokenTxType,
-  fee?: number,
+  fee?: string,
   paymentInfoForPToken?: PaymentInfoModel[],
   tokenInputs?: CoinRawData[]
 };
@@ -115,16 +116,21 @@ export async function createTx({
   const nativeOutputCoins = await createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
   const privacyOutputCoins = await createOutputCoin(privacyPaymentAmountBN.add(privacyTokenFeeBN), privacyTxInput.totalValueInputBN, privacyPaymentInfoList);
 
-  console.log('nativeOutputCoins', nativeOutputCoins);
-  console.log('privacyOutputCoins', privacyOutputCoins);
+  nativePaymentInfoList.forEach(item => {
+    item.amount = new BN(item.amount).toString();
+  });
+
+  privacyPaymentInfoList.forEach(item => {
+    item.amount = new BN(item.amount).toString();
+  });
 
   const privacyTokenParam: PrivacyTokenParam = {
     propertyID: tokenId,
     propertyName: tokenName,
     propertySymbol: tokenSymbol,
-    amount: 0,
+    amount: '0',
     tokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
-    fee: privacyTokenFeeBN.toNumber(),
+    fee: privacyTokenFeeBN.toString(),
     paymentInfoForPToken: privacyPaymentInfoList,
     tokenInputs: privacyTxInput.inputCoinStrs.map(coin => coin.toJson()),
     ...privacyTokenParamAdditional
@@ -135,7 +141,7 @@ export async function createTx({
     senderSK: privateKeySerialized,
     paramPaymentInfos: nativePaymentInfoList || [],
     inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
-    fee: nativeTokenFeeBN.toNumber(),
+    fee: nativeTokenFeeBN.toString(),
     isPrivacy: usePrivacyForNativeToken,
     isPrivacyForPToken: usePrivacyForPrivacyToken,
     metaData,
@@ -152,9 +158,7 @@ export async function createTx({
 
   console.log('paramInitTx: ', paramInitTx);
 
-  
   const resInitTx = await initTx(initTxMethod, paramInitTx);
-  console.log('createAndSendNativeToken resInitTx: ', resInitTx);
 
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
@@ -222,21 +226,21 @@ export default async function sendPrivacyToken({
 
   const { serialNumberList: nativeSpendingCoinSNs, listUTXO: nativeListUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
   const { serialNumberList: privacySpendingCoinSNs, listUTXO: privacyListUTXO } = getCoinInfoForCache(privacyTxInput.inputCoinStrs);
-  
+
   return createHistoryInfo({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
     nativePaymentInfoList,
     nativeFee,
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     tokenSymbol,
     tokenName,
     tokenId,
     privacyFee,
     privacyListUTXO,
-    privacyPaymentAmount: privacyPaymentAmountBN.toNumber(),
+    privacyPaymentAmount: privacyPaymentAmountBN.toString(),
     privacyPaymentInfoList,
     privacySpendingCoinSNs,
     txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,

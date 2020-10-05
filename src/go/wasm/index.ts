@@ -15,7 +15,7 @@ async function _loadWasmOnNode(resolve: Function, reject: Function) {
     const go = new Go();
     let inst;
     const data = fs.readFileSync(pathName);
-    
+
     const result = await WebAssembly.instantiate(data, go.importObject);
     inst = result.instance;
     go.run(inst);

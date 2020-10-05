@@ -28,8 +28,8 @@ export interface CreateHistoryParam {
   lockTime: number,
   nativePaymentInfoList: PaymentInfoModel[],
   privacyPaymentInfoList?: PaymentInfoModel[],
-  nativeFee: number,
-  privacyFee?: number,
+  nativeFee: string,
+  privacyFee?: string,
   tokenId?: TokenIdType,
   tokenSymbol?: TokenSymbolType,
   tokenName?: TokenNameType,
@@ -37,8 +37,8 @@ export interface CreateHistoryParam {
   privacySpendingCoinSNs?: string[],
   nativeListUTXO: string[],
   privacyListUTXO?: string[],
-  nativePaymentAmount: number,
-  privacyPaymentAmount?: number,
+  nativePaymentAmount: string,
+  privacyPaymentAmount?: string,
   meta?: any,
   txType?: any,
   privacyTokenTxType?: any,
@@ -57,16 +57,16 @@ export interface NativeTokenTxInputOptions {
 
 /**
  * Parse number to bn (big number), min value is bn(0) (zero)
- * @param amount 
+ * @param amount
  */
-export function toBNAmount(amount: number) {
+export function toBNAmount(amount: string) {
   new Validator('amount', amount).required().amount();
-  return new bn(Math.max(amount, 0)) || new bn(0);
+  return amount ? new bn(amount) : new bn(0);
 }
 
 /**
- * 
- * @param paymentInfoList 
+ *
+ * @param paymentInfoList
  */
 export function getTotalAmountFromPaymentList(paymentInfoList: PaymentInfoModel[]) : bn {
   new Validator('paymentInfoList', paymentInfoList).paymentInfoList();
@@ -109,7 +109,7 @@ async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinMo
 
 /**
  * Prepare data for sending native token
- * 
+ *
  * @param accountKeySet Sender account ket set
  * @param availableNativeCoins  Sender's native coins use to spend
  * @param nativePaymentAmountBN Amount to send
@@ -137,7 +137,7 @@ export async function getNativeTokenTxInput(
     : chooseBestCoinToSpent(availableNativeCoins, totalAmountBN);
   const coinsToSpend: CoinModel[] = bestCoins.resultInputCoins;
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
-  
+
   if (totalAmountBN.cmp(totalValueToSpendBN) === 1) {
     throw new ErrorCode('Not enough coin');
   }
@@ -161,7 +161,7 @@ export async function getNativeTokenTxInput(
 
 /***
  * Prepare data for send privacy token
- * 
+ *
  * @param accountKeySet Sender account ket set
  * @param availableNativeCoins  Sender's native coins use to spend
  * @param privacyPaymentAmountBN Amount to send
@@ -210,7 +210,7 @@ export async function getPrivacyTokenTxInput(
       coinsToSpend[i].info = '';
     }
   }
-  
+
   return {
     inputCoinStrs: coinsToSpend,
     totalValueInputBN: totalValueToSpentBN,
@@ -224,20 +224,22 @@ export async function initTx(handler: Function, param: object) {
   new Validator('handler', handler).required().function();
   new Validator('param', param).required();
 
-  const response = await handler(JSON.stringify(param));
+  const jsonStringParam = JSON.stringify(param);
+
+  const response = await handler(jsonStringParam);
   if (!response) {
     throw new ErrorCode('Can not init transaction');
   }
 
   return response;
-} 
+}
 
 /**
  * Create output coins
- * 
+ *
  * @param totalAmountToTransferBN Amount will be transfered
  * @param totalAmountToSpendBN Amount uses to send
- * @param paymentInfoList 
+ * @param paymentInfoList
  */
 export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]) {
   new Validator('totalAmountToTransferBN', totalAmountToTransferBN).required();
@@ -256,15 +258,13 @@ export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountT
   const sndOutputs: string[] = new Array(numberOutput);
 
   if (numberOutput > 0) {
-    const sndOutputStrs = await goMethods.randomScalars(numberOutput);
+    const sndOutputStrs = await goMethods.randomScalars(numberOutput.toString());
     if (sndOutputStrs === null || sndOutputStrs === '') {
       throw new ErrorCode('Can not random scalars for output coins');
     }
-  
-    console.log('sndOutputStrs: ', sndOutputStrs);
-  
+
     let sndDecodes = base64Decode(sndOutputStrs);
-  
+
     for (let i = 0; i < numberOutput; i++) {
       let sndBytes = sndDecodes.slice(i * ED25519_KEY_SIZE, (i + 1) * ED25519_KEY_SIZE);
       sndOutputs[i] = checkEncode(sndBytes, ENCODE_VERSION);

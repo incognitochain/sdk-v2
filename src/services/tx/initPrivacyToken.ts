@@ -17,8 +17,8 @@ interface TokenInfo {
 interface InitParam extends TokenInfo {
   accountKeySet: AccountKeySetModel,
   availableNativeCoins: CoinModel[],
-  nativeFee: number,
-  supplyAmount: number,
+  nativeFee: string,
+  supplyAmount: string,
 };
 
 export default async function initPrivacyToken({
@@ -49,8 +49,8 @@ export default async function initPrivacyToken({
   const nativePaymentInfoList = <PaymentInfoModel[]>null;
   const nativeTokenFeeBN = toBNAmount(nativeFee);
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
-  const privacyTokenFeeBN = toBNAmount(0);
-  const privacyPaymentAmountBN = toBNAmount(0);
+  const privacyTokenFeeBN = toBNAmount('0');
+  const privacyPaymentAmountBN = toBNAmount('0');
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
   const privacyAvailableCoins: CoinModel[] = [];
 
@@ -86,14 +86,14 @@ export default async function initPrivacyToken({
   const sentInfo = await sendB58CheckEncodeTxToChain(rpc.sendRawTxCustomTokenPrivacy, txInfo.b58CheckEncodeTx);
 
   const { serialNumberList: nativeSpendingCoinSNs, listUTXO: nativeListUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
-  
+
   return createHistoryInfo({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
     nativePaymentInfoList,
     nativeFee,
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     tokenSymbol,
     tokenName,

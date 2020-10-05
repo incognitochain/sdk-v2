@@ -65,14 +65,14 @@ export async function deriveSerialNumbers(accountKeySet: AccountKeySetModel, coi
     for (let i = 0; i < coins.length; i++) {
       snds[i] = coins[i].snDerivator;
     }
-  
+
     let param = {
       privateKey,
       snds
     };
-  
+
     let paramJson = JSON.stringify(param);
-  
+
     let res = await goMethods.deriveSerialNumber(paramJson);
     if (res === null || res === '') {
       throw new ErrorCode('Can not derive serial number');
@@ -110,7 +110,7 @@ export function chooseCoinToDefragment(coins: CoinModel[], defragmentAmount: bn,
     if (selectedCoins.length < maxCoinNumber) {
       new bn(coin.value).lte(defragmentAmount) && selectedCoins.push(coin);
       continue;
-    } 
+    }
 
     break;
   }
@@ -130,11 +130,11 @@ export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
     let resultInputCoins: CoinModel[] = [];
     let remainInputCoins: CoinModel[] = [];
     let totalResultInputCoinAmount = new bn(0);
-  
+
     // either take the smallest coins, or a single largest one
     let inCoinOverAmount = null;
     let inCoinsUnderAmount = [];
-  
+
     for (let i = 0; i < coins.length; i++) {
       if (new bn(coins[i].value).cmp(amountBN) === -1) {
         inCoinsUnderAmount.push(coins[i]);
@@ -147,11 +147,11 @@ export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
         inCoinOverAmount = coins[i];
       }
     }
-  
+
     inCoinsUnderAmount.sort(function (a, b) {
       return new bn(a.value).cmp(new bn(b.value));
     });
-  
+
     for (let i = 0; i < inCoinsUnderAmount.length; i++) {
       if (totalResultInputCoinAmount.cmp(amountBN) === -1) {
         totalResultInputCoinAmount = totalResultInputCoinAmount.add(new bn(inCoinsUnderAmount[i].value));
@@ -160,9 +160,7 @@ export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
         remainInputCoins.push(inCoinsUnderAmount[i]);
       }
     }
-  
-    console.log('chooseBestCoinToSpent inCoinOverAmount: ', inCoinOverAmount);
-  
+
     if (inCoinOverAmount != null && (new bn(inCoinOverAmount.value).cmp(amountBN.mul(new bn(2))) === 1 || totalResultInputCoinAmount.cmp(amountBN) === -1)) {
       remainInputCoins.push(...resultInputCoins);
       resultInputCoins = [inCoinOverAmount];
@@ -170,11 +168,10 @@ export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
     } else if (inCoinOverAmount != null) {
       remainInputCoins.push(inCoinOverAmount);
     }
-  
+
     if (totalResultInputCoinAmount.cmp(amountBN) === -1) {
       throw new ErrorCode('Not enough coin');
     } else {
-      console.timeEnd('chooseBestCoinToSpent');
       return {
         resultInputCoins: resultInputCoins,
         remainInputCoins: remainInputCoins,
@@ -187,5 +184,5 @@ export function chooseBestCoinToSpent(coins: CoinModel[], amountBN: bn): {
       remainInputCoins: coins,
       totalResultInputCoinAmount: new bn(0)
     };
-  }  
+  }
 };

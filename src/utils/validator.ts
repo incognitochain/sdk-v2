@@ -46,7 +46,7 @@ class Validator {
   }
 
   _throwError(message: string) {
-    throw new ErrorCode(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);  
+    throw new ErrorCode(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);
   }
 
   _isDefined() {
@@ -81,7 +81,7 @@ class Validator {
   boolean(message = 'Must be boolean') {
     return this._onCondition(() => typeof this.value === 'boolean', message);
   }
-  
+
   number(message = 'Must be number') {
     return this._onCondition(() => Number.isFinite(this.value), message);
   }
@@ -120,11 +120,11 @@ class Validator {
     message = `Must be one of ${JSON.stringify(list)}`;
     return this._onCondition(() => list.includes(this.value), message);
   }
-  
+
   intergerNumber(message = 'Must be an interger number') {
     return this._onCondition(() => Number.isInteger(this.value), message);
   }
-  
+
   paymentAddress(message = 'Invalid payment address') {
     return this._onCondition(() => this.string() && isPaymentAddress(this.value), message);
   }
@@ -136,14 +136,14 @@ class Validator {
   shardId(message = 'Shard ID must be between 0 to 7') {
     return this._onCondition(() => this.intergerNumber() && this.inList([0, 1, 2, 3, 4, 5, 6, 7]), message);
   }
-  
+
   /**
-   * 
+   *
    * @param {number} value amount in nano (must be an integer number)
    * @param {string} message error message
    */
   amount(message = 'Invalid amount') {
-    return this._onCondition(() => (this.intergerNumber() && this.value >= 0), message);
+    return this._onCondition(() => (this.string() && this.value >= 0), message);
   }
 
   paymentInfoList(message = 'Invalid paymentInfoList, must be array of payment info "{ paymentAddressStr: string, amount: number, message: string }" (max 30 payment info)') {

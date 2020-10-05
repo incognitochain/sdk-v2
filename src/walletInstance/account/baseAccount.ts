@@ -19,6 +19,14 @@ class BaseAccount implements BaseAccountInterface {
     this.key.keySet.viewingKeySerialized = base58CheckSerialize(this.key.keySet.viewingKey, this.key.depth, this.key.childNumber, this.key.chainCode);
   }
 
+  getSerializedInformations() {
+    return {
+      privateKey: this.key.keySet.privateKeySerialized,
+      paymentAddress: this.key.keySet.paymentAddressKeySerialized,
+      readOnlyKey: this.key.keySet.viewingKeySerialized,
+    }
+  }
+
   getBackupData() {
     return {
       name: this.name,
