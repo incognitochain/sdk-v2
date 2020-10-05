@@ -27,17 +27,17 @@ class NativeToken extends Token implements NativeTokenModel {
     this.isNativeToken = true;
   }
 
-  async transfer(paymentInfoList: PaymentInfoModel[], nativeFee: number) {
+  async transfer(paymentInfoList: PaymentInfoModel[], nativeFee: string) {
     try {
       new Validator('paymentInfoList', paymentInfoList).required().paymentInfoList();
       new Validator('nativeFee', nativeFee).required().amount();
-  
+
       L.info('Native token transfer', { paymentInfoList, nativeFee });
-  
+
       const history = await sendNativeToken({ nativePaymentInfoList: paymentInfoList, nativeFee: nativeFee, accountKeySet: this.accountKeySet, availableCoins: await this.getAvailableCoins() });
-      
+
       L.info(`Native token transfered successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error('Native token transfer failed', e);
@@ -45,13 +45,13 @@ class NativeToken extends Token implements NativeTokenModel {
     }
   }
 
-  async requestStaking(rewardReceiverPaymentAddress: string, nativeFee: number) {
+  async requestStaking(rewardReceiverPaymentAddress: string, nativeFee: string) {
     try {
       new Validator('rewardReceiverPaymentAddress', rewardReceiverPaymentAddress).required().string();
       new Validator('nativeFee', nativeFee).required().amount();
 
       L.info('Native token request staking', { rewardReceiverPaymentAddress, nativeFee });
-  
+
       const history = await sendStakingRequest({
         candidateAccountKeySet: this.accountKeySet,
         availableNativeCoins: await this.getAvailableCoins(),
@@ -59,9 +59,9 @@ class NativeToken extends Token implements NativeTokenModel {
         rewardReceiverPaymentAddress,
         autoReStaking: true
       });
-  
+
       L.info(`Native token sent request staking successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error('Native send request staking failed', e);
@@ -69,12 +69,12 @@ class NativeToken extends Token implements NativeTokenModel {
     }
   }
 
-  async pdeContribution(pdeContributionPairID: string, contributedAmount: number, nativeFee: number) {
+  async pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string) {
     try {
       new Validator('pdeContributionPairID', pdeContributionPairID).required().string();
       new Validator('contributedAmount', contributedAmount).required().amount();
       new Validator('nativeFee', nativeFee).required().amount();
-  
+
       L.info('Native token sent PDE contribution', { pdeContributionPairID, contributedAmount, nativeFee });
 
       const history = await sendNativeTokenPdeContribution({
@@ -85,9 +85,9 @@ class NativeToken extends Token implements NativeTokenModel {
         tokenId: this.tokenId,
         contributedAmount
       });
-  
+
       L.info(`Native token sent PDE contribution successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error('Native token sent PDE contribution failed', e);
@@ -95,14 +95,14 @@ class NativeToken extends Token implements NativeTokenModel {
     }
   }
 
-  async requestTrade(tokenIdBuy: TokenIdType, sellAmount: number, minimumAcceptableAmount: number, nativeFee: number, tradingFee: number) {
+  async requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, tradingFee: string) {
     try {
       new Validator('tokenIdBuy', tokenIdBuy).required().string();
       new Validator('sellAmount', sellAmount).required().amount();
       new Validator('minimumAcceptableAmount', minimumAcceptableAmount).required().amount();
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('tradingFee', tradingFee).required().amount();
-  
+
       L.info('Native token send trade request', {tokenIdBuy, sellAmount, minimumAcceptableAmount, nativeFee, tradingFee});
 
       const history = await sendNativeTokenPdeTradeRequest({
@@ -115,9 +115,9 @@ class NativeToken extends Token implements NativeTokenModel {
         sellAmount,
         minimumAcceptableAmount
       });
-  
+
       L.info(`Native token sent trade request successfully with tx id ${history.txId}`);
-  
+
       return history;
     } catch (e) {
       L.error('Native token sent trade request failed', e);
@@ -125,15 +125,15 @@ class NativeToken extends Token implements NativeTokenModel {
     }
   }
 
-  async defragment(defragmentAmount: number, nativeFee: number, maxCoinNumberToDefragment?: number) {
+  async defragment(defragmentAmount: string, nativeFee: string, maxCoinNumberToDefragment?: number) {
     try {
       new Validator('defragmentAmount', defragmentAmount).required().amount();
       new Validator('nativeFee', nativeFee).required().amount();
-  
+
       L.info('Native token defragment', { defragmentAmount, nativeFee });
-  
+
       const history = await sendNativeTokenDefragment({ defragmentAmount, nativeFee: nativeFee, accountKeySet: this.accountKeySet, availableNativeCoins: await this.getAvailableCoins(), maxCoinNumber: maxCoinNumberToDefragment });
-      
+
       if (history) {
         L.info(`Native token defragmented successfully with tx id ${history.txId}`);
       } else {

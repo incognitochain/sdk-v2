@@ -10,12 +10,13 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import CoinModel from '@src/models/coin';
 import { TX_TYPE, HISTORY_TYPE } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
+import BN from 'bn.js';
 
 interface SendParam {
   accountKeySet: AccountKeySetModel,
   availableCoins: CoinModel[],
   nativePaymentInfoList: PaymentInfoModel[],
-  nativeFee: number,
+  nativeFee: string,
 };
 
 interface CreateNativeTxParam {
@@ -67,13 +68,15 @@ export async function createTx({
 
   const outputCoins = await createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
 
-  console.log('outputCoint', outputCoins);
+  nativePaymentInfoList.forEach(item => {
+    item.amount = new BN(item.amount).toString();
+  });
 
   const paramInitTx = {
     senderSK: privateKeySerialized,
     paramPaymentInfos: nativePaymentInfoList,
     inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
-    fee: nativeTokenFeeBN.toNumber(),
+    fee: nativeTokenFeeBN.toString(),
     isPrivacy: usePrivacyForNativeToken,
     tokenID: <string>null,
     metaData,
@@ -85,7 +88,7 @@ export async function createTx({
   };
 
   console.log('paramInitTx', paramInitTx);
-  
+
   const resInitTx = await initTx(initTxMethod, paramInitTx);
 
   console.log('resInitTx', resInitTx);
@@ -107,8 +110,6 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
   const nativeTokenFeeBN = toBNAmount(nativeFee);
 
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
-  console.log('txInput', nativeTxInput);
-
   const txInfo = await createTx({
     nativeTxInput,
     nativePaymentAmountBN,
@@ -132,7 +133,7 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     nativePaymentInfoList,
     nativeFee,
     nativeListUTXO: listUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs: serialNumberList,
     txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,

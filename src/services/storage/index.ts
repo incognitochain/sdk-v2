@@ -9,9 +9,9 @@ interface ImplementInterface {
 
 export class StorageService {
   namespace: string;
-  setMethod: (key: string, data: string) => Promise<any>;
-  getMethod: (key: string) => Promise<string>;
-  removeMethod: (key: string) => Promise<any>;
+  setMethod: (key: string, data: string) => any;
+  getMethod: (key: string) => any;
+  removeMethod: (key: string) => any;
 
   constructor(namespace?: string) {
     this.namespace = namespace;

@@ -8,7 +8,7 @@ interface ChainTokenApiModelParamModelInterface {
 };
 
 class ChainTokenApiModel extends BaseModel {
-  supplyAmount: number;
+  supplyAmount: string;
   symbol: string;
   name: string;
   tokenId: string;
@@ -19,7 +19,7 @@ class ChainTokenApiModel extends BaseModel {
     this.tokenId = data.ID;
     this.symbol = data.Symbol;
     this.name = data.Name;
-    this.supplyAmount = data.Amount;
+    this.supplyAmount = data.Amount.toString();
   }
 }
 

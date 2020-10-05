@@ -25,9 +25,9 @@ export default async function sendWithdrawReward({
   new Validator('tokenId', tokenId).required().string();
 
   const usePrivacyForNativeToken = false;
-  const nativeFeeBN = toBNAmount(0);
+  const nativeFeeBN = toBNAmount('0');
   const nativePaymentInfoList: PaymentInfoModel[] = null;
-  
+
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeFeeBN, usePrivacyForNativeToken);
 
@@ -38,7 +38,7 @@ export default async function sendWithdrawReward({
     PaymentAddress: accountKeySet.paymentAddressKeySerialized,
     TokenID: tokenId
   };
-  
+
   const txInfo = await createTx({
     nativeTxInput,
     nativePaymentInfoList,
@@ -49,19 +49,19 @@ export default async function sendWithdrawReward({
     initTxMethod: goMethods.initWithdrawRewardTx,
     metaData
   });
-  
+
   console.log('txInfo', txInfo);
 
   const sentInfo = await sendB58CheckEncodeTxToChain(rpc.sendRawTx, txInfo.b58CheckEncodeTx);
   const { serialNumberList: nativeSpendingCoinSNs, listUTXO: nativeListUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
-  
+
   return createHistoryInfo({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
     nativePaymentInfoList,
-    nativeFee: nativeFeeBN.toNumber(),
+    nativeFee: nativeFeeBN.toString(),
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,

@@ -3,7 +3,7 @@ import { TokenInfo } from '@src/constants';
 import Validator from '@src/utils/validator';
 
 export const genCentralizedWithdrawAddress = ({ amount, paymentAddress, walletAddress, tokenId, currencyType, memo } : {
-  amount: number, paymentAddress: string, walletAddress: string, tokenId: string, currencyType: number, memo?: string
+  amount: string, paymentAddress: string, walletAddress: string, tokenId: string, currencyType: number, memo?: string
 }): Promise<string> => {
   new Validator('amount', amount).required().number().largerThan(0);
   new Validator('paymentAddress', paymentAddress).required().string();
@@ -15,7 +15,7 @@ export const genCentralizedWithdrawAddress = ({ amount, paymentAddress, walletAd
   return http.post('ota/generate', {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.WITHDRAW,
-    RequestedAmount: String(amount),
+    RequestedAmount: amount,
     PaymentAddress: paymentAddress,
     WalletAddress: walletAddress,
     PrivacyTokenAddress: tokenId,
@@ -24,7 +24,7 @@ export const genCentralizedWithdrawAddress = ({ amount, paymentAddress, walletAd
 };
 
 export const addETHTxWithdraw = ({ amount, originalAmount, paymentAddress, walletAddress, tokenId, burningTxId, currencyType  } : {
-  amount: number, paymentAddress: string, walletAddress: string, tokenId: string, currencyType: number, originalAmount: number, burningTxId: string
+  amount: string, paymentAddress: string, walletAddress: string, tokenId: string, currencyType: number, originalAmount: string, burningTxId: string
 }) => {
   new Validator('amount', amount).required().number().largerThan(0);
   new Validator('paymentAddress', paymentAddress).required().string();
@@ -37,8 +37,8 @@ export const addETHTxWithdraw = ({ amount, originalAmount, paymentAddress, walle
   return http.post('eta/add-tx-withdraw', {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.WITHDRAW,
-    RequestedAmount: String(amount),
-    IncognitoAmount: String(originalAmount),
+    RequestedAmount: amount,
+    IncognitoAmount: originalAmount,
     PaymentAddress: paymentAddress,
     Erc20TokenAddress: '',
     PrivacyTokenAddress: tokenId,
@@ -48,7 +48,7 @@ export const addETHTxWithdraw = ({ amount, originalAmount, paymentAddress, walle
 };
 
 export const addERC20TxWithdraw = ({ amount, originalAmount, paymentAddress, walletAddress, tokenContractID, tokenId, burningTxId, currencyType  } : {
-  amount: number, paymentAddress: string, walletAddress: string, tokenId: string, currencyType: number, originalAmount: number, burningTxId: string, tokenContractID: string
+  amount: string, paymentAddress: string, walletAddress: string, tokenId: string, currencyType: number, originalAmount: string, burningTxId: string, tokenContractID: string
 }) => {
   new Validator('amount', amount).required().number().largerThan(0);
   new Validator('paymentAddress', paymentAddress).required().string();
@@ -62,8 +62,8 @@ export const addERC20TxWithdraw = ({ amount, originalAmount, paymentAddress, wal
   return http.post('eta/add-tx-withdraw', {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.WITHDRAW,
-    RequestedAmount: String(amount),
-    IncognitoAmount: String(originalAmount),
+    RequestedAmount: amount,
+    IncognitoAmount: originalAmount,
     PaymentAddress: paymentAddress,
     Erc20TokenAddress: tokenContractID,
     PrivacyTokenAddress: tokenId,
@@ -72,12 +72,12 @@ export const addERC20TxWithdraw = ({ amount, originalAmount, paymentAddress, wal
   });
 };
 
-export const updatePTokenFee = ({ fee, paymentAddress  }: { fee: number, paymentAddress: string }) => {
+export const updatePTokenFee = ({ fee, paymentAddress  }: { fee: string, paymentAddress: string }) => {
   new Validator('fee', fee).required().amount().largerThan(0);
   new Validator('paymentAddress', paymentAddress).required().paymentAddress();
 
   return http.post('ota/update-fee', {
     Address: paymentAddress,
-    TokenFee: String(fee),
+    TokenFee: fee,
   });
 };

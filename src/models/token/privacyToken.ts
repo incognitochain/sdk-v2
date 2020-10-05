@@ -4,13 +4,12 @@ interface PrivacyTokenModelData {
   tokenId: string,
   name: string,
   symbol: string,
-  totalSupply: number,
+  totalSupply: string,
 };
 
 class PrivacyTokenModel extends BaseTokenModel {
-  totalSupply: number;
+  totalSupply: string;
 
-  
   constructor({ tokenId, name, symbol, totalSupply } : PrivacyTokenModelData) {
     super({ tokenId, name, symbol });
 

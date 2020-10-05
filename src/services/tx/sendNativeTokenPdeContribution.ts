@@ -13,9 +13,9 @@ import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
   availableNativeCoins: CoinModel[],
-  nativeFee: number,
+  nativeFee: string,
   pdeContributionPairID: string,
-  contributedAmount: number,
+  contributedAmount: string,
   tokenId: TokenIdType
 };
 
@@ -41,11 +41,11 @@ export default async function sendNativeTokenPdeContribution({
   const nativePaymentInfoList = [
     new PaymentInfoModel({
       paymentAddress: burningAddress,
-      amount: contributedAmountBN.toNumber(),
+      amount: contributedAmountBN.toString(),
       message: ''
     })
   ];
-  
+
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeFeeBN, usePrivacyForNativeToken);
 
@@ -58,7 +58,7 @@ export default async function sendNativeTokenPdeContribution({
     TokenIDStr: tokenId,
     Type: PDEContributionMeta
   };
-  
+
   const txInfo = await createTx({
     nativeTxInput,
     nativePaymentInfoList,
@@ -69,19 +69,19 @@ export default async function sendNativeTokenPdeContribution({
     initTxMethod: goMethods.initPRVContributionTx,
     metaData
   });
-  
+
   console.log('txInfo', txInfo);
 
   const sentInfo = await sendB58CheckEncodeTxToChain(rpc.sendRawTx, txInfo.b58CheckEncodeTx);
   const { serialNumberList: nativeSpendingCoinSNs, listUTXO: nativeListUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
-  
+
   return createHistoryInfo({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
     nativePaymentInfoList,
-    nativeFee: nativeFeeBN.toNumber(),
+    nativeFee: nativeFeeBN.toString(),
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,

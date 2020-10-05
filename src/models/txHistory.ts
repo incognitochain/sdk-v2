@@ -4,16 +4,16 @@ import PaymentInfoModel from './paymentInfo';
 // The metaData field is different between transaction types: {Type : number, ...}
 // 1. Staking tx:                     metaData.Type:  MetaStakingBeacon || MetaStakingShard
 // 2. Burning tx:                     metaData.Type:  BurningRequestMeta  (withdraw pToken decentralized)
-// 3. Withdraw reward amount tx:      metaData.Type:  WithDrawRewardRequestMeta 
-// 4. Contribution PRV or pToken tx:  metaData.Type:  PDEContributionMeta 
-// 5. Trade PRV or pToken tx:         metaData.Type:  PDETradeRequestMeta 
-// 6. Withdraw DEX tx:                metaData.Type:  PDEWithdrawalRequestMeta 
+// 3. Withdraw reward amount tx:      metaData.Type:  WithDrawRewardRequestMeta
+// 4. Contribution PRV or pToken tx:  metaData.Type:  PDEContributionMeta
+// 5. Trade PRV or pToken tx:         metaData.Type:  PDETradeRequestMeta
+// 6. Withdraw DEX tx:                metaData.Type:  PDEWithdrawalRequestMeta
 
 // withdraw ptoken centralized tx is ptoken tx without metadata
 
 interface NativeTokenHistoryInfo {
-  fee: number,
-  amount: number,
+  fee: string,
+  amount: string,
   paymentInfoList: PaymentInfoModel[],
   usePrivacy: boolean,
   spendingCoinSNs: string[],
@@ -76,4 +76,3 @@ export default class TxHistoryModel {
     };
   }
 }
-  

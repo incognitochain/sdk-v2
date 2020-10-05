@@ -14,8 +14,8 @@ import { bn } from '@src/privacy/sjcl/sjcl';
 interface DefragmentParam {
   accountKeySet: AccountKeySetModel,
   availableNativeCoins: CoinModel[],
-  nativeFee: number,
-  defragmentAmount: number,
+  nativeFee: string,
+  defragmentAmount: string,
   maxCoinNumber: number
 };
 
@@ -40,7 +40,7 @@ export default async function sendNativeTokenDefragment({
   const nativePaymentAmountBN = getValueFromCoins(defragmentCoins).sub(nativeFeeBN);
 
   // make sure nativePaymentAmountBN can cover the fee
-  if (nativePaymentAmountBN.lte(toBNAmount(0))) {
+  if (nativePaymentAmountBN.lte(toBNAmount('0'))) {
     return;
   }
 
@@ -60,7 +60,7 @@ export default async function sendNativeTokenDefragment({
   const nativePaymentInfoList = [
     new PaymentInfoModel({
       paymentAddress: accountKeySet.paymentAddressKeySerialized,
-      amount: nativePaymentAmountBN.toNumber(),
+      amount: nativePaymentAmountBN.toString(),
       message: ''
     })
   ];
@@ -84,9 +84,9 @@ export default async function sendNativeTokenDefragment({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
     nativePaymentInfoList,
-    nativeFee: nativeFeeBN.toNumber(),
+    nativeFee: nativeFeeBN.toString(),
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,

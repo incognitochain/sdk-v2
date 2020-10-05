@@ -15,10 +15,10 @@ interface ContributionParam {
   accountKeySet: AccountKeySetModel,
   availableNativeCoins: CoinModel[],
   privacyAvailableCoins: CoinModel[],
-  nativeFee: number,
-  privacyFee: number,
+  nativeFee: string,
+  privacyFee: string,
   pdeContributionPairID: string,
-  contributedAmount: number,
+  contributedAmount: string,
   tokenId: TokenIdType,
   tokenName: TokenNameType,
   tokenSymbol: TokenSymbolType,
@@ -57,12 +57,12 @@ export default async function sendPrivacyTokenPdeContribution({
   const privacyPaymentInfoList = [
     new PaymentInfoModel({
       paymentAddress: await getBurningAddress(),
-      amount: contributedAmountBN.toNumber(),
+      amount: contributedAmountBN.toString(),
       message: ''
     })
   ];
   const privacyPaymentAmountBN = getTotalAmountFromPaymentList(privacyPaymentInfoList);
-  
+
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
 
   console.log('nativeTxInput', nativeTxInput);
@@ -113,7 +113,7 @@ export default async function sendPrivacyTokenPdeContribution({
     nativePaymentInfoList,
     nativeFee,
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     tokenSymbol,
     tokenName,
@@ -121,7 +121,7 @@ export default async function sendPrivacyTokenPdeContribution({
     txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,
     privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     privacyPaymentInfoList,
-    privacyPaymentAmount: privacyPaymentAmountBN.toNumber(),
+    privacyPaymentAmount: privacyPaymentAmountBN.toString(),
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     usePrivacyForPrivacyToken,

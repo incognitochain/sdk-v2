@@ -14,13 +14,13 @@ import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 interface ContributionParam {
   accountKeySet: AccountKeySetModel,
   availableNativeCoins: CoinModel[],
-  nativeFee: number,
-  tradingFee: number,
-  sellAmount: number,
+  nativeFee: string,
+  tradingFee: string,
+  sellAmount: string,
   tokenIdBuy: TokenIdType,
-  minimumAcceptableAmount: number,
+  minimumAcceptableAmount: string,
   privacyAvailableCoins: CoinModel[],
-  privacyFee: number,
+  privacyFee: string,
   tokenId: TokenIdType,
   tokenName: TokenNameType,
   tokenSymbol: TokenSymbolType,
@@ -65,12 +65,12 @@ export default async function sendPrivacyTokenPdeTradeRequest({
   const privacyPaymentInfoList = [
     new PaymentInfoModel({
       paymentAddress: await getBurningAddress(),
-      amount: sellAmountBN.add(tradingFeeBN).toNumber(),
+      amount: sellAmountBN.add(tradingFeeBN).toString(),
       message: ''
     })
   ];
   const privacyPaymentAmountBN = getTotalAmountFromPaymentList(privacyPaymentInfoList);
-  
+
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
 
   console.log('nativeTxInput', nativeTxInput);
@@ -81,11 +81,11 @@ export default async function sendPrivacyTokenPdeTradeRequest({
   const metaData = {
     TokenIDToBuyStr: tokenIdBuy,
     TokenIDToSellStr: tokenId,
-    SellAmount: sellAmountBN.toNumber(),
+    SellAmount: sellAmountBN.toString(),
     TraderAddressStr: accountKeySet.paymentAddressKeySerialized,
     Type: PDETradeRequestMeta,
-    MinAcceptableAmount: minimumAcceptableAmountBN.toNumber(),
-    TradingFee: tradingFeeBN.toNumber()
+    MinAcceptableAmount: minimumAcceptableAmountBN.toString(),
+    TradingFee: tradingFeeBN.toString()
   };
 
   const txInfo = await createTx({
@@ -123,7 +123,7 @@ export default async function sendPrivacyTokenPdeTradeRequest({
     nativePaymentInfoList,
     nativeFee,
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     tokenSymbol,
     tokenName,
@@ -131,7 +131,7 @@ export default async function sendPrivacyTokenPdeTradeRequest({
     txType: TX_TYPE.PRIVACY_TOKEN_WITH_PRIVACY_MODE,
     privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     privacyPaymentInfoList,
-    privacyPaymentAmount: privacyPaymentAmountBN.toNumber(),
+    privacyPaymentAmount: privacyPaymentAmountBN.toString(),
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     usePrivacyForPrivacyToken,

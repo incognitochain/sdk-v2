@@ -24,7 +24,7 @@ class PrivacyTokenApiModel extends BaseModel {
   tokenId: string;
   symbol: string;
   name: string;
-  supplyAmount: number;
+  supplyAmount: string;
   bridgeInfo: BridgeInfoInterface;
 
   constructor(data: PrivacyTokenApiModelParam = <PrivacyTokenApiModelParam>{}) {
@@ -45,7 +45,7 @@ class PrivacyTokenApiModel extends BaseModel {
       verified: data.bridgeTokenInfo.verified,
     };
     this.name = data.chainTokenInfo?.name || data.bridgeTokenInfo?.name;
-    this.supplyAmount = data.chainTokenInfo?.supplyAmount;
+    this.supplyAmount = data.chainTokenInfo?.supplyAmount.toString();
   }
 }
 

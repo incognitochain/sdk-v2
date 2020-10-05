@@ -13,12 +13,12 @@ import { DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 interface TradeParam {
   accountKeySet: AccountKeySetModel,
   availableNativeCoins: CoinModel[],
-  nativeFee: number,
-  tradingFee: number,
-  sellAmount: number,
+  nativeFee: string,
+  tradingFee: string,
+  sellAmount: string,
   tokenIdBuy: TokenIdType,
   tokenIdSell: TokenIdType,
-  minimumAcceptableAmount: number,
+  minimumAcceptableAmount: string,
 };
 
 export default async function sendNativeTokenPdeTradeRequest({
@@ -49,11 +49,11 @@ export default async function sendNativeTokenPdeTradeRequest({
   const nativePaymentInfoList = [
     new PaymentInfoModel({
       paymentAddress: burningAddress,
-      amount: sellAmountBN.add(tradingFeeBN).toNumber(),
+      amount: sellAmountBN.add(tradingFeeBN).toString(),
       message: ''
     })
   ];
-  
+
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableNativeCoins, nativePaymentAmountBN, nativeFeeBN, usePrivacyForNativeToken);
 
@@ -62,13 +62,13 @@ export default async function sendNativeTokenPdeTradeRequest({
   const metaData =  {
     TokenIDToBuyStr: tokenIdBuy,
     TokenIDToSellStr: tokenIdSell,
-    SellAmount: sellAmountBN.toNumber(),
+    SellAmount: sellAmountBN.toString(),
     TraderAddressStr: accountKeySet.paymentAddressKeySerialized,
     Type: PDETradeRequestMeta,
-    MinAcceptableAmount: minimumAcceptableAmountBN.toNumber(),
-    TradingFee: tradingFeeBN.toNumber()
+    MinAcceptableAmount: minimumAcceptableAmountBN.toString(),
+    TradingFee: tradingFeeBN.toString()
   };
-  
+
   const txInfo = await createTx({
     nativeTxInput,
     nativePaymentInfoList,
@@ -79,19 +79,19 @@ export default async function sendNativeTokenPdeTradeRequest({
     initTxMethod: goMethods.initPRVTradeTx,
     metaData
   });
-  
+
   console.log('txInfo', txInfo);
 
   const sentInfo = await sendB58CheckEncodeTxToChain(rpc.sendRawTx, txInfo.b58CheckEncodeTx);
   const { serialNumberList: nativeSpendingCoinSNs, listUTXO: nativeListUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
-  
+
   return createHistoryInfo({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
     nativePaymentInfoList,
-    nativeFee: nativeFeeBN.toNumber(),
+    nativeFee: nativeFeeBN.toString(),
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,

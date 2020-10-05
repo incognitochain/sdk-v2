@@ -20,10 +20,10 @@ interface SendParam extends TokenInfo {
   accountKeySet: AccountKeySetModel,
   nativeAvailableCoins: CoinModel[],
   privacyAvailableCoins: CoinModel[],
-  nativeFee: number,
-  privacyFee: number,
+  nativeFee: string,
+  privacyFee: string,
   outchainAddress: string,
-  burningAmount: number
+  burningAmount: string
 };
 
 function parseOutchainAddress(outchainAddress: string) {
@@ -72,7 +72,7 @@ export default async function sendBurningRequest({
   const privacyPaymentInfoList = [
     new PaymentInfoModel({
       paymentAddress: burningAddress,
-      amount: totalBurningAmountBN.toNumber(),
+      amount: totalBurningAmountBN.toString(),
       message: ''
     })
   ];
@@ -80,7 +80,7 @@ export default async function sendBurningRequest({
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
   const privacyTokenFeeBN = toBNAmount(privacyFee);
   const privacyPaymentAmountBN = getTotalAmountFromPaymentList(privacyPaymentInfoList);
-  
+
   const nativeTxInput = await getNativeTokenTxInput(accountKeySet, nativeAvailableCoins, nativePaymentAmountBN, nativeFeeBN, usePrivacyForNativeToken);
   console.log('nativeTxInput', nativeTxInput);
 
@@ -89,7 +89,7 @@ export default async function sendBurningRequest({
 
   const burningReqMetadata = {
     BurnerAddress: accountKeySet.paymentAddressKeySerialized,
-    BurningAmount: totalBurningAmountBN.toNumber(),
+    BurningAmount: totalBurningAmountBN.toString(),
     TokenID: tokenId,
     TokenName: tokenName,
     RemoteAddress: outchainAddressParsed,
@@ -128,7 +128,7 @@ export default async function sendBurningRequest({
     nativePaymentInfoList,
     nativeFee,
     nativeListUTXO,
-    nativePaymentAmount: nativePaymentAmountBN.toNumber(),
+    nativePaymentAmount: nativePaymentAmountBN.toString(),
     nativeSpendingCoinSNs,
     tokenSymbol,
     tokenName,
@@ -139,7 +139,7 @@ export default async function sendBurningRequest({
     privacySpendingCoinSNs,
     privacyTokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     privacyPaymentInfoList,
-    privacyPaymentAmount: totalBurningAmountBN.toNumber(),
+    privacyPaymentAmount: totalBurningAmountBN.toString(),
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForPrivacyToken,
     usePrivacyForNativeToken,
