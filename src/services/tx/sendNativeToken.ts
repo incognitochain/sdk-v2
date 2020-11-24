@@ -1,7 +1,17 @@
 import bn from 'bn.js';
-import { getTotalAmountFromPaymentList, createOutputCoin, TxInputType, initTx, getNativeTokenTxInput, toBNAmount, sendB58CheckEncodeTxToChain, getCoinInfoForCache, createHistoryInfo } from './utils';
+import {
+  getTotalAmountFromPaymentList,
+  createOutputCoin,
+  TxInputType,
+  initTx,
+  getNativeTokenTxInput,
+  toBNAmount,
+  sendB58CheckEncodeTxToChain,
+  getCoinInfoForCache,
+  createHistoryInfo,
+} from './utils';
 import rpc from '@src/services/rpc';
-import { base64Decode } from '@src/privacy/utils';
+import { base64Decode, base64Encode } from '@src/privacy/utils';
 import { checkEncode } from '@src/utils/base58';
 import { ENCODE_VERSION, DEFAULT_NATIVE_FEE } from '@src/constants/constants';
 import goMethods from '@src/go';
@@ -13,29 +23,34 @@ import Validator from '@src/utils/validator';
 import BN from 'bn.js';
 
 interface SendParam {
-  accountKeySet: AccountKeySetModel,
-  availableCoins: CoinModel[],
-  nativePaymentInfoList: PaymentInfoModel[],
-  nativeFee: string,
-};
+  accountKeySet: AccountKeySetModel;
+  availableCoins: CoinModel[];
+  nativePaymentInfoList: PaymentInfoModel[];
+  nativeFee: string;
+}
 
 interface CreateNativeTxParam {
-  nativeTxInput: TxInputType,
-  nativePaymentInfoList: PaymentInfoModel[],
-  nativeTokenFeeBN: bn,
-  nativePaymentAmountBN: bn,
-  privateKeySerialized: string,
-  usePrivacyForNativeToken?: boolean,
-  metaData?: any,
-  initTxMethod: Function,
-  customExtractInfoFromInitedTxMethod?(resInitTxBytes:Uint8Array): ({ b58CheckEncodeTx: string, lockTime: number })
-};
+  nativeTxInput: TxInputType;
+  nativePaymentInfoList: PaymentInfoModel[];
+  nativeTokenFeeBN: bn;
+  nativePaymentAmountBN: bn;
+  privateKeySerialized: string;
+  usePrivacyForNativeToken?: boolean;
+  metaData?: any;
+  initTxMethod: Function;
+  customExtractInfoFromInitedTxMethod?(
+    resInitTxBytes: Uint8Array
+  ): { b58CheckEncodeTx: string; lockTime: number };
+}
 
 export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
   new Validator('resInitTxBytes', resInitTxBytes).required();
 
   // get b58 check encode tx json
-  let b58CheckEncodeTx = checkEncode(resInitTxBytes.slice(0, resInitTxBytes.length - 8), ENCODE_VERSION);
+  let b58CheckEncodeTx = checkEncode(
+    resInitTxBytes.slice(0, resInitTxBytes.length - 8),
+    ENCODE_VERSION
+  );
 
   // get lock time tx
   let lockTimeBytes = resInitTxBytes.slice(resInitTxBytes.length - 8);
@@ -43,7 +58,7 @@ export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
 
   return {
     b58CheckEncodeTx,
-    lockTime
+    lockTime,
   };
 }
 
@@ -56,60 +71,83 @@ export async function createTx({
   usePrivacyForNativeToken = true,
   metaData,
   initTxMethod,
-  customExtractInfoFromInitedTxMethod
-} : CreateNativeTxParam) {
+  customExtractInfoFromInitedTxMethod,
+}: CreateNativeTxParam) {
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
   new Validator('nativeTxInput', nativeTxInput).required();
-  new Validator('nativePaymentInfoList', nativePaymentInfoList).required().paymentInfoList();
-  new Validator('privateKeySerialized', privateKeySerialized).required().string();
-  new Validator('usePrivacyForNativeToken', usePrivacyForNativeToken).required().boolean();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList)
+    .required()
+    .paymentInfoList();
+  new Validator('privateKeySerialized', privateKeySerialized)
+    .required()
+    .string();
+  new Validator('usePrivacyForNativeToken', usePrivacyForNativeToken)
+    .required()
+    .boolean();
   new Validator('initTxMethod', initTxMethod).required();
 
-  const outputCoins = await createOutputCoin(nativePaymentAmountBN.add(nativeTokenFeeBN), nativeTxInput.totalValueInputBN, nativePaymentInfoList);
+  const outputCoins = await createOutputCoin(
+    nativePaymentAmountBN.add(nativeTokenFeeBN),
+    nativeTxInput.totalValueInputBN,
+    nativePaymentInfoList
+  );
 
-  nativePaymentInfoList.forEach(item => {
+  nativePaymentInfoList.forEach((item) => {
     item.amount = new BN(item.amount).toString();
+    item.message = base64Encode(item.message);
   });
 
   const paramInitTx = {
     senderSK: privateKeySerialized,
     paramPaymentInfos: nativePaymentInfoList,
-    inputCoinStrs: nativeTxInput.inputCoinStrs.map(coin => coin.toJson()),
+    inputCoinStrs: nativeTxInput.inputCoinStrs.map((coin) => coin.toJson()),
     fee: nativeTokenFeeBN.toString(),
     isPrivacy: usePrivacyForNativeToken,
-    tokenID: <string>null,
+    tokenID: '',
     metaData,
     info: '',
     commitmentIndices: nativeTxInput.commitmentIndices,
     myCommitmentIndices: nativeTxInput.myCommitmentIndices,
     commitmentStrs: nativeTxInput.commitmentStrs,
-    sndOutputs: outputCoins
+    sndOutputs: outputCoins,
   };
-
-  console.log('paramInitTx', paramInitTx);
 
   const resInitTx = await initTx(initTxMethod, paramInitTx);
 
-  console.log('resInitTx', resInitTx);
-
-  //base64 decode txjson
   const resInitTxBytes = base64Decode(resInitTx);
 
-  return (customExtractInfoFromInitedTxMethod ? customExtractInfoFromInitedTxMethod : extractInfoFromInitedTxBytes)(resInitTxBytes);
+  return (customExtractInfoFromInitedTxMethod
+    ? customExtractInfoFromInitedTxMethod
+    : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
-export default async function sendNativeToken({ nativePaymentInfoList, nativeFee = DEFAULT_NATIVE_FEE, accountKeySet, availableCoins } : SendParam) {
+export default async function sendNativeToken({
+  nativePaymentInfoList,
+  nativeFee = DEFAULT_NATIVE_FEE,
+  accountKeySet,
+  availableCoins,
+}: SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('availableCoins', availableCoins).required();
-  new Validator('nativePaymentInfoList', nativePaymentInfoList).required().paymentInfoList();
+  new Validator('nativePaymentInfoList', nativePaymentInfoList)
+    .required()
+    .paymentInfoList();
   new Validator('nativeFee', nativeFee).required().amount();
 
   const usePrivacyForNativeToken = true;
-  const nativePaymentAmountBN = getTotalAmountFromPaymentList(nativePaymentInfoList);
+  const nativePaymentAmountBN = getTotalAmountFromPaymentList(
+    nativePaymentInfoList
+  );
   const nativeTokenFeeBN = toBNAmount(nativeFee);
 
-  const nativeTxInput = await getNativeTokenTxInput(accountKeySet, availableCoins, nativePaymentAmountBN, nativeTokenFeeBN, usePrivacyForNativeToken);
+  const nativeTxInput = await getNativeTokenTxInput(
+    accountKeySet,
+    availableCoins,
+    nativePaymentAmountBN,
+    nativeTokenFeeBN,
+    usePrivacyForNativeToken
+  );
   const txInfo = await createTx({
     nativeTxInput,
     nativePaymentAmountBN,
@@ -121,11 +159,16 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
   });
   console.log('txInfo', txInfo);
 
-  const sentInfo = await sendB58CheckEncodeTxToChain(rpc.sendRawTx, txInfo.b58CheckEncodeTx);
+  const sentInfo = await sendB58CheckEncodeTxToChain(
+    rpc.sendRawTx,
+    txInfo.b58CheckEncodeTx
+  );
 
   // const historyInfo = createHistoryInfo({ ...sentInfo, lockTime: txInfo.lockTime });
 
-  const { serialNumberList, listUTXO } = getCoinInfoForCache(nativeTxInput.inputCoinStrs);
+  const { serialNumberList, listUTXO } = getCoinInfoForCache(
+    nativeTxInput.inputCoinStrs
+  );
 
   const history = createHistoryInfo({
     txId: sentInfo.txId,
@@ -138,7 +181,7 @@ export default async function sendNativeToken({ nativePaymentInfoList, nativeFee
     txType: TX_TYPE.NORMAL,
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
-    historyType: HISTORY_TYPE.SEND_NATIVE_TOKEN
+    historyType: HISTORY_TYPE.SEND_NATIVE_TOKEN,
   });
 
   return history;
