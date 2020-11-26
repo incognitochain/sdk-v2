@@ -17,7 +17,7 @@ import { ENCODE_VERSION, ED25519_KEY_SIZE } from '@src/constants/constants';
 import PrivateKeyModel from '@src/models/key//privateKey';
 import PaymentAddressKeyModel from '@src/models/key/paymentAddress';
 import ViewingKeyModel from '@src/models/key//viewingKey';
-import { generateKeySet, getBackupData as getBackupDataKeySet, restoreKeySetFromBackupData } from '@src/services/key/accountKeySet';
+import { getBackupData as getBackupDataKeySet, restoreKeySetFromBackupData } from '@src/services/key/accountKeySet';
 import CryptoJS from 'crypto-js';
 import { wordArrayToByteArray, byteArrayToWordArray } from '@src/services/key/utils';
 import KeyWalletModel from '@src/models/key/keyWallet';
@@ -158,7 +158,7 @@ export function deserializeViewingKeyBytes(bytes: KeyBytes) : ViewingKeyModel{
 
   viewingKey.publicKeyBytes = publicKeyBytes;
   viewingKey.receivingKeyBytes = receivingKeyBytes;
-  
+
   deserializeKeyValidate(bytes);
 
   return viewingKey;
@@ -224,26 +224,6 @@ export function getIntermediary(childIndex: number, keyWalletChainCode: KeyWalle
   let hmac = CryptoJS.HmacSHA512(CryptoJS.enc.Base64.stringify(byteArrayToWordArray(keyWalletChainCode)), byteArrayToWordArray(Uint8Array.from(childIndexBytes)));
   let intermediary = wordArrayToByteArray(hmac);
   return intermediary;
-}
-
-export async function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWalletDepth, keyWalletChainCode: KeyWalletChainCode) {
-  new Validator('childIndex', childIndex).required();
-  new Validator('keyWalletDepth', keyWalletDepth).required();
-  new Validator('keyWalletChainCode', keyWalletChainCode).required();
-
-  let intermediary = getIntermediary(childIndex, keyWalletChainCode);
-  let newSeed = intermediary.slice(0, 32);
-  const keySet = await generateKeySet(newSeed);
-
-  const childNumber: KeyWalletChildNumber = Uint8Array.from((new bn(childIndex)).toArray('be', ChildNumberSize));
-  const chainCode: KeyWalletChainCode = Uint8Array.from(intermediary.slice(ChainCodeSize));
-
-  return {
-    childNumber,
-    chainCode,
-    depth: keyWalletDepth + 1,
-    keySet
-  };
 }
 
 export function getBackupData(keyWallet: KeyWalletModel) {

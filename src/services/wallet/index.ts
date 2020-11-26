@@ -1,7 +1,7 @@
-import { MnemonicGenerator } from "./mnemonic";
 import { setRandBytesFunc } from '@src/privacy/utils';
 import CryptoJS from 'crypto-js';
 import Validator from "@src/utils/validator";
+import { newMnemonic, newSeed } from './mnemonic';
 
 export function setPrivacyUtilRandomBytesFunc(f: Function) {
   new Validator('f', f).required().function();
@@ -12,18 +12,10 @@ export function setPrivacyUtilRandomBytesFunc(f: Function) {
 export function initWalletData(passPhrase: string) {
   new Validator('passPhrase', passPhrase).required().string();
 
-   // generate mnenomic generator
-   const mnemonicGen = new MnemonicGenerator();
-   const entropy = mnemonicGen.newEntropy(128);
-
-   // mnemonic
-   const mnemonic = mnemonicGen.newMnemonic(entropy);
-
-   // seed
-   const seed = mnemonicGen.newSeed(mnemonic, passPhrase);
+   const mnemonic = newMnemonic();
+   const seed = newSeed(mnemonic);
 
   return {
-    entropy,
     mnemonic,
     seed
   };
@@ -31,7 +23,7 @@ export function initWalletData(passPhrase: string) {
 
  /**
    * Backup the wallet, encrypt with `password` (if not provided, use passPhrase instead), return a encrypted text
-   * @param {string} password 
+   * @param {string} password
    */
 export function encryptWalletData(walletData: object, password: string): string {
   new Validator('walletData', walletData).required();

@@ -51,6 +51,7 @@ const PercentFeeToReplaceTx = 10;
 const MaxSizeInfoCoin = 255;
 const ShardNumber = 8;
 
+const BIP44_COIN_TYPE = 587;
 
 export {
   PriKeyType,
@@ -90,5 +91,6 @@ export {
   MenmonicWordLen,
   MaxSizeInfoCoin,
   StopAutoStakingMeta,
-  ShardNumber
+  ShardNumber,
+  BIP44_COIN_TYPE,
 };
