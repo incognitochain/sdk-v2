@@ -15,7 +15,7 @@
     "build:web:module": "rimraf build/web/module && yarn lint && NODE_ENV='production' TARGET='web:module' webpack --progress",
     "build:web:browser": "rimraf build/web/browser && yarn lint && NODE_ENV='production' TARGET='web:browser' webpack --progress",
     "build:node": "rimraf build/node && yarn lint && NODE_ENV='production' TARGET='node' webpack --progress",
-    "build": "yarn build:node && yarn build:web:module && yarn build:web:browser",
+    "build": "yarn build:web:browser",
     "build:dev": "yarn build:dev:node && yarn build:dev:web:browser && yarn build:dev:web:module",
     "build:dev:node": "rimraf build/node && TARGET='node' webpack --progress",
     "build:dev:web:browser": "rimraf build/web/browser && TARGET='web:browser' webpack --progress",

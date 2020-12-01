@@ -4,6 +4,5 @@ sample/*.wasm
 tmp/
 .idea/
 .vscode/
-build/
 .DS_STORE
 stats.json
