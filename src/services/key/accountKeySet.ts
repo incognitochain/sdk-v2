@@ -17,7 +17,7 @@ export async function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes) {
 
   paymentAddress.publicKeyBytes = publicKeyBytes;
   paymentAddress.transmissionKeyBytes = transmissionKeyBytes;
-  
+
   viewingKey.publicKeyBytes = publicKeyBytes;
   viewingKey.receivingKeyBytes = receivingKeyBytes;
 
@@ -30,7 +30,7 @@ export async function getBLSPublicKeyB58CheckEncode(miningSeedKey: number[]){
   return await generateBLSPubKeyB58CheckEncodeFromSeed(miningSeedKey);
 }
 
-export async function generateKeySet(seed: string) {
+export async function generateKeySet(seed: Buffer) {
   new Validator('seed', seed).required();
 
   const privateKey = await generatePrivateKey(seed);

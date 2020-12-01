@@ -1,3 +1,4 @@
+import hdkey from 'hdkey';
 import {base64Decode, base64Encode} from '@src/privacy/utils';
 import goMethods from '@src/go';
 import { generateECDSAKeyPair } from '@src/privacy/ecdsa';
@@ -12,9 +13,11 @@ import { wordArrayToByteArray, byteArrayToWordArray } from './utils';
 import { generateKeySet } from './accountKeySet';
 import KeyWalletModel from '@src/models/key/keyWallet';
 import Validator from '@src/utils/validator';
+import { BIP44_COIN_TYPE, ChildNumberSize } from '@src/constants/wallet';
+import bn from 'bn.js';
 
 // GeneratePrivateKey generates spending key from seed
-export async function generatePrivateKey(seed: any) : Promise<KeyBytes> {
+export async function generatePrivateKey(seed: Buffer) : Promise<KeyBytes> {
   new Validator('seed', seed).required();
 
   let seedB64Encode = base64Encode(seed);
@@ -85,7 +88,7 @@ export async function generateTransmissionKey(receivingKey: KeyBytes) : Promise<
   return transmissionKey;
 }
 
-// hashPrivateKey 
+// hashPrivateKey
 export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes: Uint8Array, publicKeyBytes: Uint8Array) {
   new Validator('hashPrivateKeyBytes', hashPrivateKeyBytes).required();
   new Validator('publicKeyBytes', publicKeyBytes).required();
@@ -110,7 +113,7 @@ export async function generateCommitteeKeyFromHashPrivateKey(hashPrivateKeyBytes
     MiningPubKey: miningPubKey,
   };
 
-  // JSON marshal commiteeKey 
+  // JSON marshal commiteeKey
   let keyStr = json.stringify(committeeKey);
   let encodedKey = checkEncode(stringToBytes(keyStr), ENCODE_VERSION);
 
@@ -125,23 +128,18 @@ export async function generateBLSPubKeyB58CheckEncodeFromSeed(seed: number[]) {
   return checkEncode(blsPublicKey, ENCODE_VERSION);
 }
 
-export async function generateMasterKey(seed: Uint8Array) {
-  new Validator('seed', seed).required();
+export async function generateKey(seed: Buffer, index = 0, depth = -1) {
+  const hdKey = hdkey.fromMasterSeed(seed);
 
-  // HmacSHA512(data, key)
-  let hmac = CryptoJS.HmacSHA512(CryptoJS.enc.Base64.stringify(byteArrayToWordArray(seed)), 'Constant seed');
-  let intermediary = wordArrayToByteArray(hmac);
+  const childHdKey = hdKey.derive(`m/44'/${BIP44_COIN_TYPE}'/0'/0/${index}`);
+  const incognitoKeySet = await generateKeySet(childHdKey.privateKey);
 
-  // Split it into our PubKey and chain code
-  let keyBytes = intermediary.slice(0, 32);  // use to create master private/public keypair
-  let chainCode = Uint8Array.from(intermediary.slice(32)); // be used with public PubKey (in keypair) for new child keys 
-  
-  let keyWallet = new KeyWalletModel();
-  keyWallet.chainCode = chainCode;
-  keyWallet.depth = 0;
-  keyWallet.childNumber = new Uint8Array([0, 0, 0, 0]);
-  keyWallet.keySet = await generateKeySet(keyBytes);
-  
-  return keyWallet;
+  const incognitoChildKey = new KeyWalletModel();
+  // @ts-ignore
+  incognitoChildKey.childNumber = (new bn(index)).toArray("be", ChildNumberSize);
+  incognitoChildKey.chainCode = childHdKey.chainCode;
+  incognitoChildKey.depth = depth + 1;
+  incognitoChildKey.keySet = incognitoKeySet;
+
+  return incognitoChildKey;
 }
-
