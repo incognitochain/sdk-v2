@@ -2,8 +2,7 @@ import BaseModel from './baseModel';
 import MasterAccountModel from './account/masterAccount';
 
 class WalletModel extends BaseModel {
-  seed: Uint8Array;
-  entropy: number[];
+  seed: Buffer;
   passPhrase: string;
   mnemonic: string;
   masterAccount: MasterAccountModel;
@@ -11,9 +10,8 @@ class WalletModel extends BaseModel {
 
   constructor() {
     super();
-    
+
     this.seed = null;
-    this.entropy = null;
     this.passPhrase = null;
     this.mnemonic = null;
     this.masterAccount = null;
