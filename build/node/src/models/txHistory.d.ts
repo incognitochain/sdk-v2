@@ -23,6 +23,10 @@ interface TxHistoryModelParam {
     meta?: any;
     accountPublicKeySerialized: string;
     historyType?: number;
+    useNativeFee: boolean;
+    usePrivacyFee: boolean;
+    fee: string;
+    amount: string;
 }
 export default class TxHistoryModel {
     txId: string;
@@ -34,7 +38,11 @@ export default class TxHistoryModel {
     meta: any;
     accountPublicKeySerialized: string;
     historyType: number;
-    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType }: TxHistoryModelParam);
+    useNativeFee: boolean;
+    usePrivacyFee: boolean;
+    fee: string;
+    amount: string;
+    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType, useNativeFee, usePrivacyFee, fee, amount, }: TxHistoryModelParam);
     toJson(): {
         txId: string;
         txType: string;

@@ -1,7 +1,8 @@
+/// <reference types="node" />
 import AccountKeySetModel from "../../models/key/accountKeySet";
 export declare function getKeySetFromPrivateKeyBytes(privateKeyBytes: KeyBytes): Promise<AccountKeySetModel>;
 export declare function getBLSPublicKeyB58CheckEncode(miningSeedKey: number[]): Promise<string>;
-export declare function generateKeySet(seed: string): Promise<AccountKeySetModel>;
+export declare function generateKeySet(seed: Buffer): Promise<AccountKeySetModel>;
 export declare function getBackupData(keySet: AccountKeySetModel): {
     publicKeyBytes: number[];
     transmissionKeyBytes: number[];

@@ -68,9 +68,6 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       new Validator('paymentList', paymentList).required().paymentInfoList();
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('privacyFee', privacyFee).required().amount();
-
-      L.info(`Privacy token ${this.tokenId} transfer`, { paymentList, nativeFee, privacyFee });
-
       const history = await sendPrivacyToken({
         accountKeySet: this.accountKeySet,
         nativeAvailableCoins: await this.getNativeAvailableCoins(),
@@ -82,9 +79,6 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         tokenName: this.name,
         tokenSymbol: this.symbol,
       });
-
-      L.info(`Privacy token ${this.tokenId} transfered successfully with tx id ${history.txId}`);
-
       return history;
     } catch (e) {
       L.error(`Privacy token ${this.tokenId} transfered failed`, e);

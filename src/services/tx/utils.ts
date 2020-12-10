@@ -12,48 +12,49 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import TxHistoryModel from '@src/models/txHistory';
 import { BurnAddress } from '@src/constants/wallet';
 import { cacheTxHistory } from '../cache/txHistory';
-import { TX_STATUS } from '@src/constants/tx';
+import { HISTORY_TYPE, TX_STATUS } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
+import { toNumber } from 'lodash';
 
 export interface TxInputType {
-  inputCoinStrs: CoinModel[],
-  totalValueInputBN: bn,
-  commitmentIndices: number[],
-  myCommitmentIndices: number[],
-  commitmentStrs: string[],
-};
+  inputCoinStrs: CoinModel[];
+  totalValueInputBN: bn;
+  commitmentIndices: number[];
+  myCommitmentIndices: number[];
+  commitmentStrs: string[];
+}
 
 export interface CreateHistoryParam {
-  txId: string,
-  lockTime: number,
-  nativePaymentInfoList: PaymentInfoModel[],
-  privacyPaymentInfoList?: PaymentInfoModel[],
-  nativeFee: string,
-  privacyFee?: string,
-  tokenId?: TokenIdType,
-  tokenSymbol?: TokenSymbolType,
-  tokenName?: TokenNameType,
-  nativeSpendingCoinSNs: string[],
-  privacySpendingCoinSNs?: string[],
-  nativeListUTXO: string[],
-  privacyListUTXO?: string[],
-  nativePaymentAmount: string,
-  privacyPaymentAmount?: string,
-  meta?: any,
-  txType?: any,
-  privacyTokenTxType?: any,
-  accountPublicKeySerialized: string,
-  historyType: number,
-  usePrivacyForPrivacyToken?: boolean,
-  usePrivacyForNativeToken: boolean
-};
+  txId: string;
+  lockTime: number;
+  nativePaymentInfoList: PaymentInfoModel[];
+  privacyPaymentInfoList?: PaymentInfoModel[];
+  nativeFee: string;
+  privacyFee?: string;
+  tokenId?: TokenIdType;
+  tokenSymbol?: TokenSymbolType;
+  tokenName?: TokenNameType;
+  nativeSpendingCoinSNs: string[];
+  privacySpendingCoinSNs?: string[];
+  nativeListUTXO: string[];
+  privacyListUTXO?: string[];
+  nativePaymentAmount: string;
+  privacyPaymentAmount?: string;
+  meta?: any;
+  txType?: any;
+  privacyTokenTxType?: any;
+  accountPublicKeySerialized: string;
+  historyType: number;
+  usePrivacyForPrivacyToken?: boolean;
+  usePrivacyForNativeToken: boolean;
+}
 
 export interface NativeTokenTxInputOptions {
   chooseCoinStrategy: (params?: {
-    availabelCoins?: CoinModel[],
-    totalAmountBN?: bn
-  }) => CoinModel[]
-};
+    availabelCoins?: CoinModel[];
+    totalAmountBN?: bn;
+  }) => CoinModel[];
+}
 
 /**
  * Parse number to bn (big number), min value is bn(0) (zero)
@@ -68,42 +69,60 @@ export function toBNAmount(amount: string) {
  *
  * @param paymentInfoList
  */
-export function getTotalAmountFromPaymentList(paymentInfoList: PaymentInfoModel[]) : bn {
+export function getTotalAmountFromPaymentList(
+  paymentInfoList: PaymentInfoModel[]
+): bn {
   new Validator('paymentInfoList', paymentInfoList).paymentInfoList();
 
-  return paymentInfoList?.reduce((totalAmount: bn, paymentInfo: PaymentInfoModel) => totalAmount.add(new bn(paymentInfo.amount)), new bn(0)) || new bn(0);
+  return (
+    paymentInfoList?.reduce(
+      (totalAmount: bn, paymentInfo: PaymentInfoModel) =>
+        totalAmount.add(new bn(paymentInfo.amount)),
+      new bn(0)
+    ) || new bn(0)
+  );
 }
 
-async function getRandomCommitments(paymentAddress: string, coinsToSpend: CoinModel[], usePrivacy: boolean, tokenId?: TokenIdType) {
+async function getRandomCommitments(
+  paymentAddress: string,
+  coinsToSpend: CoinModel[],
+  usePrivacy: boolean,
+  tokenId?: TokenIdType
+) {
   new Validator('paymentAddress', paymentAddress).required().string();
   new Validator('coinsToSpend', coinsToSpend).required().array();
   new Validator('usePrivacy', usePrivacy).required().boolean();
   new Validator('tokenId', tokenId).string();
 
-  let commitmentIndices = [];
-  let myCommitmentIndices = [];
-  let commitmentStrs = [];
+  let commitmentIndices: any = [];
+  let myCommitmentIndices: any = [];
+  let commitmentStrs: any = [];
 
   if (usePrivacy) {
-    const randomCommitmentData = await rpc.randomCommitmentsProcess(paymentAddress, coinsToSpend, tokenId);
-
+    const randomCommitmentData = await rpc.randomCommitmentsProcess(
+      paymentAddress,
+      coinsToSpend,
+      tokenId
+    );
     commitmentIndices = randomCommitmentData.commitmentIndices;
     myCommitmentIndices = randomCommitmentData.myCommitmentIndices;
     commitmentStrs = randomCommitmentData.commitmentStrs;
 
     // Check number of list of random commitments, list of random commitment indices
     if (commitmentIndices.length !== coinsToSpend.length * CM_RING_SIZE) {
-      throw new ErrorCode('Invalid random commitments');
+      throw new Error('Invalid random commitments');
     }
     if (myCommitmentIndices.length !== coinsToSpend.length) {
-      throw new ErrorCode('Number of list my commitment indices must be equal to number of input coins');
+      throw new Error(
+        'Number of list my commitment indices must be equal to number of input coins'
+      );
     }
   }
 
   return {
     commitmentIndices,
     myCommitmentIndices,
-    commitmentStrs
+    commitmentStrs,
   };
 }
 
@@ -122,42 +141,48 @@ export async function getNativeTokenTxInput(
   nativeTokenFeeBN: bn,
   usePrivacy: boolean = true,
   options?: NativeTokenTxInputOptions
-) : Promise<TxInputType> {
+): Promise<TxInputType> {
   new Validator('accountKeySet', accountKeySet).required();
-  new Validator('availableNativeCoins', availableNativeCoins).required().array();
+  new Validator('availableNativeCoins', availableNativeCoins)
+    .required()
+    .array();
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('usePrivacy', usePrivacy).required().boolean();
 
-
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const totalAmountBN = nativePaymentAmountBN.add(nativeTokenFeeBN);
   const bestCoins = options?.chooseCoinStrategy
-    ? { resultInputCoins: options?.chooseCoinStrategy({ availabelCoins: availableNativeCoins, totalAmountBN }) }
+    ? {
+        resultInputCoins: options?.chooseCoinStrategy({
+          availabelCoins: availableNativeCoins,
+          totalAmountBN,
+        }),
+      }
     : chooseBestCoinToSpent(availableNativeCoins, totalAmountBN);
   const coinsToSpend: CoinModel[] = bestCoins.resultInputCoins;
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
-
   if (totalAmountBN.cmp(totalValueToSpendBN) === 1) {
-    throw new ErrorCode('Not enough coin');
+    throw new Error('Not enough coin');
   }
-
-  const { commitmentIndices, myCommitmentIndices, commitmentStrs } = await getRandomCommitments(paymentAddress, coinsToSpend, usePrivacy);
-
+  const {
+    commitmentIndices,
+    myCommitmentIndices,
+    commitmentStrs,
+  } = await getRandomCommitments(paymentAddress, coinsToSpend, usePrivacy);
   for (let i = 0; i < coinsToSpend.length; i++) {
     // set info for input coin is null
     coinsToSpend[i].info = '';
   }
-
-  return {
+  const result = {
     inputCoinStrs: coinsToSpend,
     totalValueInputBN: totalValueToSpendBN,
     commitmentIndices,
     myCommitmentIndices,
     commitmentStrs,
   };
+  return result;
 }
-
 
 /***
  * Prepare data for send privacy token
@@ -168,15 +193,17 @@ export async function getNativeTokenTxInput(
  * @param privacyTokenFeeBN Fee to send (privacy token fee)
  */
 export async function getPrivacyTokenTxInput(
-    accountKeySet: AccountKeySetModel,
-    privacyAvailableCoins: CoinModel[],
-    tokenId: TokenIdType,
-    privacyPaymentAmountBN: bn,
-    privacyTokenFeeBN: bn,
-    usePrivacy: boolean = true,
-  ) : Promise<TxInputType> {
+  accountKeySet: AccountKeySetModel,
+  privacyAvailableCoins: CoinModel[],
+  tokenId: TokenIdType,
+  privacyPaymentAmountBN: bn,
+  privacyTokenFeeBN: bn,
+  usePrivacy: boolean = true
+): Promise<TxInputType> {
   new Validator('accountKeySet', accountKeySet).required();
-  new Validator('privacyAvailableCoins', privacyAvailableCoins).required().array();
+  new Validator('privacyAvailableCoins', privacyAvailableCoins)
+    .required()
+    .array();
   new Validator('tokenId', tokenId).required().string();
   new Validator('privacyPaymentAmountBN', privacyPaymentAmountBN).required();
   new Validator('privacyTokenFeeBN', privacyTokenFeeBN).required();
@@ -191,7 +218,10 @@ export async function getPrivacyTokenTxInput(
 
   if (tokenId) {
     const totalAmountBN = privacyPaymentAmountBN.add(privacyTokenFeeBN);
-    const bestCoins = chooseBestCoinToSpent(privacyAvailableCoins, totalAmountBN);
+    const bestCoins = chooseBestCoinToSpent(
+      privacyAvailableCoins,
+      totalAmountBN
+    );
 
     coinsToSpend = bestCoins.resultInputCoins;
     totalValueToSpentBN = getValueFromCoins(coinsToSpend);
@@ -200,7 +230,12 @@ export async function getPrivacyTokenTxInput(
       throw new ErrorCode('Not enough coin');
     }
 
-    const RandomCommitmentData = await getRandomCommitments(paymentAddress, coinsToSpend, usePrivacy, tokenId);
+    const RandomCommitmentData = await getRandomCommitments(
+      paymentAddress,
+      coinsToSpend,
+      usePrivacy,
+      tokenId
+    );
     commitmentIndices = RandomCommitmentData.commitmentIndices;
     myCommitmentIndices = RandomCommitmentData.myCommitmentIndices;
     commitmentStrs = RandomCommitmentData.commitmentStrs;
@@ -210,14 +245,14 @@ export async function getPrivacyTokenTxInput(
       coinsToSpend[i].info = '';
     }
   }
-
-  return {
+  const result = {
     inputCoinStrs: coinsToSpend,
     totalValueInputBN: totalValueToSpentBN,
     commitmentIndices,
     myCommitmentIndices,
     commitmentStrs,
   };
+  return result;
 }
 
 export async function initTx(handler: Function, param: object) {
@@ -241,15 +276,19 @@ export async function initTx(handler: Function, param: object) {
  * @param totalAmountToSpendBN Amount uses to send
  * @param paymentInfoList
  */
-export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountToSpendBN: bn, paymentInfoList: PaymentInfoModel[]) {
+export async function createOutputCoin(
+  totalAmountToTransferBN: bn,
+  totalAmountToSpendBN: bn,
+  paymentInfoList: PaymentInfoModel[]
+) {
   new Validator('totalAmountToTransferBN', totalAmountToTransferBN).required();
   new Validator('totalAmountToSpendBN', totalAmountToSpendBN).required();
   new Validator('paymentInfoList', paymentInfoList).paymentInfoList();
-
   if (totalAmountToSpendBN.lt(totalAmountToTransferBN)) {
-    throw new ErrorCode('Amount uses to spend must larger than or equal amount uses to transfer');
+    throw new Error(
+      'Amount uses to spend must larger than or equal amount uses to transfer'
+    );
   }
-
   let numberOutput = paymentInfoList?.length || 0;
   if (totalAmountToSpendBN.gt(totalAmountToTransferBN)) {
     numberOutput++;
@@ -258,19 +297,23 @@ export async function createOutputCoin(totalAmountToTransferBN: bn, totalAmountT
   const sndOutputs: string[] = new Array(numberOutput);
 
   if (numberOutput > 0) {
-    const sndOutputStrs = await goMethods.randomScalars(numberOutput.toString());
+    const sndOutputStrs = await goMethods.randomScalars(
+      numberOutput.toString()
+    );
     if (sndOutputStrs === null || sndOutputStrs === '') {
-      throw new ErrorCode('Can not random scalars for output coins');
+      throw new Error('Can not random scalars for output coins');
     }
 
     let sndDecodes = base64Decode(sndOutputStrs);
 
     for (let i = 0; i < numberOutput; i++) {
-      let sndBytes = sndDecodes.slice(i * ED25519_KEY_SIZE, (i + 1) * ED25519_KEY_SIZE);
+      let sndBytes = sndDecodes.slice(
+        i * ED25519_KEY_SIZE,
+        (i + 1) * ED25519_KEY_SIZE
+      );
       sndOutputs[i] = checkEncode(sndBytes, ENCODE_VERSION);
     }
   }
-
   return sndOutputs;
 }
 
@@ -281,7 +324,10 @@ export function encryptPaymentMessage(paymentInfoList: PaymentInfoModel[]) {
   return paymentInfoList;
 }
 
-export async function sendB58CheckEncodeTxToChain(handler: Function, b58CheckEncodeTx: string) {
+export async function sendB58CheckEncodeTxToChain(
+  handler: Function,
+  b58CheckEncodeTx: string
+) {
   new Validator('handler', handler).required().function();
   new Validator('b58CheckEncodeTx', b58CheckEncodeTx).required().string();
 
@@ -294,24 +340,22 @@ export async function sendB58CheckEncodeTxToChain(handler: Function, b58CheckEnc
   throw new ErrorCode('Send tx failed');
 }
 
-
 export function getCoinInfoForCache(coins: CoinModel[]) {
   new Validator('coins', coins).required().array();
 
   const serialNumberList: string[] = [];
   const listUTXO: string[] = [];
 
-  coins.forEach(coin => {
+  coins.forEach((coin) => {
     serialNumberList.push(coin.serialNumber);
     listUTXO.push(coin.snDerivator);
   });
 
   return {
     serialNumberList,
-    listUTXO
+    listUTXO,
   };
 }
-
 
 export function createHistoryInfo({
   txId,
@@ -335,7 +379,7 @@ export function createHistoryInfo({
   accountPublicKeySerialized,
   historyType,
   usePrivacyForPrivacyToken,
-  usePrivacyForNativeToken
+  usePrivacyForNativeToken,
 }: CreateHistoryParam) {
   const history = new TxHistoryModel({
     txId,
@@ -348,7 +392,7 @@ export function createHistoryInfo({
       fee: nativeFee,
       amount: nativePaymentAmount,
       paymentInfoList: nativePaymentInfoList,
-      usePrivacy: usePrivacyForNativeToken
+      usePrivacy: usePrivacyForNativeToken,
     },
     privacyTokenInfo: {
       spendingCoinSNs: privacySpendingCoinSNs,
@@ -360,25 +404,21 @@ export function createHistoryInfo({
       amount: privacyPaymentAmount,
       paymentInfoList: privacyPaymentInfoList,
       usePrivacy: usePrivacyForPrivacyToken,
-      privacyTokenTxType
+      privacyTokenTxType,
     },
     meta,
     accountPublicKeySerialized,
     historyType,
   });
-
-
-  // TODO: handle cache error
   cacheTxHistory(history.txId, history);
-
   return history;
 }
 
-export async function getBurningAddress(beaconHeight = 0){
+export async function getBurningAddress(beaconHeight = 0) {
   let burningAddress;
   try {
     burningAddress = await rpc.getBurningAddress(beaconHeight);
-  } catch (e){
+  } catch (e) {
     burningAddress = BurnAddress;
   }
 

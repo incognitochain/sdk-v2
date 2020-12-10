@@ -88,18 +88,59 @@ async function main() {
         'Imported acc',
         '112t8rnXJDs4NNtaG1Am1MxEgtsG1RfffBmBFd3TBe9PXFfP3cabTFJU3wS3wdN9WxnRc6GbRDLtQTdnZyW1V9nRBp8AiMmfF3XeCKv1Wkgy'
       );
-      const tx = await state.importedAccount.nativeToken.transfer(
-        [
-          {
-            paymentAddressStr:
-              state.importedAccount.key.keySet.paymentAddressKeySerialized,
-            amount: '15000000',
-            message: 'send prv',
-          },
-        ],
-        '100'
+      state.privacyToken = await state.importedAccount.getPrivacyTokenById(
+        // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
+        '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
       );
-      console.debug(`TXID`, tx);
+
+      // const txPRV = await state.importedAccount.nativeToken.transfer(
+      //   [
+      //     {
+      //       paymentAddressStr:
+      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+      //       amount: '69000',
+      //       message: 'send prv',
+      //     },
+      //   ],
+      //   '100'
+      // );
+      // console.debug('txPRV', txPRV);
+
+      await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
+        console.log((await state.privacyToken.getTotalBalance()).toNumber());
+      });
+
+      await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
+        console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
+      });
+      if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
+        const txNative = await state.privacyToken.transfer(
+          [
+            {
+              paymentAddressStr:
+                '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+              amount: '1248',
+              message: 'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
+            },
+          ],
+          '100',
+          ''
+        );
+        console.log(`txNative`, txNative);
+        // const txPrivacy = await state.privacyToken.transfer(
+        //   [
+        //     {
+        //       paymentAddressStr:
+        //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+        //       amount: '30814',
+        //       message: 'send zil',
+        //     },
+        //   ],
+        //   '',
+        //   '100'
+        // );
+        // console.log(`txPrivacy`, txPrivacy);
+      }
     });
 
     // await section('GET TOTAL BALANCE NATIVE TOKEN', async () => {
@@ -124,33 +165,6 @@ async function main() {
     //   state.privacyToken = await state.importedAccount.getFollowingPrivacyToken('8fb58c65541b62a3eb8d99f62f4a9e2f8eaf99b9860f566674b3989e521594b2');
     //   console.log(state.privacyToken);
     // });
-
-    // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
-    //   console.log((await state.privacyToken.getTotalBalance()).toNumber());
-    // });
-
-    // await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
-    //   console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
-    // });
-
-    await section('TRANSFER PRIVACY TOKEN', async () => {
-      if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
-        console.log(
-          await state.privacyToken.transfer(
-            [
-              {
-                paymentAddressStr:
-                  state.newAccount.key.keySet.paymentAddressKeySerialized,
-                amount: 10,
-                message: '',
-              },
-            ],
-            10,
-            0
-          )
-        );
-      }
-    });
 
     // await section('ACCOUNT UNFOLLOW TOKEN', async () => {
     //   state.importedAccount.unfollowTokenById('8fb58c65541b62a3eb8d99f62f4a9e2f8eaf99b9860f566674b3989e521594b2');

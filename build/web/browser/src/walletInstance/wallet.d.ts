@@ -1,8 +1,8 @@
+/// <reference types="node" />
 import WalletModel from "../models/wallet";
 import { MasterAccount } from "./account";
 declare class Wallet implements WalletModel {
-    seed: Uint8Array;
-    entropy: number[];
+    seed: Buffer;
     passPhrase: string;
     mnemonic: string;
     masterAccount: MasterAccount;
@@ -10,7 +10,8 @@ declare class Wallet implements WalletModel {
     constructor();
     static restore(encryptedWallet: string, password: string): Promise<Wallet>;
     init(passPhrase: string, name?: string): Promise<this>;
-    import(name: string, passPhrase: string, mnemonic: string, entropy: number[], seed: Uint8Array, masterAccount: MasterAccount): void;
+    import(name: string, passPhrase: string, mnemonic: string, seed: Buffer, masterAccount: MasterAccount): Promise<void>;
+    isIncorrectBIP44(): Promise<boolean>;
     backup(password: string): string;
 }
 export default Wallet;

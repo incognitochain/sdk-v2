@@ -1,12 +1,6 @@
 /// <reference types="node" />
-declare class MnemonicGenerator {
-    constructor();
-    newEntropy(bitSize: number): any;
-    newMnemonic(entropy: any): string;
-    padByteSlice(slice: any, lenght: any): any;
-    addChecksum(data: any): number[];
-    computeChecksum(data: any): number[];
-    newSeed(mnemonic: any, password: any): Buffer;
-}
-export { MnemonicGenerator };
+declare function newMnemonic(): string;
+declare function newSeed(mnemonic: string): Buffer;
+declare function validateMnemonic(mnemonic: string): boolean;
+export { newMnemonic, newSeed, validateMnemonic, };
 //# sourceMappingURL=mnemonic.d.ts.map

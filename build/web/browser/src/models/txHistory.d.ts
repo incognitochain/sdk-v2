@@ -34,7 +34,11 @@ export default class TxHistoryModel {
     meta: any;
     accountPublicKeySerialized: string;
     historyType: number;
-    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType }: TxHistoryModelParam);
+    useNativeFee: boolean;
+    usePrivacyFee: boolean;
+    fee: string;
+    amount: string;
+    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType, }: TxHistoryModelParam);
     toJson(): {
         txId: string;
         txType: string;

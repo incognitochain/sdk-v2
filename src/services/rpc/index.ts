@@ -10,24 +10,29 @@ async function sendRequest(method: string, params: any): Promise<any> {
     jsonrpc: '1.0',
     method: method,
     params: params,
-    id: 1
+    id: 1,
   };
 
   return await httpService.post('', data);
-};
+}
 
 class RpcClient {
-  getOutputCoin = async (paymentAdrr: string, viewingKey = '', tokenID: string = null) => {
+  getOutputCoin = async (
+    paymentAdrr: string,
+    viewingKey = '',
+    tokenID: string = null
+  ) => {
     const result: any = await sendRequest('listoutputcoins', [
-        0,
-        999999,
-        [{
-          'PaymentAddress': paymentAdrr,
-          'ReadonlyKey': viewingKey,
-        }],
-        ...tokenID ? [tokenID] : []
-      ]
-    );
+      0,
+      999999,
+      [
+        {
+          PaymentAddress: paymentAdrr,
+          ReadonlyKey: viewingKey,
+        },
+      ],
+      ...(tokenID ? [tokenID] : []),
+    ]);
 
     const outCoinsMap = result.Outputs;
 
@@ -40,46 +45,51 @@ class RpcClient {
     }
 
     return {
-      outCoins: outCoins?.map((data: CoinRawData) => new CoinModel(data))
+      outCoins: outCoins?.map((data: CoinRawData) => new CoinModel(data)),
     };
   };
 
   // hasSerialNumber return true if serial number existed in database
-  hasSerialNumber = async (paymentAddr: string, serialNumberStrs: any, tokenID: string | null = null) => {
+  hasSerialNumber = async (
+    paymentAddr: string,
+    serialNumberStrs: any,
+    tokenID: string | null = null
+  ) => {
     const result: boolean[] = await sendRequest('hasserialnumbers', [
-        paymentAddr,
-        serialNumberStrs,
-        ...tokenID ? [tokenID] : []
-      ]
-    );
+      paymentAddr,
+      serialNumberStrs,
+      ...(tokenID ? [tokenID] : []),
+    ]);
 
     return result;
   };
 
   // hasSNDerivator return true if snd existed in database
-  hasSNDerivator = async (paymentAddr: string, snds: any, tokenID: any = null) => {
-    const existed = await sendRequest(
-      'hassnderivators',
-      [
-        paymentAddr,
-        snds,
-        ...tokenID ? [tokenID] : []
-      ]
-    );
+  hasSNDerivator = async (
+    paymentAddr: string,
+    snds: any,
+    tokenID: any = null
+  ) => {
+    const existed = await sendRequest('hassnderivators', [
+      paymentAddr,
+      snds,
+      ...(tokenID ? [tokenID] : []),
+    ]);
 
     return { existed };
   };
 
   // randomCommitmentsProcess randoms list commitment for proving
-  randomCommitmentsProcess = async (paymentAddr: any, inputCoinStrs: any, tokenID: any = null) => {
-    const result: any = await sendRequest(
-      'randomcommitments',
-      [
-        paymentAddr,
-        inputCoinStrs,
-        ...tokenID ? [tokenID] : []
-      ]
-    );
+  randomCommitmentsProcess = async (
+    paymentAddr: any,
+    inputCoinStrs: any,
+    tokenID: any = null
+  ) => {
+    const result: any = await sendRequest('randomcommitments', [
+      paymentAddr,
+      inputCoinStrs,
+      ...(tokenID ? [tokenID] : []),
+    ]);
 
     const commitmentStrs = result.Commitments;
 
@@ -91,15 +101,12 @@ class RpcClient {
   };
 
   sendRawTx = async (serializedTxJson: any) => {
-    const result: any = await sendRequest(
-      'sendtransaction',
-      [
-        serializedTxJson
-      ]
-    );
+    const result: any = await sendRequest('sendtransaction', [
+      serializedTxJson,
+    ]);
 
     return {
-      txId: result.TxID
+      txId: result.TxID,
     };
   };
 
@@ -117,15 +124,12 @@ class RpcClient {
     let serializedTxJson = checkEncode(txBytes, ENCODE_VERSION);
     // console.log("tx json serialize: ", serializedTxJson);
 
-    const result: any = await sendRequest(
-      'sendrawcustomtokentransaction',
-      [
-        serializedTxJson
-      ]
-    );
+    const result: any = await sendRequest('sendrawcustomtokentransaction', [
+      serializedTxJson,
+    ]);
 
     return {
-      txId: result.TxID
+      txId: result.TxID,
     };
   };
 
@@ -133,21 +137,16 @@ class RpcClient {
   sendRawTxCustomTokenPrivacy = async (serializedTxJson: any) => {
     const result: any = await sendRequest(
       'sendrawprivacycustomtokentransaction',
-      [
-        serializedTxJson
-      ]
+      [serializedTxJson]
     );
 
     return {
-      txId: result.TxID
+      txId: result.TxID,
     };
   };
 
   listCustomTokens = async () => {
-    const result: any = await sendRequest(
-      'listcustomtoken',
-      []
-    );
+    const result: any = await sendRequest('listcustomtoken', []);
 
     return {
       listCustomToken: result.ListCustomToken,
@@ -155,10 +154,7 @@ class RpcClient {
   };
 
   listPrivacyCustomTokens = async () => {
-    const result: any = await sendRequest(
-      'listprivacycustomtoken',
-      []
-    );
+    const result: any = await sendRequest('listprivacycustomtoken', []);
 
     let pTokens = result.ListCustomToken;
     // decode txinfo for each ptoken
@@ -173,217 +169,182 @@ class RpcClient {
     return pTokens;
   };
 
-  getUnspentCustomToken = async (paymentAddrSerialize: any, tokenIDStr: any) => {
-    const result: any = await sendRequest(
-      'listunspentcustomtoken',
-      [
-        paymentAddrSerialize,
-        tokenIDStr
-      ]
-    );
+  getUnspentCustomToken = async (
+    paymentAddrSerialize: any,
+    tokenIDStr: any
+  ) => {
+    const result: any = await sendRequest('listunspentcustomtoken', [
+      paymentAddrSerialize,
+      tokenIDStr,
+    ]);
 
-    return result && {
-      listUnspentCustomToken: result,
+    return (
+      result && {
+        listUnspentCustomToken: result,
+      }
+    );
+  };
+
+  getEstimateFeePerKB = async (
+    paymentAddrSerialize: any,
+    tokenIDStr: any = null
+  ) => {
+    const result: any = await sendRequest('estimatefeewithestimator', [
+      -1,
+      paymentAddrSerialize,
+      8,
+      tokenIDStr,
+    ]);
+
+    return {
+      unitFee: parseInt(result.EstimateFeeCoinPerKb),
     };
   };
 
-  getEstimateFeePerKB = async (paymentAddrSerialize: any, tokenIDStr: any = null) => {
-    const result: any = await sendRequest(
-      'estimatefeewithestimator',
-      [
-        -1, paymentAddrSerialize, 8, tokenIDStr
-      ]
-    );
-
-    return {
-      unitFee: parseInt(result.EstimateFeeCoinPerKb)
-    };
-  }
-
   getTransactionByHash = async (txHashStr: any) => {
-    const result: any = await sendRequest(
-      'gettransactionbyhash',
-      [
-        txHashStr
-      ]
-    );
+    const result: any = await sendRequest('gettransactionbyhash', [txHashStr]);
 
-    return result ? {
-      isInBlock: result.IsInBlock,
-      isInMempool: result.IsInMempool,
-      err: <any>null
-    } : {
-      isInBlock: false,
-      isInMempool: false,
-    }
-  }
+    return result
+      ? {
+          isInBlock: result.IsInBlock,
+          isInMempool: result.IsInMempool,
+          err: <any>null,
+        }
+      : {
+          isInBlock: false,
+          isInMempool: false,
+        };
+  };
 
   getStakingAmount = async (type: any) => {
-    const result: any = await sendRequest(
-      'getstackingamount',
-      [
-        type
-      ]
-    );
+    const result: any = await sendRequest('getstackingamount', [type]);
     return {
-      res: Number(result)
+      res: Number(result),
     };
-  }
+  };
 
   getActiveShard = async () => {
-    const result: any = await sendRequest(
-      'getactiveshards',
-      []
-    );
+    const result: any = await sendRequest('getactiveshards', []);
 
     return {
-      shardNumber: parseInt(result)
+      shardNumber: parseInt(result),
     };
-  }
+  };
 
   getMaxShardNumber = async () => {
-    const result: any = await sendRequest(
-      'getmaxshardsnumber',
-      []
-    );
+    const result: any = await sendRequest('getmaxshardsnumber', []);
 
     return {
-      shardNumber: parseInt(result)
+      shardNumber: parseInt(result),
     };
-  }
+  };
 
   hashToIdenticon = async (hashStrs: any) => {
-    const result: any = await sendRequest(
-      'hashtoidenticon',
-      hashStrs
-    );
+    const result: any = await sendRequest('hashtoidenticon', hashStrs);
 
     return {
-      images: result
+      images: result,
     };
-  }
+  };
 
   getRewardAmount = async (paymentAddrStr: any) => {
-    const result: any = await sendRequest(
-      'getrewardamount',
-      [paymentAddrStr]
-    );
+    const result: any = await sendRequest('getrewardamount', [paymentAddrStr]);
 
     return {
-      rewards: result
+      rewards: result,
     };
-  }
+  };
 
   getBeaconBestState = async () => {
-    const result: any = await sendRequest(
-      'getbeaconbeststate',
-      []
-    );
+    const result: any = await sendRequest('getbeaconbeststate', []);
 
     return {
-      bestState: result
+      bestState: result,
     };
   };
 
   getPublicKeyRole = async (publicKey: any) => {
-    const result: any = await sendRequest(
-      'getpublickeyrole',
-      [publicKey]
-    );
+    const result: any = await sendRequest('getpublickeyrole', [publicKey]);
 
     return {
-      status: result
+      status: result,
     };
-  }
+  };
 
   getPDEState = async (beaconHeight: any) => {
-    const result: any = await sendRequest(
-      'getpdestate',
-      [{
-        'BeaconHeight': beaconHeight
-      }]
-    );
+    const result: any = await sendRequest('getpdestate', [
+      {
+        BeaconHeight: beaconHeight,
+      },
+    ]);
 
     return {
-      state: result
+      state: result,
     };
-  }
+  };
 
   getPDETradeStatus = async (txId: any) => {
-    const result: any = await sendRequest(
-      'getpdetradestatus',
-      [{
-        'TxRequestIDStr': txId
-      }]
-    );
+    const result: any = await sendRequest('getpdetradestatus', [
+      {
+        TxRequestIDStr: txId,
+      },
+    ]);
 
     return {
-      state: result
+      state: result,
     };
-  }
+  };
 
   getPDEContributionStatus = async (pairId: any) => {
-    const result: any = await sendRequest(
-      'getpdecontributionstatus',
-      [{
-        'ContributionPairID': pairId
-      }]
-    );
+    const result: any = await sendRequest('getpdecontributionstatus', [
+      {
+        ContributionPairID: pairId,
+      },
+    ]);
 
     return {
-      state: result
+      state: result,
     };
-  }
+  };
 
   getPDEContributionStatusV2 = async (pairId: any) => {
-    const result: any = await sendRequest(
-      'getpdecontributionstatusv2',
-      [{
-        'ContributionPairID': pairId
-      }]
-    );
+    const result: any = await sendRequest('getpdecontributionstatusv2', [
+      {
+        ContributionPairID: pairId,
+      },
+    ]);
 
     return {
-      state: result
+      state: result,
     };
-  }
+  };
 
   getPDEWithdrawalStatus = async (txId: any) => {
-    const result: any = await sendRequest(
-      'getpdewithdrawalstatus',
-      [{
-        'TxRequestIDStr': txId
-      }]
-    );
+    const result: any = await sendRequest('getpdewithdrawalstatus', [
+      {
+        TxRequestIDStr: txId,
+      },
+    ]);
 
     return {
-      state: result
+      state: result,
     };
-  }
+  };
 
   getBlockChainInfo = async () => {
-    const result: any = await sendRequest(
-      'getblockchaininfo',
-      []
-    );
+    const result: any = await sendRequest('getblockchaininfo', []);
 
     return result;
   };
 
   listRewardAmount = async () => {
-    const result: any = await sendRequest(
-      'listrewardamount',
-      []
-    );
+    const result: any = await sendRequest('listrewardamount', []);
 
     return result;
   };
 
   getBeaconBestStateDetail = async () => {
-    const result: any = await sendRequest(
-      'getbeaconbeststatedetail',
-      []
-    );
+    const result: any = await sendRequest('getbeaconbeststatedetail', []);
 
     return result;
   };
@@ -402,42 +363,46 @@ class RpcClient {
     if (tokenIDStr2 === '') {
       tokenIDStr2 = PRVIDSTR;
     }
-
     const beaconHeight = await this.getBeaconHeight();
     const pdeStateRes = await this.getPDEState(beaconHeight);
-
-    console.log('pdeStateRes: ', pdeStateRes);
-
     let tokenIDArray = [tokenIDStr1, tokenIDStr2];
     tokenIDArray.sort();
-
-    let keyValue = PDEPOOLKEY + '-' + beaconHeight + '-'
-      + tokenIDArray[0] + '-' + tokenIDArray[1];
-
-    console.log('pdeStateRes.state.PDEPoolPairs[keyValue]: ', pdeStateRes.state.PDEPoolPairs[keyValue]);
-
-    if (pdeStateRes.state.PDEPoolPairs[keyValue] !== null && pdeStateRes.state.PDEPoolPairs[keyValue] !== undefined) {
-      if (tokenIDArray[0] == PRVIDSTR && pdeStateRes.state.PDEPoolPairs[keyValue].Token1PoolValue < 10000 * 1e9) {
+    let keyValue =
+      PDEPOOLKEY +
+      '-' +
+      beaconHeight +
+      '-' +
+      tokenIDArray[0] +
+      '-' +
+      tokenIDArray[1];
+    if (
+      pdeStateRes.state.PDEPoolPairs[keyValue] !== null &&
+      pdeStateRes.state.PDEPoolPairs[keyValue] !== undefined
+    ) {
+      if (
+        tokenIDArray[0] == PRVIDSTR &&
+        pdeStateRes.state.PDEPoolPairs[keyValue].Token1PoolValue < 10000 * 1e9
+      ) {
         return false;
       }
-
-      if (tokenIDArray[1] == PRVIDSTR && pdeStateRes.state.PDEPoolPairs[keyValue].Token2PoolValue < 10000 * 1e9) {
+      if (
+        tokenIDArray[1] == PRVIDSTR &&
+        pdeStateRes.state.PDEPoolPairs[keyValue].Token2PoolValue < 10000 * 1e9
+      ) {
         return false;
       }
-
       return true;
     }
     return false;
-  }
+  };
 
   getTransactionByReceiver = async (paymentAdrr: any, viewingKey: any) => {
-    const result: any = await sendRequest(
-      'gettransactionbyreceiver',
-      [{
-        'PaymentAddress': paymentAdrr,
-        'ReadonlyKey': viewingKey,
-      }]
-    );
+    const result: any = await sendRequest('gettransactionbyreceiver', [
+      {
+        PaymentAddress: paymentAdrr,
+        ReadonlyKey: viewingKey,
+      },
+    ]);
 
     return {
       receivedTransactions: result.ReceivedTransactions,
@@ -445,25 +410,21 @@ class RpcClient {
   };
 
   getListPrivacyCustomTokenBalance = async (privateKey: any) => {
-    const result: any = await sendRequest(
-      'getlistprivacycustomtokenbalance',
-      [privateKey]
-    );
+    const result: any = await sendRequest('getlistprivacycustomtokenbalance', [
+      privateKey,
+    ]);
 
     return result.ListCustomTokenBalance || [];
   };
 
   getBurningAddress = async (beaconHeight: number = 0) => {
-    const result: any = await sendRequest(
-      'getburningaddress',
-      [beaconHeight]
-    );
+    const result: any = await sendRequest('getburningaddress', [beaconHeight]);
 
     return result;
   };
 
   getNodeTime = async () => {
-    const data = await sendRequest('getnetworkinfo', "");
+    const data = await sendRequest('getnetworkinfo', '');
     return data.NodeTime;
   };
 }
