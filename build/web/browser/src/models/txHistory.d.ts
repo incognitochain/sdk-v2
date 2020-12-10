@@ -13,7 +13,7 @@ interface PrivacyTokenHistoryInfo extends NativeTokenHistoryInfo {
     tokenSymbol: TokenSymbolType;
     privacyTokenTxType: number;
 }
-interface TxHistoryModelParam {
+export interface TxHistoryModelParam {
     txId: string;
     txType: string;
     lockTime: number;
@@ -34,10 +34,6 @@ export default class TxHistoryModel {
     meta: any;
     accountPublicKeySerialized: string;
     historyType: number;
-    useNativeFee: boolean;
-    usePrivacyFee: boolean;
-    fee: string;
-    amount: string;
     constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType, }: TxHistoryModelParam);
     toJson(): {
         txId: string;
