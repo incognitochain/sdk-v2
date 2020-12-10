@@ -15,6 +15,7 @@ export { default as AccountKeySetModel } from "./src/models/key/accountKeySet";
 export { default as PaymentInfoModel } from "./src/models/paymentInfo";
 export { default as storageService } from "./src/services/storage";
 export { default as TxHistoryModel } from "./src/models/txHistory";
+export * from "./src/models/txHistory";
 export { setConfig, getConfig } from "./src/config";
 export { default as BN } from 'bn.js';
 export { getPrivacyTokenList } from "./src/services/bridge/token";
