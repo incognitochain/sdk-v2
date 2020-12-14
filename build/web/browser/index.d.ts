@@ -25,6 +25,7 @@ export declare const historyServices: {
 };
 export declare const walletServices: {
     setPrivacyUtilRandomBytesFunc: typeof setPrivacyUtilRandomBytesFunc;
+    checkPaymentAddress: (paymentAddr: string) => boolean;
 };
 export declare const goServices: {
     implementGoMethodManually: typeof implementGoMethodManually;
