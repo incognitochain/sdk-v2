@@ -4,9 +4,14 @@
 
 # Get Started
 ## Install
+`$ yarn add https://github.com/incognitochain/sdk-v2#develop` 
+or
 `$ yarn add https://github.com/incognitochain/sdk-v2`
 
-## Usage
+Please use branch #develop. We are building sdk-v2.
+Follow example at https://github.com/incognitochain/sdk-v2/blob/master/sample/test-node.js
+
+## Usage 
 
 ### Nodejs
 
