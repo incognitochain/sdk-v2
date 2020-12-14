@@ -9,7 +9,10 @@ import {
   implementGoMethodUseWasm,
   GO_METHOD_NAMES,
 } from '@src/go';
-import { setPrivacyUtilRandomBytesFunc } from '@src/services/wallet';
+import {
+  setPrivacyUtilRandomBytesFunc,
+  checkPaymentAddress,
+} from '@src/services/wallet';
 import { removeBridgeHistory } from '@src/services/bridge/history';
 import * as _CONSTANT from '@src/constants/constants';
 import * as _TX_CONSTANT from '@src/constants/tx';
@@ -39,6 +42,7 @@ export const historyServices = {
 
 export const walletServices = {
   setPrivacyUtilRandomBytesFunc,
+  checkPaymentAddress,
 };
 
 export const goServices = {
