@@ -6,4 +6,3 @@ tmp/
 .vscode/
 .DS_STORE
 stats.json
-build/node
