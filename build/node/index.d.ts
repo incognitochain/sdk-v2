@@ -25,7 +25,6 @@ export declare const historyServices: {
 };
 export declare const walletServices: {
     setPrivacyUtilRandomBytesFunc: typeof setPrivacyUtilRandomBytesFunc;
-    checkPaymentAddress: (paymentAddr: string) => boolean;
 };
 export declare const goServices: {
     implementGoMethodManually: typeof implementGoMethodManually;
@@ -38,6 +37,9 @@ export declare const bridgeServices: {
         currencyType: number;
         isDecentralized: boolean;
     }) => Promise<import("axios").AxiosResponse<any>>;
+};
+export declare const keyServices: {
+    checkPaymentAddress: (paymentAddr: string) => boolean;
 };
 export declare const CONSTANT: {
     TX_CONSTANT: typeof _TX_CONSTANT;

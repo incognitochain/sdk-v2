@@ -37,5 +37,6 @@ export declare function getBackupData(keyWallet: KeyWalletModel): {
     };
 };
 export declare function restoreKeyWalletFromBackupData(data: any): KeyWalletModel;
+export declare const checkPaymentAddress: (paymentAddr: string) => boolean;
 export {};
 //# sourceMappingURL=keyWallet.d.ts.map

@@ -47,6 +47,3 @@ export async function decryptWalletData(
 
   return data;
 }
-
-//TODO: method val incognito address
-export const checkPaymentAddress = (paymentAddr: string) => true;

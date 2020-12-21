@@ -9,17 +9,14 @@ import {
   implementGoMethodUseWasm,
   GO_METHOD_NAMES,
 } from '@src/go';
-import {
-  setPrivacyUtilRandomBytesFunc,
-  checkPaymentAddress,
-} from '@src/services/wallet';
+import { setPrivacyUtilRandomBytesFunc } from '@src/services/wallet';
 import { removeBridgeHistory } from '@src/services/bridge/history';
 import * as _CONSTANT from '@src/constants/constants';
 import * as _TX_CONSTANT from '@src/constants/tx';
 import * as _WALLET_CONSTANT from '@src/constants/wallet';
 import * as HISTORY_CONSTANT from '@src/constants/history';
 import _TOKEN_INFO_CONSTANT from '@src/constants/tokenInfo';
-
+import { checkPaymentAddress } from '@src/services/key';
 export { default as AccountInstance } from '@src/walletInstance/account/account';
 export { default as NativeTokenInstance } from '@src/walletInstance/token/nativeToken';
 export { default as PrivacyTokenInstance } from '@src/walletInstance/token/privacyToken';
@@ -42,7 +39,6 @@ export const historyServices = {
 
 export const walletServices = {
   setPrivacyUtilRandomBytesFunc,
-  checkPaymentAddress,
 };
 
 export const goServices = {
@@ -53,6 +49,10 @@ export const goServices = {
 
 export const bridgeServices = {
   removeBridgeHistory,
+};
+
+export const keyServices = {
+  checkPaymentAddress,
 };
 
 export const CONSTANT = {
