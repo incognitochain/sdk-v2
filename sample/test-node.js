@@ -114,18 +114,18 @@ async function main() {
       //   '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
       // );
 
-      // const txPRV = await state.importedAccount.nativeToken.transfer(
-      //   [
-      //     {
-      //       paymentAddressStr:
-      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-      //       amount: '69000',
-      //       message: 'send prv',
-      //     },
-      //   ],
-      //   '100'
-      // );
-      // console.debug('txPRV', txPRV);
+      const txPRV = await state.importedAccount.nativeToken.transfer(
+        [
+          {
+            paymentAddressStr:
+              '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+            amount: '69000',
+            message: 'send prv',
+          },
+        ],
+        '100'
+      );
+      console.debug('txPRV', txPRV);
 
       // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getTotalBalance()).toNumber());
