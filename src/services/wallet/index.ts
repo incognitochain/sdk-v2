@@ -1,7 +1,7 @@
 import { setRandBytesFunc } from '@src/privacy/utils';
 import CryptoJS from 'crypto-js';
 import Validator from '@src/utils/validator';
-import { newMnemonic, newSeed } from './mnemonic';
+import mnemonicService from './mnemonic';
 
 export function setPrivacyUtilRandomBytesFunc(f: Function) {
   new Validator('f', f).required().function();
@@ -12,8 +12,8 @@ export function setPrivacyUtilRandomBytesFunc(f: Function) {
 export function initWalletData(passPhrase: string) {
   new Validator('passPhrase', passPhrase).required().string();
 
-  const mnemonic = newMnemonic();
-  const seed = newSeed(mnemonic);
+  const mnemonic = mnemonicService.newMnemonic();
+  const seed = mnemonicService.newSeed(mnemonic);
 
   return {
     mnemonic,

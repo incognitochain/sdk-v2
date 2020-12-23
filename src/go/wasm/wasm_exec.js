@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 // Copyright 2018 The Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
@@ -21,9 +20,7 @@
   } else if (typeof self !== 'undefined') {
     self.global = self;
   } else {
-    throw new Error(
-      'cannot export Go (neither global, window nor self is defined)'
-    );
+    throw new Error('cannot export Go (neither global, window nor self is defined)');
   }
 
   if (!global.require && typeof require !== 'undefined') {
@@ -46,14 +43,7 @@
   if (!global.fs) {
     let outputBuf = '';
     global.fs = {
-      constants: {
-        O_WRONLY: -1,
-        O_RDWR: -1,
-        O_CREAT: -1,
-        O_TRUNC: -1,
-        O_APPEND: -1,
-        O_EXCL: -1,
-      }, // unused
+      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
       writeSync(fd, buf) {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf('\n');
@@ -71,106 +61,44 @@
         const n = this.writeSync(fd, buf);
         callback(null, n);
       },
-      chmod(path, mode, callback) {
-        callback(enosys());
-      },
-      chown(path, uid, gid, callback) {
-        callback(enosys());
-      },
-      close(fd, callback) {
-        callback(enosys());
-      },
-      fchmod(fd, mode, callback) {
-        callback(enosys());
-      },
-      fchown(fd, uid, gid, callback) {
-        callback(enosys());
-      },
-      fstat(fd, callback) {
-        callback(enosys());
-      },
-      fsync(fd, callback) {
-        callback(null);
-      },
-      ftruncate(fd, length, callback) {
-        callback(enosys());
-      },
-      lchown(path, uid, gid, callback) {
-        callback(enosys());
-      },
-      link(path, link, callback) {
-        callback(enosys());
-      },
-      lstat(path, callback) {
-        callback(enosys());
-      },
-      mkdir(path, perm, callback) {
-        callback(enosys());
-      },
-      open(path, flags, mode, callback) {
-        callback(enosys());
-      },
-      read(fd, buffer, offset, length, position, callback) {
-        callback(enosys());
-      },
-      readdir(path, callback) {
-        callback(enosys());
-      },
-      readlink(path, callback) {
-        callback(enosys());
-      },
-      rename(from, to, callback) {
-        callback(enosys());
-      },
-      rmdir(path, callback) {
-        callback(enosys());
-      },
-      stat(path, callback) {
-        callback(enosys());
-      },
-      symlink(path, link, callback) {
-        callback(enosys());
-      },
-      truncate(path, length, callback) {
-        callback(enosys());
-      },
-      unlink(path, callback) {
-        callback(enosys());
-      },
-      utimes(path, atime, mtime, callback) {
-        callback(enosys());
-      },
+      chmod(path, mode, callback) { callback(enosys()); },
+      chown(path, uid, gid, callback) { callback(enosys()); },
+      close(fd, callback) { callback(enosys()); },
+      fchmod(fd, mode, callback) { callback(enosys()); },
+      fchown(fd, uid, gid, callback) { callback(enosys()); },
+      fstat(fd, callback) { callback(enosys()); },
+      fsync(fd, callback) { callback(null); },
+      ftruncate(fd, length, callback) { callback(enosys()); },
+      lchown(path, uid, gid, callback) { callback(enosys()); },
+      link(path, link, callback) { callback(enosys()); },
+      lstat(path, callback) { callback(enosys()); },
+      mkdir(path, perm, callback) { callback(enosys()); },
+      open(path, flags, mode, callback) { callback(enosys()); },
+      read(fd, buffer, offset, length, position, callback) { callback(enosys()); },
+      readdir(path, callback) { callback(enosys()); },
+      readlink(path, callback) { callback(enosys()); },
+      rename(from, to, callback) { callback(enosys()); },
+      rmdir(path, callback) { callback(enosys()); },
+      stat(path, callback) { callback(enosys()); },
+      symlink(path, link, callback) { callback(enosys()); },
+      truncate(path, length, callback) { callback(enosys()); },
+      unlink(path, callback) { callback(enosys()); },
+      utimes(path, atime, mtime, callback) { callback(enosys()); },
     };
   }
 
   if (!global.process) {
     global.process = {
-      getuid() {
-        return -1;
-      },
-      getgid() {
-        return -1;
-      },
-      geteuid() {
-        return -1;
-      },
-      getegid() {
-        return -1;
-      },
-      getgroups() {
-        throw enosys();
-      },
+      getuid() { return -1; },
+      getgid() { return -1; },
+      geteuid() { return -1; },
+      getegid() { return -1; },
+      getgroups() { throw enosys(); },
       pid: -1,
       ppid: -1,
-      umask() {
-        throw enosys();
-      },
-      cwd() {
-        throw enosys();
-      },
-      chdir() {
-        throw enosys();
-      },
+      umask() { throw enosys(); },
+      cwd() { throw enosys(); },
+      chdir() { throw enosys(); },
     };
   }
 
@@ -183,9 +111,7 @@
     };
   }
   if (!global.crypto) {
-    throw new Error(
-      'global.crypto is not available, polyfill required (getRandomValues only)'
-    );
+    throw new Error('global.crypto is not available, polyfill required (getRandomValues only)');
   }
 
   if (!global.performance) {
@@ -257,7 +183,7 @@
       };
 
       const storeValue = (addr, v) => {
-        const nanHead = 0x7ff80000;
+        const nanHead = 0x7FF80000;
 
         if (typeof v === 'number' && v !== 0) {
           if (isNaN(v)) {
@@ -325,9 +251,7 @@
       const loadString = (addr) => {
         const saddr = getInt64(addr + 0);
         const len = getInt64(addr + 8);
-        return decoder.decode(
-          new DataView(this._inst.exports.mem.buffer, saddr, len)
-        );
+        return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
       };
 
       const timeOrigin = Date.now() - performance.now();
@@ -357,13 +281,11 @@
             const fd = getInt64(sp + 8);
             const p = getInt64(sp + 16);
             const n = this.mem.getInt32(sp + 24, true);
-            fs.writeSync(
-              fd,
-              new Uint8Array(this._inst.exports.mem.buffer, p, n)
-            );
+            fs.writeSync(fd, new Uint8Array(this._inst.exports.mem.buffer, p, n));
           },
 
           // func resetMemoryDataView()
+          // eslint-disable-next-line no-unused-vars
           'runtime.resetMemoryDataView': (sp) => {
             sp >>>= 0;
             this.mem = new DataView(this._inst.exports.mem.buffer);
@@ -378,7 +300,7 @@
           // func walltime1() (sec int64, nsec int32)
           'runtime.walltime1': (sp) => {
             sp >>>= 0;
-            const msec = new Date().getTime();
+            const msec = (new Date).getTime();
             setInt64(sp + 8, msec / 1000);
             this.mem.setInt32(sp + 16, (msec % 1000) * 1000000, true);
           },
@@ -388,21 +310,18 @@
             sp >>>= 0;
             const id = this._nextCallbackTimeoutID;
             this._nextCallbackTimeoutID++;
-            this._scheduledTimeouts.set(
-              id,
-              setTimeout(
-                () => {
+            this._scheduledTimeouts.set(id, setTimeout(
+              () => {
+                this._resume();
+                while (this._scheduledTimeouts.has(id)) {
+                  // for some reason Go failed to register the timeout event, log and try again
+                  // (temporary workaround for https://github.com/golang/go/issues/28975)
+                  console.warn('scheduleTimeoutEvent: missed timeout event');
                   this._resume();
-                  while (this._scheduledTimeouts.has(id)) {
-                    // for some reason Go failed to register the timeout event, log and try again
-                    // (temporary workaround for https://github.com/golang/go/issues/28975)
-                    console.warn('scheduleTimeoutEvent: missed timeout event');
-                    this._resume();
-                  }
-                },
-                getInt64(sp + 8) + 1 // setTimeout has been seen to fire up to 1 millisecond early
-              )
-            );
+                }
+              },
+              getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
+            ));
             this.mem.setInt32(sp + 16, id, true);
           },
 
@@ -450,11 +369,7 @@
           // func valueSet(v ref, p string, x ref)
           'syscall/js.valueSet': (sp) => {
             sp >>>= 0;
-            Reflect.set(
-              loadValue(sp + 8),
-              loadString(sp + 16),
-              loadValue(sp + 32)
-            );
+            Reflect.set(loadValue(sp + 8), loadString(sp + 16), loadValue(sp + 32));
           },
 
           // func valueDelete(v ref, p string)
@@ -466,20 +381,13 @@
           // func valueIndex(v ref, i int) ref
           'syscall/js.valueIndex': (sp) => {
             sp >>>= 0;
-            storeValue(
-              sp + 24,
-              Reflect.get(loadValue(sp + 8), getInt64(sp + 16))
-            );
+            storeValue(sp + 24, Reflect.get(loadValue(sp + 8), getInt64(sp + 16)));
           },
 
           // valueSetIndex(v ref, i int, x ref)
           'syscall/js.valueSetIndex': (sp) => {
             sp >>>= 0;
-            Reflect.set(
-              loadValue(sp + 8),
-              getInt64(sp + 16),
-              loadValue(sp + 24)
-            );
+            Reflect.set(loadValue(sp + 8), getInt64(sp + 16), loadValue(sp + 24));
           },
 
           // func valueCall(v ref, m string, args []ref) (ref, bool)
@@ -555,10 +463,7 @@
           // func valueInstanceOf(v ref, t ref) bool
           'syscall/js.valueInstanceOf': (sp) => {
             sp >>>= 0;
-            this.mem.setUint8(
-              sp + 24,
-              loadValue(sp + 8) instanceof loadValue(sp + 16) ? 1 : 0
-            );
+            this.mem.setUint8(sp + 24, (loadValue(sp + 8) instanceof loadValue(sp + 16)) ? 1 : 0);
           },
 
           // func copyBytesToGo(dst []byte, src ref) (int, bool)
@@ -566,9 +471,7 @@
             sp >>>= 0;
             const dst = loadSlice(sp + 8);
             const src = loadValue(sp + 32);
-            if (
-              !(src instanceof Uint8Array || src instanceof Uint8ClampedArray)
-            ) {
+            if (!(src instanceof Uint8Array || src instanceof Uint8ClampedArray)) {
               this.mem.setUint8(sp + 48, 0);
               return;
             }
@@ -583,9 +486,7 @@
             sp >>>= 0;
             const dst = loadValue(sp + 8);
             const src = loadSlice(sp + 16);
-            if (
-              !(dst instanceof Uint8Array || dst instanceof Uint8ClampedArray)
-            ) {
+            if (!(dst instanceof Uint8Array || dst instanceof Uint8ClampedArray)) {
               this.mem.setUint8(sp + 48, 0);
               return;
             }
@@ -595,10 +496,10 @@
             this.mem.setUint8(sp + 48, 1);
           },
 
-          debug: (value) => {
+          'debug': (value) => {
             console.log(value);
           },
-        },
+        }
       };
     }
 
@@ -608,8 +509,7 @@
       }
       this._inst = instance;
       this.mem = new DataView(this._inst.exports.mem.buffer);
-      this._values = [
-        // JS values that Go currently has references to, indexed by reference id
+      this._values = [ // JS values that Go currently has references to, indexed by reference id
         NaN,
         0,
         null,
@@ -619,8 +519,7 @@
         this,
       ];
       this._goRefCounts = new Array(this._values.length).fill(Infinity); // number of references that Go has to a JS value, indexed by reference id
-      this._ids = new Map([
-        // mapping from JS values to reference ids
+      this._ids = new Map([ // mapping from JS values to reference ids
         [0, 1],
         [null, 2],
         [true, 3],
@@ -628,7 +527,7 @@
         [global, 5],
         [this, 6],
       ]);
-      this._idPool = []; // unused ids that have been garbage collected
+      this._idPool = [];   // unused ids that have been garbage collected
       this.exited = false; // whether the Go program has exited
 
       // Pass command line arguments and environment variables to WebAssembly by writing them to the linear memory.
@@ -711,21 +610,18 @@
     go.argv = process.argv.slice(2);
     go.env = Object.assign({ TMPDIR: require('os').tmpdir() }, process.env);
     go.exit = process.exit;
-    WebAssembly.instantiate(fs.readFileSync(process.argv[2]), go.importObject)
-      .then((result) => {
-        process.on('exit', (code) => {
-          // Node.js exits if no event handler is pending
-          if (code === 0 && !go.exited) {
-            // deadlock, make Go print error and stack traces
-            go._pendingEvent = { id: 0 };
-            go._resume();
-          }
-        });
-        return go.run(result.instance);
-      })
-      .catch((err) => {
-        console.error(err);
-        process.exit(1);
+    WebAssembly.instantiate(fs.readFileSync(process.argv[2]), go.importObject).then((result) => {
+      process.on('exit', (code) => { // Node.js exits if no event handler is pending
+        if (code === 0 && !go.exited) {
+          // deadlock, make Go print error and stack traces
+          go._pendingEvent = { id: 0 };
+          go._resume();
+        }
       });
+      return go.run(result.instance);
+    }).catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
   }
 })();
