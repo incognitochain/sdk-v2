@@ -25,12 +25,6 @@ export declare function base58CheckDeserialize(keyStr: string): {
     };
 };
 export declare function getIntermediary(childIndex: number, keyWalletChainCode: KeyWalletChainCode): any;
-export declare function generateChildKeyData(childIndex: number, keyWalletDepth: KeyWalletDepth, keyWalletChainCode: KeyWalletChainCode): Promise<{
-    childNumber: Uint8Array;
-    chainCode: Uint8Array;
-    depth: number;
-    keySet: import("../../models/key/accountKeySet").default;
-}>;
 export declare function getBackupData(keyWallet: KeyWalletModel): {
     chainCode: number[];
     childNumber: number[];
@@ -43,5 +37,6 @@ export declare function getBackupData(keyWallet: KeyWalletModel): {
     };
 };
 export declare function restoreKeyWalletFromBackupData(data: any): KeyWalletModel;
+export declare const checkPaymentAddress: (paymentAddr: string) => boolean;
 export {};
 //# sourceMappingURL=keyWallet.d.ts.map

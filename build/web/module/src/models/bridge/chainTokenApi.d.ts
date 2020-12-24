@@ -1,7 +1,7 @@
 import BaseModel from "../baseModel";
 interface ChainTokenApiModelParamModelInterface {
     Amount: number;
-    ID: string;
+    TokenID: string;
     Name: string;
     Symbol: string;
 }

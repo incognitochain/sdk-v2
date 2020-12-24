@@ -12,8 +12,10 @@ function validateMnemonic(mnemonic: string) {
   return bip39.validateMnemonic(mnemonic);
 }
 
-export {
+export const mnemonicService = {
   newMnemonic,
   newSeed,
   validateMnemonic,
 };
+
+export default mnemonicService;
