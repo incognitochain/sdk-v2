@@ -98,7 +98,7 @@ async function getRandomCommitments(
   let myCommitmentIndices: any = [];
   let commitmentStrs: any = [];
 
-  if (usePrivacy) {
+  if (usePrivacy && coinsToSpend.length > 0) {
     const randomCommitmentData = await rpc.randomCommitmentsProcess(
       paymentAddress,
       coinsToSpend,

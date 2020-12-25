@@ -6,6 +6,7 @@ type Config = {
   apiURL: string;
   mainnet: boolean;
   wasmPath: string;
+  api2URL?: string;
 };
 
 type SetConfigName = {
@@ -14,6 +15,7 @@ type SetConfigName = {
   apiURL?: string;
   mainnet?: boolean;
   wasmPath?: string;
+  api2URL?: string;
 };
 
 // default config
@@ -22,17 +24,31 @@ let config: Config = {
   apiURL: null,
   logMethod: console.log,
   mainnet: ENV.MAINNET,
-  wasmPath: null
+  wasmPath: null,
+  api2URL: null,
 };
 
 export function getConfig() {
-  const apiURL = config.apiURL || (config.mainnet ? ENV.DEFAULT_API_URL_MAINNET : ENV.DEFAULT_API_URL_TESTNET);
-  const chainURL = config.chainURL || (config.mainnet ? ENV.DEFAULT_CHAIN_URL_MAINNET : ENV.DEFAULT_CHAIN_URL_TESTNET);
-  
+  const apiURL =
+    config.apiURL ||
+    (config.mainnet
+      ? ENV.DEFAULT_API_URL_MAINNET
+      : ENV.DEFAULT_API_URL_TESTNET);
+  const chainURL =
+    config.chainURL ||
+    (config.mainnet
+      ? ENV.DEFAULT_CHAIN_URL_MAINNET
+      : ENV.DEFAULT_CHAIN_URL_TESTNET);
+  const api2URL =
+    config.api2URL ||
+    (config.mainnet
+      ? ENV.DEFAULT_API_2_URL_MAINNET
+      : ENV.DEFAULT_API_2_URL_TESTNET);
   return {
     ...config,
     apiURL,
-    chainURL
+    chainURL,
+    api2URL,
   };
 }
 

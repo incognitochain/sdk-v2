@@ -4,10 +4,12 @@ declare type SetConfigName = {
     apiURL?: string;
     mainnet?: boolean;
     wasmPath?: string;
+    api2URL?: string;
 };
 export declare function getConfig(): {
     apiURL: string;
     chainURL: string;
+    api2URL: string;
     logMethod: (message: string) => void;
     mainnet: boolean;
     wasmPath: string;
