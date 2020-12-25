@@ -1,13 +1,15 @@
 export {};
 
 interface ENV {
-  DEFAULT_CHAIN_URL_MAINNET: string,
-  DEFAULT_CHAIN_URL_TESTNET: string,
-  DEFAULT_API_URL_MAINNET: string,
-  DEFAULT_API_URL_TESTNET: string,
-  IS_PROD: boolean,
-  MAINNET: boolean
-};
+  DEFAULT_CHAIN_URL_MAINNET: string;
+  DEFAULT_CHAIN_URL_TESTNET: string;
+  DEFAULT_API_URL_MAINNET: string;
+  DEFAULT_API_URL_TESTNET: string;
+  DEFAULT_API_2_URL_MAINNET: string;
+  DEFAULT_API_2_URL_TESTNET: string;
+  IS_PROD: boolean;
+  MAINNET: boolean;
+}
 
 declare global {
   interface Array<T> {
@@ -26,16 +28,16 @@ declare global {
   /**
    * Log
    */
-  const L : {
+  const L: {
     info: (message: string, info?: any) => void;
     error: (message: string, error?: any) => void;
     warning: (message: string) => void;
-  }
+  };
 
   const __IS_WEB__: boolean;
   const __IS_NODE__: boolean;
-  const ENV : ENV;
-  
+  const ENV: ENV;
+
   type KeyWalletChainCode = Uint8Array;
   type KeyWalletChildNumber = Uint8Array;
   type KeyWalletDepth = number;
