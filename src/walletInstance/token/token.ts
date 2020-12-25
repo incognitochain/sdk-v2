@@ -92,7 +92,7 @@ class Token implements BaseTokenModel {
 
     L.info(`Token ${this.tokenId} load total balance = ${balanceBN.toString()}`);
 
-    return balanceBN;
+    return balanceBN.toString();
   }
 
   async getTxHistories() {
