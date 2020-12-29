@@ -109,23 +109,33 @@ async function main() {
         'Imported acc',
         '112t8rnXJDs4NNtaG1Am1MxEgtsG1RfffBmBFd3TBe9PXFfP3cabTFJU3wS3wdN9WxnRc6GbRDLtQTdnZyW1V9nRBp8AiMmfF3XeCKv1Wkgy'
       );
-      // state.privacyToken = await state.importedAccount.getPrivacyTokenById(
-      //   // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
-      //   '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
-      // );
-
-      const txPRV = await state.importedAccount.nativeToken.transfer(
-        [
-          {
-            paymentAddressStr:
-              '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-            amount: '69000',
-            message: 'send prv',
-          },
-        ],
-        '100'
+      
+      
+      // console.debug('HISTORY', history);
+      state.privacyToken = await state.importedAccount.getPrivacyTokenById(
+        'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
+        // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
       );
-      console.debug('txPRV', txPRV);
+
+      const history = await state.privacyToken.getTransactionByReceiver(
+        { skip: 0, limit: 10 }
+      );
+
+      console.debug('HISTORY TOKEN', history);
+
+
+      // const txPRV = await state.importedAccount.nativeToken.transfer(
+      //   [
+      //     {
+      //       paymentAddressStr:
+      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+      //       amount: '69000',
+      //       message: 'send prv',
+      //     },
+      //   ],
+      //   '100'
+      // );
+      // console.debug('txPRV', txPRV);
 
       // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getTotalBalance()).toNumber());

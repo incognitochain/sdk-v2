@@ -27,9 +27,9 @@ declare class Token implements BaseTokenModel {
      */
     getAvailableCoins(tokenId?: TokenIdType): Promise<import("../../models/coin").default[]>;
     /**
-    *
-    * @param tokenId use `null` for native token
-    */
+     *
+     * @param tokenId use `null` for native token
+     */
     getUnspentCoins(tokenId: TokenIdType): Promise<import("../../models/coin").default[]>;
     /**
      *
@@ -42,6 +42,10 @@ declare class Token implements BaseTokenModel {
      */
     getTotalBalance(tokenId?: TokenIdType): Promise<string>;
     getTxHistories(): Promise<import("../../..").TxHistoryModel[]>;
+    getTransactionByReceiver: ({ skip, limit, }: {
+        skip: number;
+        limit: number;
+    }) => Promise<any>;
     transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: string, privacyFee?: string): void;
     withdrawNodeReward(): Promise<import("../../..").TxHistoryModel>;
 }

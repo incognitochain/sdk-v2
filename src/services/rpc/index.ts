@@ -427,6 +427,31 @@ class RpcClient {
     const data = await sendRequest('getnetworkinfo', '');
     return data.NodeTime;
   };
+
+  getTransactionByReceiverV2 = async ({
+    PaymentAddress,
+    ReadonlyKey,
+    TokenID,
+    Skip = 0,
+    Limit = 10,
+  }: {
+    PaymentAddress: string;
+    ReadonlyKey: string;
+    TokenID: string;
+    Skip?: number;
+    Limit?: number;
+  }) => {
+    const result: any = await sendRequest('gettransactionbyreceiverv2', [
+      {
+        PaymentAddress,
+        ReadonlyKey,
+        Skip,
+        Limit,
+        TokenID,
+      },
+    ]);
+    return result.ReceivedTransactions;
+  };
 }
 
 const client = new RpcClient();
