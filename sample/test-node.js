@@ -37,7 +37,7 @@ async function main() {
 
     await section('SET CONFIG', () => {
       incognito.setConfig({
-        mainnet: false,
+        mainnet: true,
         wasmPath: path.resolve(__dirname, '../privacy.wasm'),
       });
       console.log('Config after updating', incognito.getConfig());
@@ -107,22 +107,25 @@ async function main() {
     await section('IMPORT ACCOUNT', async () => {
       state.importedAccount = await state.wallet.masterAccount.importAccount(
         'Imported acc',
-        '112t8rnXJDs4NNtaG1Am1MxEgtsG1RfffBmBFd3TBe9PXFfP3cabTFJU3wS3wdN9WxnRc6GbRDLtQTdnZyW1V9nRBp8AiMmfF3XeCKv1Wkgy'
+        '112t8rnXKfvZc5iAqrGtKT7kfMnbnrMLRfTTu5xfjgGYssEMdaSBC6NuPDqq8Z4QZAWhnBu1mccsJ2dU7S9f45zGyX1qw4DCRBe6Hjkhhvx7'
       );
-      
-      
+
       // console.debug('HISTORY', history);
       state.privacyToken = await state.importedAccount.getPrivacyTokenById(
-        'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
+        // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
         // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
+        'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f' //eth
       );
 
-      const history = await state.privacyToken.getTransactionByReceiver(
-        { skip: 0, limit: 10 }
-      );
+      const address = await state.privacyToken.bridgeGenerateDepositAddress();
 
-      console.debug('HISTORY TOKEN', history);
+      console.log('address', address);
 
+      // const history = await state.privacyToken.getTransactionByReceiver(
+      //   { skip: 0, limit: 10 }
+      // );
+
+      // console.debug('HISTORY TOKEN', history);
 
       // const txPRV = await state.importedAccount.nativeToken.transfer(
       //   [
