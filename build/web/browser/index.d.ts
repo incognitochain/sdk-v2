@@ -32,7 +32,7 @@ export declare const goServices: {
     GO_METHOD_NAMES: string[];
 };
 export declare const bridgeServices: {
-    removeBridgeHistory: ({ historyId, currencyType, isDecentralized }: {
+    removeBridgeHistory: ({ historyId, currencyType, isDecentralized, }: {
         historyId: number;
         currencyType: number;
         isDecentralized: boolean;

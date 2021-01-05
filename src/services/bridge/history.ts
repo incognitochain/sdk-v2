@@ -1,24 +1,34 @@
 import { http } from '@src/services/http';
 import Validator from '@src/utils/validator';
-import BridgeHistoryModel from '@src/models/bridge/bridgeHistory';
 
-export const getBridgeHistory = async ({ paymentAddress, tokenId }: { paymentAddress: string, tokenId: string }) => {
+export const getBridgeHistory = async ({
+  paymentAddress,
+  tokenId,
+}: {
+  paymentAddress: string;
+  tokenId: string;
+}) => {
   new Validator('paymentAddress', paymentAddress).required().paymentAddress();
   new Validator('tokenId', tokenId).required().string();
-
-  const historyData = await http.get('eta/history', {
-    params: {
-      WalletAddress: paymentAddress,
-      PrivacyTokenAddress: tokenId
-    }
-  });
-
-  if (historyData instanceof Array) {
-    return historyData.map(history => new BridgeHistoryModel(history));
-  }
+  return await http
+    .get('eta/history', {
+      params: {
+        WalletAddress: paymentAddress,
+        PrivacyTokenAddress: tokenId,
+      },
+    })
+    .then((res: any) => res || []);
 };
 
-export const removeBridgeHistory = ({ historyId, currencyType, isDecentralized }: { historyId: number, currencyType: number, isDecentralized: boolean }) => {
+export const removeBridgeHistory = ({
+  historyId,
+  currencyType,
+  isDecentralized,
+}: {
+  historyId: number;
+  currencyType: number;
+  isDecentralized: boolean;
+}) => {
   new Validator('historyId', historyId).required().number();
   new Validator('currencyType', currencyType).required().number();
   new Validator('isDecentralized', isDecentralized).required().boolean();
@@ -26,6 +36,6 @@ export const removeBridgeHistory = ({ historyId, currencyType, isDecentralized }
   return http.post('eta/remove', {
     CurrencyType: currencyType,
     ID: historyId,
-    Decentralized: Number(isDecentralized)
+    Decentralized: Number(isDecentralized),
   });
 };
