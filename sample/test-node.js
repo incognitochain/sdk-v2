@@ -114,7 +114,7 @@ async function main() {
         // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
         'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f' //eth
       );
-      const data = await state.privacyToken.bridgeGenerateDepositAddress();
+      const data = await state.privacyToken.bridgeGetHistory();
       console.log('address', data);
       // const history = await state.privacyToken.getTransactionByReceiver(
       //   { skip: 0, limit: 10 }
