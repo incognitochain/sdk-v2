@@ -35,14 +35,13 @@ async function main() {
 
     console.log('Incognito module', incognito);
 
-    await section('SET CONFIG', () => {
-      incognito.setConfig({
-        mainnet: true,
-        wasmPath: path.resolve(__dirname, '../privacy.wasm'),
-      });
-      console.log('Config after updating', incognito.getConfig());
+    incognito.setConfig({
+      mainnet: true,
+      wasmPath: path.resolve(__dirname, '../privacy.wasm'),
+      deviceId: '1234',
+      deviceToken: '1234',
     });
-
+    console.log('Config after updating', incognito.getConfig());
     await section('LOAD WASM', incognito.goServices.implementGoMethodUseWasm);
 
     await section('STORAGE IMPLEMENTATION', () => {
@@ -66,14 +65,14 @@ async function main() {
       await incognito.WalletInstance.restore(state.encWallet, '2');
     });
 
-    try {
-      let result = incognito.keyServices.checkPaymentAddress(
-        '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ'
-      );
-      console.log('PAYMENT_ADDR_VALID', result);
-    } catch (error) {
-      console.debug(error);
-    }
+    // try {
+    //   let result = incognito.keyServices.checkPaymentAddress(
+    //     '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ'
+    //   );
+    //   console.log('PAYMENT_ADDR_VALID', result);
+    // } catch (error) {
+    //   console.debug(error);
+    // }
 
     // console.log(
     //   'PAYMENT_ADDR_VALID_PRIVATE_KEY',
@@ -109,24 +108,18 @@ async function main() {
         'Imported acc',
         '112t8rnXKfvZc5iAqrGtKT7kfMnbnrMLRfTTu5xfjgGYssEMdaSBC6NuPDqq8Z4QZAWhnBu1mccsJ2dU7S9f45zGyX1qw4DCRBe6Hjkhhvx7'
       );
-
       // console.debug('HISTORY', history);
       state.privacyToken = await state.importedAccount.getPrivacyTokenById(
         // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
         // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
         'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f' //eth
       );
-
-      const address = await state.privacyToken.bridgeGenerateDepositAddress();
-
-      console.log('address', address);
-
+      const data = await state.privacyToken.bridgeGenerateDepositAddress();
+      console.log('address', data);
       // const history = await state.privacyToken.getTransactionByReceiver(
       //   { skip: 0, limit: 10 }
       // );
-
       // console.debug('HISTORY TOKEN', history);
-
       // const txPRV = await state.importedAccount.nativeToken.transfer(
       //   [
       //     {
@@ -139,11 +132,9 @@ async function main() {
       //   '100'
       // );
       // console.debug('txPRV', txPRV);
-
       // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getTotalBalance()).toNumber());
       // });
-
       // await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
       // });

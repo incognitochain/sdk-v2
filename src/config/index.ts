@@ -1,31 +1,38 @@
-type ConfigName = 'chainURL' | 'logMethod';
-
-type Config = {
+import { http } from '@src/services/http';
+interface ISetConfig {
   logMethod: (message: string) => void;
   chainURL: string;
   apiURL: string;
   mainnet: boolean;
   wasmPath: string;
   api2URL?: string;
-};
+  deviceId: string;
+  deviceToken: string;
+}
 
-type SetConfigName = {
-  logMethod?: (message: string) => void;
-  chainURL?: string;
-  apiURL?: string;
-  mainnet?: boolean;
-  wasmPath?: string;
-  api2URL?: string;
-};
+interface IConfig {
+  logMethod: (message: string) => void;
+  chainURL: string;
+  apiURL: string;
+  mainnet: boolean;
+  wasmPath: string;
+  api2URL: string;
+  deviceId: string;
+  deviceToken: string;
+  token: string;
+}
 
 // default config
-let config: Config = {
-  chainURL: null,
-  apiURL: null,
+let config: IConfig = {
+  chainURL: '',
+  apiURL: '',
   logMethod: console.log,
   mainnet: ENV.MAINNET,
-  wasmPath: null,
-  api2URL: null,
+  wasmPath: '',
+  api2URL: '',
+  deviceId: '',
+  deviceToken: '',
+  token: '',
 };
 
 export function getConfig() {
@@ -52,9 +59,20 @@ export function getConfig() {
   };
 }
 
-export function setConfig(newConfig: SetConfigName) {
+export const getToken = (deviceId: string, deviceToken: string) => {
+  if (!deviceId) throw new Error('Missing device ID');
+  if (!deviceToken) throw new Error('Missing device token');
+  return http
+    .post('/auth/new-token', {
+      DeviceID: deviceId,
+      DeviceToken: deviceToken,
+    })
+    .then((res: any) => res?.Token);
+};
+
+export const setConfig = (newConfig: ISetConfig) => {
   config = {
     ...config,
     ...newConfig,
   };
-}
+};
