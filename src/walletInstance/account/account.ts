@@ -10,6 +10,7 @@ import { getBLSPublicKeyB58CheckEncode } from '@src/services/key/accountKeySet';
 import { getRewardAmount, getStakerStatus } from '@src/services/node';
 import Validator from '@src/utils/validator';
 import { getPrivacyTokenList } from '@src/services/bridge/token';
+import { PRVIDSTR } from '@src/constants/wallet';
 
 interface AccountModelInterface extends AccountModel {
   nativeToken: NativeToken;
@@ -73,16 +74,13 @@ class Account extends BaseAccount implements AccountModelInterface {
 
   followTokenById(tokenId: TokenIdType) {
     new Validator('tokenId', tokenId).required().string();
-
-    // TODO verify token id
-    if (!this.privacyTokenIds.includes(tokenId)) {
+    if (tokenId !== PRVIDSTR && !this.privacyTokenIds.includes(tokenId)) {
       this.privacyTokenIds.push(tokenId);
     }
   }
 
   unfollowTokenById(tokenId: TokenIdType) {
     new Validator('tokenId', tokenId).required().string();
-
     _.remove(this.privacyTokenIds, (id) => id === tokenId);
   }
 
