@@ -1,4 +1,4 @@
-import http from './bridgeHttp';
+import { http } from '@src/services/http';
 import Validator from '@src/utils/validator';
 import BridgeHistoryModel from '@src/models/bridge/bridgeHistory';
 

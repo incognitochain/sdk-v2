@@ -1,20 +1,31 @@
+/* eslint-disable no-undef */
+import { getToken } from '@src/config';
 import axios from 'axios';
 import { getConfig } from '@src/config';
 
+let currentAccessToken = '';
 const TIMEOUT = 20000;
 const instance = axios.create({
   timeout: TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFhQUBpbmNvZ25pdG8ub3JnIiwiZXhwIjoxODk4NTg1MzEwLCJpZCI6NjM5Nywib3JpZ19pYXQiOjE1ODQwODkzMTB9.vT600Op7gpa5467RI6APJj9UREj9_olhg_v-57FtZUk',
   },
 });
 
-instance.interceptors.request.use((req) => {
-  req.baseURL = getConfig().apiURL;
-  return req;
-});
+instance.interceptors.request.use(
+  (req) => {
+    const { apiURL } = getConfig();
+    req.baseURL = apiURL;
+    req.headers = {
+      ...req.headers,
+      Authorization: `Bearer ${currentAccessToken}`,
+    };
+    return req;
+  },
+  (error) => {
+    Promise.reject(error);
+  }
+);
 
 instance.interceptors.response.use(
   (res) => {
@@ -25,26 +36,28 @@ instance.interceptors.response.use(
     }
     return Promise.resolve(result);
   },
-  (errorData) => {
-    const errResponse = errorData?.response;
-    // can not get response, alert to user
-    if (errorData?.isAxiosError && !errResponse) {
-      throw new Error('Send request RPC failed');
+  async (error) => {
+    const originalRequest = error?.config;
+    if (error?.response?.status === 401) {
+      L.error('Token was expired!');
+      await setTokenHeader();
+      return instance(originalRequest);
     }
-    return Promise.reject(errorData);
+    if (error?.isAxiosError && !error?.response) {
+      throw new Error('Send request API failed');
+    }
+    return Promise.reject(error);
   }
 );
 
-export default instance;
+export const setTokenHeader = async () => {
+  const { deviceId, deviceToken } = getConfig();
+  const token = await getToken(deviceId, deviceToken);
+  if (!token) {
+    throw new Error('Can not set token request');
+  }
+  currentAccessToken = token;
+  axios.defaults.headers.Authorization = `Bearer ${token}`;
+};
 
-/**
- * Document: https://github.com/axios/axios#instance-methodsaxios#request(config)
-    axios#get(url[, config])
-    axios#delete(url[, config])
-    axios#head(url[, config])
-    axios#options(url[, config])
-    axios#post(url[, data[, config]])
-    axios#put(url[, data[, config]])
-    axios#patch(url[, data[, config]])
-    axios#getUri([config])
- */
+export default instance;

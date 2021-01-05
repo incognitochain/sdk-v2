@@ -1,4 +1,4 @@
-import http from './bridgeHttp';
+import { http } from '@src/services/http';
 import BridgeTokenApiModel from '@src/models/bridge/bridgeTokenApi';
 import ChainTokenApiModel from '@src/models/bridge/chainTokenApi';
 import PrivacyTokenApiModel from '@src/models/bridge/privacyTokenApi';
