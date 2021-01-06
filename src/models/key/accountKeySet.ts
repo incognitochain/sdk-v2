@@ -23,6 +23,7 @@ class AccountKeySetModel extends BaseModel {
   privateKeySerialized: string;
   viewingKeySerialized: string;
   paymentAddressKeySerialized: string;
+  index: number;
   // blsPublicKeySerialized: string;
 
   constructor({ privateKey, paymentAddress, viewingKey } : AccountKeySetParam) {

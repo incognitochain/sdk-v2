@@ -9,9 +9,7 @@ export function setPrivacyUtilRandomBytesFunc(f: Function) {
   setRandBytesFunc(f);
 }
 
-export function initWalletData(passPhrase: string) {
-  new Validator('passPhrase', passPhrase).required().string();
-
+export function initWalletData() {
   const mnemonic = mnemonicService.newMnemonic();
   const seed = mnemonicService.newSeed(mnemonic);
 
@@ -22,7 +20,7 @@ export function initWalletData(passPhrase: string) {
 }
 
 /**
- * Backup the wallet, encrypt with `password` (if not provided, use passPhrase instead), return a encrypted text
+ * Backup the wallet, encrypt with `password`, return a encrypted text
  * @param {string} password
  */
 export function encryptWalletData(

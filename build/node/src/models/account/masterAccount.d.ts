@@ -3,6 +3,7 @@ import AccountModel from "./account";
 import KeyWalletModel from "../key/keyWallet";
 declare class MasterAccountModel extends BaseAccountModel {
     child: AccountModel[];
+    deletedIndexes: Number[];
     constructor(name: string, key: KeyWalletModel, child: AccountModel[]);
 }
 export default MasterAccountModel;

@@ -3,7 +3,6 @@ import BaseModel from "./baseModel";
 import MasterAccountModel from "./account/masterAccount";
 declare class WalletModel extends BaseModel {
     seed: Buffer;
-    passPhrase: string;
     mnemonic: string;
     masterAccount: MasterAccountModel;
     name: string;
