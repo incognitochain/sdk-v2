@@ -1,41 +1,14 @@
 import { http } from '@src/services/http';
-import Validator from '@src/utils/validator';
 
-export const getBridgeHistory = async ({
-  paymentAddress,
-  tokenId,
-}: {
-  paymentAddress: string;
-  tokenId: string;
-}) => {
-  new Validator('paymentAddress', paymentAddress).required().paymentAddress();
-  new Validator('tokenId', tokenId).required().string();
-  return await http
+export const getBridgeHistory = (payload: any) =>
+  http
     .get('eta/history', {
-      params: {
-        WalletAddress: paymentAddress,
-        PrivacyTokenAddress: tokenId,
-      },
+      params: payload,
     })
     .then((res: any) => res || []);
-};
 
-export const removeBridgeHistory = ({
-  historyId,
-  currencyType,
-  isDecentralized,
-}: {
-  historyId: number;
-  currencyType: number;
-  isDecentralized: boolean;
-}) => {
-  new Validator('historyId', historyId).required().number();
-  new Validator('currencyType', currencyType).required().number();
-  new Validator('isDecentralized', isDecentralized).required().boolean();
+export const retryBridgeHistory = (payload: any) =>
+  http.post('eta/retry', payload).then((res: any) => res);
 
-  return http.post('eta/remove', {
-    CurrencyType: currencyType,
-    ID: historyId,
-    Decentralized: Number(isDecentralized),
-  });
-};
+export const removeBridgeHistory = (payload: any) =>
+  http.post('eta/remove', payload).then((res: any) => res);

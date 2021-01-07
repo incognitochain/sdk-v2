@@ -32,11 +32,7 @@ export declare const goServices: {
     GO_METHOD_NAMES: string[];
 };
 export declare const bridgeServices: {
-    removeBridgeHistory: ({ historyId, currencyType, isDecentralized, }: {
-        historyId: number;
-        currencyType: number;
-        isDecentralized: boolean;
-    }) => Promise<import("axios").AxiosResponse<any>>;
+    removeBridgeHistory: (payload: any) => Promise<any>;
 };
 export declare const keyServices: {
     checkPaymentAddress: (paymentAddr: string) => boolean;
