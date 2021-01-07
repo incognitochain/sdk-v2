@@ -19,7 +19,11 @@ import {
   genERC20DepositAddress,
   genCentralizedDepositAddress,
 } from '@src/services/bridge/deposit';
-import { getBridgeHistory } from '@src/services/bridge/history';
+import {
+  getBridgeHistory,
+  removeBridgeHistory,
+  retryBridgeHistory,
+} from '@src/services/bridge/history';
 import {
   genCentralizedWithdrawAddress,
   updatePTokenFee,
@@ -28,6 +32,7 @@ import {
 } from '@src/services/bridge/withdraw';
 import { convertDecimalToNanoAmount } from '@src/utils/common';
 import BN from 'bn.js';
+import BridgeHistoryModel from '@src/models/bridge/bridgeHistory';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel;
@@ -329,18 +334,21 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
   async bridgeGetHistory() {
     try {
       if (!this.bridgeInfo) {
-        throw new ErrorCode(
+        throw new Error(
           `Token ${this.tokenId} does not support bridge history function`
         );
       }
-
-      const histories = await getBridgeHistory({
+      const payload = {
         paymentAddress: this.accountKeySet.paymentAddressKeySerialized,
         tokenId: this.tokenId,
-      });
-
+      };
+      const { paymentAddress, tokenId } = payload;
+      new Validator('paymentAddress', paymentAddress)
+        .required()
+        .paymentAddress();
+      new Validator('tokenId', tokenId).required().string();
+      const histories = await getBridgeHistory(payload);
       L.info('Get bridge history successfully');
-
       return histories;
     } catch (e) {
       L.error('Get bridge history failed', e);
@@ -348,6 +356,87 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
+  async bridgeRetryHistory({
+    id,
+    decentralized,
+    walletAddress,
+    addressType,
+    currencyType,
+    userPaymentAddress,
+    privacyTokenAddress,
+    erc20TokenAddress,
+    outChainTx,
+  }: {
+    id: number;
+    decentralized: number;
+    walletAddress: string;
+    addressType: number;
+    currencyType: number;
+    userPaymentAddress: string;
+    privacyTokenAddress: string;
+    erc20TokenAddress: string;
+    outChainTx: string;
+  }) {
+    try {
+      if (!this.bridgeInfo) {
+        throw new Error(
+          `Token ${this.tokenId} does not support bridge history function`
+        );
+      }
+      const payload = {
+        ID: id,
+        Decentralized: decentralized,
+        WalletAddress: walletAddress,
+        AddressType: addressType,
+        CurrencyType: currencyType,
+        PaymentAddress: userPaymentAddress,
+        PrivacyTokenAddress: privacyTokenAddress,
+        Erc20TokenAddress: erc20TokenAddress,
+        TxOutchain: outChainTx,
+      };
+      new Validator('id', id).required().number();
+      new Validator('decentralized', decentralized).number();
+      new Validator('walletAddress', walletAddress).string();
+      new Validator('addressType', addressType).number();
+      new Validator('currencyType', currencyType).number();
+      new Validator('userPaymentAddress', userPaymentAddress).string();
+      new Validator('privacyTokenAddress', privacyTokenAddress).string();
+      new Validator('erc20TokenAddress', erc20TokenAddress).string();
+      new Validator('outChainTx', outChainTx).string();
+      return await retryBridgeHistory(payload);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async bridgeRemoveHistory({
+    id,
+    currencyType,
+    decentralized,
+  }: {
+    id: number;
+    currencyType: number;
+    decentralized: number;
+  }) {
+    try {
+      if (!this.bridgeInfo) {
+        throw new Error(
+          `Token ${this.tokenId} does not support bridge history function`
+        );
+      }
+      const payload = {
+        id,
+        currencyType,
+        decentralized,
+      };
+      new Validator('id', id).required().number();
+      new Validator('decentralized', decentralized).number();
+      new Validator('currencyType', currencyType).number();
+      return await removeBridgeHistory(payload);
+    } catch (e) {
+      throw e;
+    }
+  }
   private async bridgeWithdrawCentralized(
     outchainAddress: string,
     decimalAmount: string,
