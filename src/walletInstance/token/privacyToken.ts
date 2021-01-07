@@ -339,14 +339,12 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         );
       }
       const payload = {
-        paymentAddress: this.accountKeySet.paymentAddressKeySerialized,
-        tokenId: this.tokenId,
+        WalletAddress: this.accountKeySet.paymentAddressKeySerialized,
+        PrivacyTokenAddress: this.tokenId,
       };
-      const { paymentAddress, tokenId } = payload;
-      new Validator('paymentAddress', paymentAddress)
-        .required()
-        .paymentAddress();
-      new Validator('tokenId', tokenId).required().string();
+      const { WalletAddress, PrivacyTokenAddress } = payload;
+      new Validator('walletAddress', WalletAddress).required().string();
+      new Validator('tokenId', PrivacyTokenAddress).required().string();
       const histories = await getBridgeHistory(payload);
       L.info('Get bridge history successfully');
       return histories;
