@@ -108,7 +108,10 @@ async function main() {
         'Imported acc',
         '112t8rnXKxRbfeJWTUZNz1CjpKkKhHEL353ZVRFcwxNA4daVvptviReekjbUp5Mu9WLitC3HrQ7jbykgoSgb3BRmDUZWnbDeV6xj76TUycKj'
       );
-      // console.debug('HISTORY', history);
+      const hash = await incognito.rpcClient.getTransactionByHash(
+        'f522cb4325e0e5260a3fcaca95053e0165eefe13b1689b023460a7416321f934'
+      );
+      console.debug('hash', hash);
       state.privacyToken = await state.importedAccount.getPrivacyTokenById(
         // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
         '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc' //zil
@@ -136,9 +139,9 @@ async function main() {
       // // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getTotalBalance()).toNumber());
       // });
-      await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
-        console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
-      });
+      // await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
+      //   console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
+      // });
       if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
         // const txNative = await state.privacyToken.transfer({
         //   paymentInfoList: [
@@ -155,21 +158,21 @@ async function main() {
         //   memo: 'Send token pay fee by prv',
         // });
         // console.log(`txNative`, txNative);
-        const txPrivacy = await state.privacyToken.transfer({
-          paymentInfoList: [
-            {
-              paymentAddressStr:
-                '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-              amount: '1248',
-              message:
-                'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
-            },
-          ],
-          nativeFee: '',
-          privacyFee: '100',
-          memo: 'Send token pay fee by ptoken',
-        });
-        console.log(`txPrivacy`, txPrivacy);
+        // const txPrivacy = await state.privacyToken.transfer({
+        //   paymentInfoList: [
+        //     {
+        //       paymentAddressStr:
+        //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+        //       amount: '1248',
+        //       message:
+        //         'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
+        //     },
+        //   ],
+        //   nativeFee: '',
+        //   privacyFee: '100',
+        //   memo: 'Send token pay fee by ptoken',
+        // });
+        // console.log(`txPrivacy`, txPrivacy);
       }
     });
 
