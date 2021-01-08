@@ -1,4 +1,4 @@
-import { getMinMaxDepositAmount } from './../../services/bridge/deposit';
+import { getMinMaxDepositAmount } from '@src/services/bridge/deposit';
 import Token from './token';
 import PrivacyTokenModel from '@src/models/token/privacyToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
@@ -21,6 +21,7 @@ import {
 } from '@src/services/bridge/deposit';
 import {
   getBridgeHistory,
+  getBridgeHistoryById,
   removeBridgeHistory,
   retryBridgeHistory,
 } from '@src/services/bridge/history';
@@ -32,7 +33,6 @@ import {
 } from '@src/services/bridge/withdraw';
 import { convertDecimalToNanoAmount } from '@src/utils/common';
 import BN from 'bn.js';
-import BridgeHistoryModel from '@src/models/bridge/bridgeHistory';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel;
@@ -302,7 +302,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
   async bridgeGenerateDepositAddress() {
     try {
       if (!this.bridgeInfo) {
-        throw new ErrorCode(
+        throw new Error(
           `Token ${this.tokenId} does not support deposit function`
         );
       }
@@ -409,12 +409,16 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         TxOutchain: outChainTx,
       };
       new Validator('id', id).required().number();
-      new Validator('decentralized', decentralized).number();
-      new Validator('walletAddress', walletAddress).string();
-      new Validator('addressType', addressType).number();
-      new Validator('currencyType', currencyType).number();
-      new Validator('userPaymentAddress', userPaymentAddress).string();
-      new Validator('privacyTokenAddress', privacyTokenAddress).string();
+      new Validator('decentralized', decentralized).required().number();
+      new Validator('walletAddress', walletAddress).required().string();
+      new Validator('addressType', addressType).required().number();
+      new Validator('currencyType', currencyType).required().number();
+      new Validator('userPaymentAddress', userPaymentAddress)
+        .required()
+        .string();
+      new Validator('privacyTokenAddress', privacyTokenAddress)
+        .required()
+        .string();
       new Validator('erc20TokenAddress', erc20TokenAddress).string();
       new Validator('outChainTx', outChainTx).string();
       return await retryBridgeHistory(payload);
@@ -439,18 +443,45 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         );
       }
       const payload = {
-        id,
-        currencyType,
-        decentralized,
+        ID: id,
+        CurrencyType: currencyType,
+        Decentralized: decentralized,
       };
       new Validator('id', id).required().number();
-      new Validator('decentralized', decentralized).number();
-      new Validator('currencyType', currencyType).number();
+      new Validator('decentralized', decentralized).required().number();
+      new Validator('currencyType', currencyType).required().number();
       return await removeBridgeHistory(payload);
     } catch (e) {
       throw e;
     }
   }
+
+  async bridgeGetHistoryById({
+    id,
+    currencyType,
+  }: {
+    id: string;
+    currencyType: number;
+  }) {
+    try {
+      if (!this.bridgeInfo) {
+        throw new Error(
+          `Token ${this.tokenId} does not support bridge history function`
+        );
+      }
+      new Validator('id', id).required().number();
+      new Validator('currencyType', currencyType).required().number();
+      const payload = {
+        ID: id,
+        CurrencyType: currencyType,
+      };
+      L.info('getBridgeHistoryById', payload);
+      return await getBridgeHistoryById(payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   private async bridgeWithdrawCentralized(
     outchainAddress: string,
     decimalAmount: string,

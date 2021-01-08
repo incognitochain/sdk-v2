@@ -54,6 +54,10 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         currencyType: number;
         decentralized: number;
     }): Promise<any>;
+    bridgeGetHistoryById({ id, currencyType, }: {
+        id: string;
+        currencyType: number;
+    }): Promise<any>;
     private bridgeWithdrawCentralized;
     private bridgeWithdrawDecentralized;
     /**

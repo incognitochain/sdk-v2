@@ -1,6 +1,7 @@
 import TxHistoryModel from "../../models/txHistory";
 export declare function updateTxHistory(txHistory: TxHistoryModel): Promise<TxHistoryModel>;
-export declare function checkCachedHistories(): Promise<boolean>;
+export declare function checkCachedHistoryById(txId: string): Promise<TxHistoryModel>;
+export declare function checkCachedHistories(): Promise<void>;
 /**
  *
  * @param tokenId Use `null` for native token

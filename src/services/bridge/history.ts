@@ -12,3 +12,10 @@ export const retryBridgeHistory = (payload: any) =>
 
 export const removeBridgeHistory = (payload: any) =>
   http.post('eta/remove', payload).then((res: any) => res);
+
+export const getBridgeHistoryById = (params: any) =>
+  http
+    .get(`eta/history/detail/${params.ID}`, {
+      params,
+    })
+    .then((res: any) => res);

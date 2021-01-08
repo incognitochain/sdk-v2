@@ -1,6 +1,7 @@
 import '@src/utils/polyfill.ts';
 import '@src/global';
 import {
+  checkCachedHistoryById,
   checkCachedHistories,
   getTxHistoryByPublicKey,
 } from '@src/services/history/txHistory';
@@ -31,8 +32,10 @@ export { default as TxHistoryModel } from '@src/models/txHistory';
 export * from '@src/models/txHistory';
 export { setConfig, getConfig } from '@src/config';
 export { getPrivacyTokenList } from '@src/services/bridge/token';
+export { default as rpcClient } from '@src/services/rpc';
 
 export const historyServices = {
+  checkCachedHistoryById,
   checkCachedHistories,
   getTxHistoryByPublicKey,
 };
