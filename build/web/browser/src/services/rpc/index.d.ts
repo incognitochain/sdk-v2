@@ -31,15 +31,7 @@ declare class RpcClient {
     getEstimateFeePerKB: (paymentAddrSerialize: any, tokenIDStr?: any) => Promise<{
         unitFee: number;
     }>;
-    getTransactionByHash: (txHashStr: any) => Promise<{
-        isInBlock: any;
-        isInMempool: any;
-        err: any;
-    } | {
-        isInBlock: boolean;
-        isInMempool: boolean;
-        err?: undefined;
-    }>;
+    getTransactionByHash: (txHashStr: any) => Promise<any>;
     getStakingAmount: (type: any) => Promise<{
         res: number;
     }>;

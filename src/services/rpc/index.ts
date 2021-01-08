@@ -201,20 +201,8 @@ class RpcClient {
     };
   };
 
-  getTransactionByHash = async (txHashStr: any) => {
-    const result: any = await sendRequest('gettransactionbyhash', [txHashStr]);
-
-    return result
-      ? {
-          isInBlock: result.IsInBlock,
-          isInMempool: result.IsInMempool,
-          err: <any>null,
-        }
-      : {
-          isInBlock: false,
-          isInMempool: false,
-        };
-  };
+  getTransactionByHash = (txHashStr: any) =>
+    sendRequest('gettransactionbyhash', [txHashStr]);
 
   getStakingAmount = async (type: any) => {
     const result: any = await sendRequest('getstackingamount', [type]);

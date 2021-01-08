@@ -19,18 +19,22 @@ export async function updateTxHistory(txHistory: TxHistoryModel) {
     // tx failed
     txHistory.status = TX_STATUS.FAILED;
   }
+  L.info('updateTxHistory', txInfo);
   return txHistory;
+}
+
+export async function checkCachedHistoryById(txId: string) {
+  const cached = await getTxHistoryCache();
+  const txHistory = cached[txId];
+  const updatedTxHistory = await updateTxHistory(txHistory);
+  cacheTxHistory(txId, updatedTxHistory);
+  return updatedTxHistory;
 }
 
 export async function checkCachedHistories() {
   const cached = await getTxHistoryCache();
-  const txIds = Object.keys(cached);
-  const tasks = txIds.map(async (txId) => {
-    const txHistory = cached[txId];
-    const updatedTxHistory = await updateTxHistory(txHistory);
-    return cacheTxHistory(txId, updatedTxHistory).catch(null);
-  });
-  return Promise.all(tasks).then(() => true);
+  const tasks = Object.keys(cached).map((txId) => checkCachedHistoryById(txId));
+  await Promise.all(tasks);
 }
 
 /**
