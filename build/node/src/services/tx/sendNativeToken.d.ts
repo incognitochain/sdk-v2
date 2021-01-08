@@ -8,6 +8,7 @@ interface SendParam {
     availableCoins: CoinModel[];
     nativePaymentInfoList: PaymentInfoModel[];
     nativeFee: string;
+    memo?: string;
 }
 interface CreateNativeTxParam {
     nativeTxInput: TxInputType;
@@ -22,15 +23,16 @@ interface CreateNativeTxParam {
         b58CheckEncodeTx: string;
         lockTime: number;
     };
+    memo?: string;
 }
 export declare function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array): {
     b58CheckEncodeTx: string;
     lockTime: number;
 };
-export declare function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput, nativePaymentInfoList, privateKeySerialized, usePrivacyForNativeToken, metaData, initTxMethod, customExtractInfoFromInitedTxMethod, }: CreateNativeTxParam): Promise<{
+export declare function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput, nativePaymentInfoList, privateKeySerialized, usePrivacyForNativeToken, metaData, initTxMethod, customExtractInfoFromInitedTxMethod, memo, }: CreateNativeTxParam): Promise<{
     b58CheckEncodeTx: string;
     lockTime: number;
 }>;
-export default function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins, }: SendParam): Promise<import("../../..").TxHistoryModel>;
+export default function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins, memo, }: SendParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendNativeToken.d.ts.map

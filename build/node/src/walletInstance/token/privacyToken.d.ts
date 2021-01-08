@@ -21,7 +21,12 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     get bridgeBEP2(): boolean;
     hasExchangeRate(): Promise<boolean>;
     getNativeAvailableCoins(): Promise<import("../../models/coin").default[]>;
-    transfer(paymentList: PaymentInfoModel[], nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
+    transfer({ paymentInfoList, nativeFee, privacyFee, memo, }: {
+        paymentInfoList: PaymentInfoModel[];
+        nativeFee?: string;
+        privacyFee?: string;
+        memo?: string;
+    }): Promise<import("../../..").TxHistoryModel>;
     burning(outchainAddress: string, burningAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;

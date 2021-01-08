@@ -106,25 +106,41 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     return this.getAvailableCoins(null);
   }
 
-  async transfer(
-    paymentList: PaymentInfoModel[],
-    nativeFee: string,
-    privacyFee: string
-  ) {
+  async transfer({
+    paymentInfoList,
+    nativeFee,
+    privacyFee,
+    memo,
+  }: {
+    paymentInfoList: PaymentInfoModel[];
+    nativeFee?: string;
+    privacyFee?: string;
+    memo?: string;
+  }) {
     try {
-      new Validator('paymentList', paymentList).required().paymentInfoList();
+      new Validator('paymentList', paymentInfoList)
+        .required()
+        .paymentInfoList();
       new Validator('nativeFee', nativeFee).required().amount();
       new Validator('privacyFee', privacyFee).required().amount();
+      new Validator('memo', memo).string();
+      L.info('Privacy token transfer', {
+        paymentInfoList,
+        nativeFee,
+        privacyFee,
+        memo,
+      });
       const history = await sendPrivacyToken({
         accountKeySet: this.accountKeySet,
         nativeAvailableCoins: await this.getNativeAvailableCoins(),
         privacyAvailableCoins: await this.getAvailableCoins(),
         nativeFee,
         privacyFee,
-        privacyPaymentInfoList: paymentList,
+        privacyPaymentInfoList: paymentInfoList,
         tokenId: this.tokenId,
         tokenName: this.name,
         tokenSymbol: this.symbol,
+        memo,
       });
       return history;
     } catch (e) {

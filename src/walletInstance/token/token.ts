@@ -127,11 +127,17 @@ class Token implements BaseTokenModel {
       Limit: limit,
     });
 
-  transfer(
-    paymentInfoList: PaymentInfoModel[],
-    nativeFee?: string,
-    privacyFee?: string
-  ) {}
+  transfer({
+    paymentInfoList,
+    nativeFee,
+    privacyFee,
+    memo,
+  }: {
+    paymentInfoList: PaymentInfoModel[];
+    nativeFee?: string;
+    privacyFee?: string;
+    memo?: string;
+  }) {}
 
   async withdrawNodeReward() {
     try {
