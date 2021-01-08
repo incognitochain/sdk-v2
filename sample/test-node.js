@@ -114,58 +114,58 @@ async function main() {
         // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
         'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f' //eth
       );
-      const data = await state.privacyToken.bridgeGetHistory();
-      console.log('address', data);
+      // const data = await state.privacyToken.bridgeGetHistory();
+      // console.log('address', data);
       // const history = await state.privacyToken.getTransactionByReceiver(
       //   { skip: 0, limit: 10 }
       // );
       // console.debug('HISTORY TOKEN', history);
-      // const txPRV = await state.importedAccount.nativeToken.transfer(
-      //   [
-      //     {
-      //       paymentAddressStr:
-      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-      //       amount: '69000',
-      //       message: 'send prv',
-      //     },
-      //   ],
-      //   '100'
-      // );
-      // console.debug('txPRV', txPRV);
+      const txPRV = await state.importedAccount.nativeToken.transfer(
+        [
+          {
+            paymentAddressStr:
+              '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+            amount: '69000',
+            message: 'send prv',
+          },
+        ],
+        '100'
+      );
+      console.debug('txPRV', txPRV);
       // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getTotalBalance()).toNumber());
       // });
       // await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
       // });
-      // if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
-      // const txNative = await state.privacyToken.transfer(
-      //   [
-      //     {
-      //       paymentAddressStr:
-      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-      //       amount: '1248',
-      //       message: 'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
-      //     },
-      //   ],
-      //   '100',
-      //   ''
-      // );
-      // console.log(`txNative`, txNative);
-      // const txPrivacy = await state.privacyToken.transfer(
-      //   [
-      //     {
-      //       paymentAddressStr:
-      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-      //       amount: '30814',
-      //       message: 'send zil',
-      //     },
-      //   ],
-      //   '',
-      //   '100'
-      // );
-      // console.log(`txPrivacy`, txPrivacy);
-      // }
+      if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
+        const txNative = await state.privacyToken.transfer(
+          [
+            {
+              paymentAddressStr:
+                '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+              amount: '1248',
+              message: 'send token pay by prv',
+            },
+          ],
+          '100',
+          ''
+        );
+        console.log('txNative', txNative);
+        const txPrivacy = await state.privacyToken.transfer(
+          [
+            {
+              paymentAddressStr:
+                '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+              amount: '30814',
+              message: 'send zil',
+            },
+          ],
+          '',
+          '100'
+        );
+        console.log('txPrivacy', txPrivacy);
+      }
     });
 
     // await section('GET TOTAL BALANCE NATIVE TOKEN', async () => {
@@ -208,9 +208,13 @@ async function main() {
     //   console.log(await state.importedAccount.getNodeStatus());
     // });
 
-    // await section('GET TX HISTORIES NATIVE TOKEN', async () => {
-    //   console.log(await state.importedAccount.nativeToken.getTxHistories());
-    // });
+    await section('GET TX HISTORIES NATIVE TOKEN', async () => {
+      console.log(await state.importedAccount.nativeToken.getTxHistories());
+    });
+
+    await section('GET TX HISTORIES PRIVACY TOKEN', async () => {
+      console.log(await state.privacyToken.getTxHistories());
+    });
 
     // await section('REMOVE ACCOUNT', async () => {
     //   await state.wallet.masterAccount.removeAccount('Imported acc');

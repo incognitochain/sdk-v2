@@ -3,10 +3,21 @@ import KEYS from '@src/constants/keys';
 import _ from 'lodash';
 import TxHistoryModel from '@src/models/txHistory';
 import Validator from '@src/utils/validator';
+import { base64Decode } from '@src/privacy/utils';
+import PaymentInfoModel from '@src/models/paymentInfo';
 
 interface TxHistoryCache {
   [txId: string]: TxHistoryModel;
 }
+
+const decodePaymentInfoList = (paymentInfoList: PaymentInfoModel[]) => {
+  return paymentInfoList
+    ? paymentInfoList.map((info) => ({
+        ...info,
+        message: base64Decode(info.message),
+      }))
+    : [];
+};
 
 export async function getTxHistoryCache() {
   const prevCached: { [txId: string]: object } =
@@ -20,8 +31,18 @@ export async function getTxHistoryCache() {
       txType: historyData.txType,
       lockTime: historyData.lockTime,
       status: historyData.status,
-      nativeTokenInfo: historyData.nativeTokenInfo,
-      privacyTokenInfo: historyData.privacyTokenInfo,
+      nativeTokenInfo: {
+        ...historyData.nativeTokenInfo,
+        paymentInfoList: decodePaymentInfoList(
+          historyData.nativeTokenInfo?.paymentInfoList
+        ),
+      },
+      privacyTokenInfo: {
+        ...historyData.privacyTokenInfo,
+        paymentInfoList: decodePaymentInfoList(
+          historyData.privacyTokenInfo?.paymentInfoList
+        ),
+      },
       meta: historyData.meta,
       accountPublicKeySerialized: historyData.accountPublicKeySerialized,
       historyType: historyData.historyType,
