@@ -1,9 +1,8 @@
+/// <reference types="node" />
 import BaseModel from "./baseModel";
 import MasterAccountModel from "./account/masterAccount";
 declare class WalletModel extends BaseModel {
-    seed: Uint8Array;
-    entropy: number[];
-    passPhrase: string;
+    seed: Buffer;
     mnemonic: string;
     masterAccount: MasterAccountModel;
     name: string;

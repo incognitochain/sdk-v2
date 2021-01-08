@@ -16,7 +16,7 @@ import * as _TX_CONSTANT from '@src/constants/tx';
 import * as _WALLET_CONSTANT from '@src/constants/wallet';
 import * as HISTORY_CONSTANT from '@src/constants/history';
 import _TOKEN_INFO_CONSTANT from '@src/constants/tokenInfo';
-
+import { checkPaymentAddress } from '@src/services/key';
 export { default as AccountInstance } from '@src/walletInstance/account/account';
 export { default as NativeTokenInstance } from '@src/walletInstance/token/nativeToken';
 export { default as PrivacyTokenInstance } from '@src/walletInstance/token/privacyToken';
@@ -26,9 +26,10 @@ export { default as KeyWalletModel } from '@src/models/key/keyWallet';
 export { default as AccountKeySetModel } from '@src/models/key/accountKeySet';
 export { default as PaymentInfoModel } from '@src/models/paymentInfo';
 export { default as storageService } from '@src/services/storage';
+export { default as mnemonicService } from '@src/services/wallet/mnemonic';
 export { default as TxHistoryModel } from '@src/models/txHistory';
+export * from '@src/models/txHistory';
 export { setConfig, getConfig } from '@src/config';
-export { default as BN } from 'bn.js';
 export { getPrivacyTokenList } from '@src/services/bridge/token';
 
 export const historyServices = {
@@ -48,6 +49,10 @@ export const goServices = {
 
 export const bridgeServices = {
   removeBridgeHistory,
+};
+
+export const keyServices = {
+  checkPaymentAddress,
 };
 
 export const CONSTANT = {

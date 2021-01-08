@@ -157,19 +157,13 @@ export default async function sendNativeToken({
     initTxMethod: goMethods.initPrivacyTx,
     usePrivacyForNativeToken,
   });
-  console.log('txInfo', txInfo);
-
   const sentInfo = await sendB58CheckEncodeTxToChain(
     rpc.sendRawTx,
     txInfo.b58CheckEncodeTx
   );
-
-  // const historyInfo = createHistoryInfo({ ...sentInfo, lockTime: txInfo.lockTime });
-
   const { serialNumberList, listUTXO } = getCoinInfoForCache(
     nativeTxInput.inputCoinStrs
   );
-
   const history = createHistoryInfo({
     txId: sentInfo.txId,
     lockTime: txInfo.lockTime,
@@ -183,6 +177,5 @@ export default async function sendNativeToken({
     usePrivacyForNativeToken,
     historyType: HISTORY_TYPE.SEND_NATIVE_TOKEN,
   });
-
   return history;
 }

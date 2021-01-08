@@ -14,6 +14,7 @@ declare class AccountKeySetModel extends BaseModel {
     privateKeySerialized: string;
     viewingKeySerialized: string;
     paymentAddressKeySerialized: string;
+    index: number;
     constructor({ privateKey, paymentAddress, viewingKey }: AccountKeySetParam);
     get publicKeySerialized(): string;
     get publicKeyCheckEncode(): string;

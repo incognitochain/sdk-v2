@@ -85,6 +85,6 @@ export declare function getCoinInfoForCache(coins: CoinModel[]): {
     serialNumberList: string[];
     listUTXO: string[];
 };
-export declare function createHistoryInfo({ txId, lockTime, nativePaymentInfoList, privacyPaymentInfoList, nativePaymentAmount, privacyPaymentAmount, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, nativeSpendingCoinSNs, privacySpendingCoinSNs, nativeListUTXO, privacyListUTXO, meta, txType, privacyTokenTxType, accountPublicKeySerialized, historyType, usePrivacyForPrivacyToken, usePrivacyForNativeToken }: CreateHistoryParam): TxHistoryModel;
+export declare function createHistoryInfo({ txId, lockTime, nativePaymentInfoList, privacyPaymentInfoList, nativePaymentAmount, privacyPaymentAmount, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, nativeSpendingCoinSNs, privacySpendingCoinSNs, nativeListUTXO, privacyListUTXO, meta, txType, privacyTokenTxType, accountPublicKeySerialized, historyType, usePrivacyForPrivacyToken, usePrivacyForNativeToken, }: CreateHistoryParam): TxHistoryModel;
 export declare function getBurningAddress(beaconHeight?: number): Promise<any>;
 //# sourceMappingURL=utils.d.ts.map

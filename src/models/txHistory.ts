@@ -12,32 +12,32 @@ import PaymentInfoModel from './paymentInfo';
 // withdraw ptoken centralized tx is ptoken tx without metadata
 
 interface NativeTokenHistoryInfo {
-  fee: string,
-  amount: string,
-  paymentInfoList: PaymentInfoModel[],
-  usePrivacy: boolean,
-  spendingCoinSNs: string[],
-  listUTXO: string[]
-};
+  fee: string;
+  amount: string;
+  paymentInfoList: PaymentInfoModel[];
+  usePrivacy: boolean;
+  spendingCoinSNs: string[];
+  listUTXO: string[];
+}
 
-interface PrivacyTokenHistoryInfo extends NativeTokenHistoryInfo{
-  tokenId: TokenIdType,
-  tokenName: TokenNameType,
-  tokenSymbol: TokenSymbolType,
-  privacyTokenTxType: number
-};
+interface PrivacyTokenHistoryInfo extends NativeTokenHistoryInfo {
+  tokenId: TokenIdType;
+  tokenName: TokenNameType;
+  tokenSymbol: TokenSymbolType;
+  privacyTokenTxType: number;
+}
 
-interface TxHistoryModelParam {
-  txId: string,
-  txType: string,
-  lockTime: number,
-  status: number,
-  nativeTokenInfo: NativeTokenHistoryInfo,
-  privacyTokenInfo?: PrivacyTokenHistoryInfo,
-  meta?: any,
-  accountPublicKeySerialized: string,
-  historyType?: number
-};
+export interface TxHistoryModelParam {
+  txId: string;
+  txType: string;
+  lockTime: number;
+  status: number;
+  nativeTokenInfo: NativeTokenHistoryInfo;
+  privacyTokenInfo?: PrivacyTokenHistoryInfo;
+  meta?: any;
+  accountPublicKeySerialized: string;
+  historyType?: number;
+}
 
 export default class TxHistoryModel {
   txId: string;
@@ -50,7 +50,17 @@ export default class TxHistoryModel {
   accountPublicKeySerialized: string;
   historyType: number;
 
-  constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType } : TxHistoryModelParam) {
+  constructor({
+    txId,
+    txType,
+    lockTime,
+    status,
+    nativeTokenInfo,
+    privacyTokenInfo,
+    meta,
+    accountPublicKeySerialized,
+    historyType,
+  }: TxHistoryModelParam) {
     this.txId = txId;
     this.txType = txType;
     this.lockTime = lockTime;
@@ -72,7 +82,7 @@ export default class TxHistoryModel {
       privacyTokenInfo: this.privacyTokenInfo,
       meta: this.meta,
       accountPublicKeySerialized: this.accountPublicKeySerialized,
-      historyType: this.historyType
+      historyType: this.historyType,
     };
   }
 }

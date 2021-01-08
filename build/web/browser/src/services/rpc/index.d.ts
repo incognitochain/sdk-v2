@@ -92,6 +92,13 @@ declare class RpcClient {
     getListPrivacyCustomTokenBalance: (privateKey: any) => Promise<any>;
     getBurningAddress: (beaconHeight?: number) => Promise<any>;
     getNodeTime: () => Promise<any>;
+    getTransactionByReceiverV2: ({ PaymentAddress, ReadonlyKey, TokenID, Skip, Limit, }: {
+        PaymentAddress: string;
+        ReadonlyKey: string;
+        TokenID: string;
+        Skip?: number;
+        Limit?: number;
+    }) => Promise<any>;
 }
 declare const client: RpcClient;
 export default client;

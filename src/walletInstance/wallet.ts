@@ -2,21 +2,18 @@ import WalletModel from "@src/models/wallet";
 import { MasterAccount } from "./account";
 import { initWalletData, encryptWalletData, decryptWalletData } from '@src/services/wallet';
 import Validator from "@src/utils/validator";
-import { generateKey } from '@src/services/key/generator';
-import { newSeed } from '@src/services/wallet/mnemonic';
+import mnemonicService from '@src/services/wallet/mnemonic';
 
 const  DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
 
 class Wallet implements WalletModel {
   seed: Buffer;
-  passPhrase: string;
   mnemonic: string;
   masterAccount: MasterAccount;
   name: string;
 
   constructor() {
     this.seed = null;
-    this.passPhrase = null;
     this.mnemonic = null;
     this.masterAccount = null;
     this.name = DEFAULT_WALLET_NAME;
@@ -28,10 +25,10 @@ class Wallet implements WalletModel {
       new Validator('password', password).required().string();
 
       const data: any = await decryptWalletData(encryptedWallet, password);
-      const { masterAccount, name, mnemonic, seed, passPhrase } = data;
+      const { masterAccount, name, mnemonic, seed } = data;
       const wallet = new Wallet();
 
-      await wallet.import(name, passPhrase, mnemonic, Buffer.from(seed), MasterAccount.restoreFromBackupData(masterAccount, seed));
+      await wallet.restore(name, mnemonic, Buffer.from(seed), MasterAccount.restoreFromBackupData(masterAccount, seed));
 
       L.info(`Restored wallet "${name}"`);
 
@@ -42,13 +39,11 @@ class Wallet implements WalletModel {
     }
   }
 
-  async init(passPhrase: string, name?: string) {
+  async init(name?: string) {
     try {
-      new Validator('passPhrase', passPhrase).required().string();
       new Validator('name', name).string();
 
-      const { mnemonic, seed } = initWalletData(passPhrase);
-      this.passPhrase = passPhrase;
+      const { mnemonic, seed } = initWalletData();
       this.name = name || this.name;
       this.seed = seed;
       this.mnemonic = mnemonic;
@@ -63,16 +58,14 @@ class Wallet implements WalletModel {
     }
   }
 
-  async import(name: string, passPhrase: string, mnemonic: string, seed: Buffer, masterAccount: MasterAccount) {
+  async restore(name: string, mnemonic: string, seed: Buffer, masterAccount: MasterAccount) {
     new Validator('name', name).required().string();
-    new Validator('passPhrase', passPhrase).required().string();
     new Validator('mnemonic', mnemonic).required().string();
     new Validator('seed', seed).required();
     new Validator('masterAccount', masterAccount).required();
 
     this.name = name;
     this.seed = seed;
-    this.passPhrase = passPhrase;
     this.mnemonic = mnemonic;
     this.masterAccount = masterAccount;
 
@@ -83,8 +76,20 @@ class Wallet implements WalletModel {
     }
   }
 
+  async import(name: string, mnemonic: string) {
+    new Validator('name', name).required().string();
+    new Validator('mnemonic', mnemonic).required().string();
+
+    const seed = mnemonicService.newSeed(mnemonic);
+
+    this.name = name;
+    this.seed = seed;
+    this.mnemonic = mnemonic;
+    this.masterAccount = await new MasterAccount('MASTER', seed).init();
+  }
+
   async isIncorrectBIP44() {
-    const seed = newSeed(this.mnemonic);
+    const seed = mnemonicService.newSeed(this.mnemonic);
 
     if (this.seed !== seed) {
       return true;
@@ -108,7 +113,6 @@ class Wallet implements WalletModel {
         masterAccount: this.masterAccount.getBackupData(),
         name: this.name,
         mnemonic: this.mnemonic,
-        passPhrase: this.passPhrase,
         seed: this.seed,
       };
 

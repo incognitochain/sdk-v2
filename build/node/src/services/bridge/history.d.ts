@@ -1,11 +1,4 @@
-import BridgeHistoryModel from "../../models/bridge/bridgeHistory";
-export declare const getBridgeHistory: ({ paymentAddress, tokenId }: {
-    paymentAddress: string;
-    tokenId: string;
-}) => Promise<BridgeHistoryModel[]>;
-export declare const removeBridgeHistory: ({ historyId, currencyType, isDecentralized }: {
-    historyId: number;
-    currencyType: number;
-    isDecentralized: boolean;
-}) => Promise<import("axios").AxiosResponse<any>>;
+export declare const getBridgeHistory: (payload: any) => Promise<any>;
+export declare const retryBridgeHistory: (payload: any) => Promise<any>;
+export declare const removeBridgeHistory: (payload: any) => Promise<any>;
 //# sourceMappingURL=history.d.ts.map

@@ -157,16 +157,16 @@ export async function createTx({
     privacyTxInput.totalValueInputBN,
     privacyPaymentInfoList
   );
-
-  nativePaymentInfoList.forEach((item) => {
-    item.amount = new BN(item.amount).toString();
-    item.message = base64Encode(item.message);
-  });
-
-  privacyPaymentInfoList.forEach((item) => {
-    item.amount = new BN(item.amount).toString();
-    item.message = base64Encode(item.message);
-  });
+  nativePaymentInfoList &&
+    nativePaymentInfoList.forEach((item) => {
+      item.amount = new BN(item.amount).toString();
+      item.message = base64Encode(item.message);
+    });
+  privacyPaymentInfoList &&
+    privacyPaymentInfoList.forEach((item) => {
+      item.amount = new BN(item.amount).toString();
+      item.message = base64Encode(item.message);
+    });
 
   const privacyTokenParam: PrivacyTokenParam = {
     propertyID: tokenId,
@@ -199,22 +199,18 @@ export async function createTx({
     commitmentStrsForPToken: privacyTxInput.commitmentStrs,
     sndOutputsForPToken: privacyOutputCoins,
   };
-
-  console.log('paramInitTx: ', paramInitTx);
-
+  L.info('paramInitTx: ', paramInitTx);
   const resInitTx = await initTx(initTxMethod, paramInitTx);
-
+  L.info('resInitTx: ', resInitTx);
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
-
   return (customExtractInfoFromInitedTxMethod
     ? customExtractInfoFromInitedTxMethod
     : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
-export function hasExchangeRate(tokenId: string) {
-  return rpc.isExchangeRatePToken(tokenId).catch(() => false);
-}
+export const hasExchangeRate = async (tokenId: string) =>
+  rpc.isExchangeRatePToken(tokenId);
 
 export default async function sendPrivacyToken({
   accountKeySet,
@@ -243,13 +239,12 @@ export default async function sendPrivacyToken({
   new Validator('tokenId', tokenId).required().string();
   new Validator('tokenName', tokenName).required().string();
   new Validator('tokenSymbol', tokenSymbol).required().string();
-
-  if (privacyFee && !(await hasExchangeRate(tokenId))) {
-    throw new ErrorCode(
+  const isTokenHasExchangeRate = await rpc.isExchangeRatePToken(tokenId);
+  if (privacyFee && !isTokenHasExchangeRate) {
+    throw new Error(
       `Token ${tokenId} can not use for paying fee, has no exchange rate!`
     );
   }
-
   const usePrivacyForPrivacyToken = true;
   const usePrivacyForNativeToken = true;
   const nativeTokenFeeBN = toBNAmount(nativeFee);
@@ -290,12 +285,10 @@ export default async function sendPrivacyToken({
     tokenName,
     initTxMethod: goMethods.initPrivacyTokenTx,
   });
-
   const sentInfo = await sendB58CheckEncodeTxToChain(
     rpc.sendRawTxCustomTokenPrivacy,
     txInfo.b58CheckEncodeTx
   );
-
   const {
     serialNumberList: nativeSpendingCoinSNs,
     listUTXO: nativeListUTXO,

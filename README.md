@@ -15,7 +15,7 @@ Follow example at https://github.com/incognitochain/sdk-v2/blob/master/sample/te
 
 ### Nodejs
 
-Copy wasm binary to your root project: 
+Copy wasm binary to your root project:
 
 `cp node_modules/incognito-js/privacy.wasm .`
 
@@ -29,9 +29,9 @@ await incognitoJs.goServices.implementGoMethodUseWasm();
 Follow this step to [implement storage.](#Implement storage)
 
 -------------
-### Browser 
+### Browser
 
-Copy wasm binary to your root project: 
+Copy wasm binary to your root project:
 
 `cp node_modules/incognito-js/privacy.wasm .`
 
@@ -100,7 +100,7 @@ Usage:
 ```javascript
 setConfig (
 	logMethod: (message: string) => void (pass null to disable log)
-	chainURL: string // 
+	chainURL: string //
 	apiURL: string
 	mainnet: boolean // update this property will change apiURL & chainURL if they are not defined
 	wasmPath: string // path to the binary file, the SDK will find the wasm in where it was executed
@@ -170,7 +170,7 @@ const updatedHistories = await account.nativeToken.getTxHistories();
 
 `incognitoJs` uses some methods implemented by Go to improve performance. Go will be built to WASM (Web Assembly) for Nodejs/browser enviroments and Gomobile for React Native.
 
-### implementGoMethodUseWasm 
+### implementGoMethodUseWasm
 
 Used on Nodejs/browser enviroments.
 
@@ -189,7 +189,7 @@ await goServices.implementGoMethodUseWasm();
 console.log('Go methods were implemented!')
 ```
 
-### implementGoMethodManually  
+### implementGoMethodManually
 
 Implement go methods manually (for React Native).
 Please use [react-native-incognito-js](https://github.com/incognitochain/react-native-incognito-js), it is a `incognitoJs` library wrapper, all Go methods have been implemented already.
@@ -245,7 +245,7 @@ console.log(goServices.GO_METHOD_NAMES)
 
 ## Wallet services
 
-### setPrivacyUtilRandomBytesFunc 
+### setPrivacyUtilRandomBytesFunc
 
 Implement random bytes function.
 
@@ -328,7 +328,6 @@ console.log('Incognito JS constants:', CONSTANT);
 |----------|:-------------:|------:|------:|
 |seed|Uint8Array|||
 |entropy|number[ ]|||
-|passPhrase|string||Wallet pass phrase|
 |mnemonic|string|||
 |masterAccount|MasterAccount||The main account in wallet|
 |name|string||Wallet name|
@@ -433,7 +432,7 @@ Remove an account by name.
 
 Usage:
 ```javascript
-removeAccount(name: string) => void 
+removeAccount(name: string) => void
 ```
 
 Example:
@@ -621,7 +620,7 @@ const rewards = await account.getNodeRewards();
 console.log('All rewards', rewards);
 ```
 
-### getNodeStatus 
+### getNodeStatus
 
 For Node only - Get node status.
 
@@ -763,7 +762,7 @@ requestTrade (
 ) => Promise<TxHistoryModel>
 ```
 
-### withdrawNodeReward 
+### withdrawNodeReward
 
 [Node] Withdraw reward from node.
 
@@ -891,7 +890,7 @@ const history = await token.transfer(
 console.log('Privacy token sent with history', history);
 ```
 
-### burning 
+### burning
 
 Burn the token.
 
@@ -918,7 +917,7 @@ const history = await token.burning(
 console.log('Privacy token burned with history', history);
 ```
 
-### pdeContribution  
+### pdeContribution
 
 [pDEX] Send PDE contribution.
 
@@ -932,7 +931,7 @@ pdeContribution(
 ) => Promise<TxHistoryModel>
 ```
 
-### requestTrade   
+### requestTrade
 
 Send trade request.
 
@@ -948,7 +947,7 @@ requestTrade (
 ) => Promise<TxHistoryModel>
 ```
 
-### withdrawNodeReward     
+### withdrawNodeReward
 
 [Node] Withdraw reward from node.
 
@@ -957,7 +956,7 @@ Usage:
 withdrawNodeReward() => Promise<TxHistoryModel>
 ```
 
-### bridgeGenerateDepositAddress  
+### bridgeGenerateDepositAddress
 
 Get a temporary deposit address (expired after 60 minutes).
 
@@ -975,7 +974,7 @@ const ethDepositAddress = await token.bridgeGenerateDepositAddress();
 console.log('ETH deposit address', ethDepositAddress);
 ```
 
-### bridgeWithdraw   
+### bridgeWithdraw
 
 Withdraw bridged coins (Convert privacy token to origin, your privacy token will be burned and the origin will be returned). Please notice: withdrawal uses the fee (nativeFee or privacyFee) for burning coins.
 
@@ -1004,7 +1003,7 @@ await token.bridgeWithdraw(
 console.log('ETH withdrew');
 ```
 
-### bridgeGetHistory 
+### bridgeGetHistory
 
 Get deposit/withdrawal history.
 
@@ -1013,13 +1012,13 @@ Usage:
 bridgeGetHistory() => Promise<BridgeHistoryModel[]>
 ```
 
-## KeyWalletModel 
+## KeyWalletModel
 
 |Public Property|Type|Default value|Description|
 |----------|:-------------:|------:|------:|
 |keySet|AccountKeySetModel||Account Key set|
 
-## AccountKeySetModel 
+## AccountKeySetModel
 
 |Public Property|Type|Default value|Description|
 |----------|:-------------:|------:|------:|

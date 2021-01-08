@@ -6,11 +6,14 @@ declare class BaseAccount implements BaseAccountInterface {
     name: string;
     key: KeyWalletModel;
     constructor(name: string);
+    getIndex(): number;
     serializeKeys(): void;
     getSerializedInformations(): {
         privateKey: string;
+        publicKey: string;
         paymentAddress: string;
         readOnlyKey: string;
+        index: number;
     };
     getBackupData(): {
         name: string;

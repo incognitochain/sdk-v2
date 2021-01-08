@@ -1,20 +1,24 @@
+/// <reference types="node" />
 import BaseAccount from "./baseAccount";
 import MasterAccountModel from "../../models/account/masterAccount";
 import Account from "./account";
 interface MasterAccountInterface extends MasterAccountModel {
 }
 declare class MasterAccount extends BaseAccount implements MasterAccountInterface {
+    seed: Buffer;
     child: Account[];
-    constructor(name?: string);
-    static restoreFromBackupData(data: any): MasterAccount;
-    init(walletSeed: Uint8Array): Promise<this>;
+    deletedIndexes: Number[];
+    constructor(name: string, seed: Buffer);
+    static restoreFromBackupData(data: any, seed: Buffer): MasterAccount;
+    init(): Promise<this>;
     getAccountByName(name: string): Account;
     getAccountByPrivateKey(privateKeySerialized: string): Account;
-    addAccount(name: string, shardId?: number): Promise<Account>;
+    addAccount(name: string, shardId?: number, index?: number): Promise<Account>;
     removeAccount(name: string): void;
     getAccounts(): Account[];
     importAccount(name: string, privateKey: string): Promise<Account>;
     getBackupData(): {
+        deletedIndexes: Number[];
         name: string;
         key: {
             chainCode: number[];

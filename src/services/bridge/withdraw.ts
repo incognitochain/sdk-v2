@@ -1,4 +1,4 @@
-import http from './bridgeHttp';
+import { http } from '@src/services/http';
 import { TokenInfo } from '@src/constants';
 import Validator from '@src/utils/validator';
 

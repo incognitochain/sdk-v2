@@ -18,6 +18,7 @@ interface MasterAccountInterface extends MasterAccountModel {};
 class MasterAccount extends BaseAccount implements MasterAccountInterface {
   seed: Buffer;
   child: Account[];
+  deletedIndexes: Number[];
 
   constructor(name: string = DEFAULT_MASTER_ACCOUNT_NAME, seed: Buffer) {
     new Validator('walletSeed', seed).required();
@@ -28,17 +29,20 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     this.child = [];
     this.key = null;
     this.seed = seed;
+    this.deletedIndexes = [];
   }
 
   static restoreFromBackupData(data: any, seed: Buffer) {
     new Validator('data', data).required();
 
-    const { name, key, child } = data;
+    const { name, key, child, deletedIndexes } = data;
     const keyWallet = restoreKeyWalletFromBackupData(key);
     const account = new MasterAccount(name, seed);
     account.key = keyWallet;
     account.child = child.map((accountData: any) => Account.restoreFromBackupData(accountData));
     account.serializeKeys();
+
+    account.deletedIndexes = deletedIndexes || [];
 
     return account;
   }
@@ -64,10 +68,13 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     return _.find(this.getAccounts(), account => account.key.keySet.privateKeySerialized === privateKeySerialized);
   }
 
-  async addAccount(name: string, shardId?: number) {
+  async addAccount(name: string, shardId?: number, index?: number) {
     try {
       new Validator('name', name).required().string();
       new Validator('shardId', shardId).shardId();
+
+      const accounts = this.getAccounts();
+      const accountIndexes = accounts.map(item => item.getIndex());
 
       L.info('Add new account', { name, shardId });
 
@@ -75,17 +82,32 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
         throw new ErrorCode(`Account with name ${name} was existed`);
       }
 
+      if (index > -1 && accountIndexes.includes(index)) {
+        throw new ErrorCode(`Account with index ${index} was existed`);
+      }
+
       const lastChildAccountIndex = _.findLastIndex(this.child, account => !account.isImport && !!account.key.childNumber);
       const lastChildAccount = lastChildAccountIndex !== -1 && this.child[lastChildAccountIndex];
       let newIndex = lastChildAccount ? new bn(lastChildAccount.key.childNumber).add(new bn(1)).toNumber() : 1;
-      let keyData, lastByte;
-      do {
-        keyData = await generateKey(this.seed, newIndex, 0);
-        const publicKeyBytes = keyData.keySet.paymentAddress.publicKeyBytes;
+      let keyData;
 
-        lastByte = publicKeyBytes[publicKeyBytes.length - 1];
-        newIndex += 1;
-      } while(typeof shardId === 'number' && getShardIDFromLastByte(lastByte) !== shardId);
+      if (index > -1) {
+        keyData = await generateKey(this.seed, index, 0);
+      } else {
+
+        let lastByte;
+        do {
+          while (this.deletedIndexes.includes(newIndex)) {
+            newIndex += 1;
+          }
+
+          keyData = await generateKey(this.seed, newIndex, 0);
+          const publicKeyBytes = keyData.keySet.paymentAddress.publicKeyBytes;
+
+          lastByte = publicKeyBytes[publicKeyBytes.length - 1];
+          newIndex += 1;
+        } while (typeof shardId === 'number' && getShardIDFromLastByte(lastByte) !== shardId);
+      }
 
       const childAccountKeyWallet = new KeyWalletModel();
 
@@ -107,7 +129,10 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   removeAccount(name: string) {
     new Validator('name', name).required().string();
 
-    _.remove(this.child, account => account.name === name);
+    const removedAccounts = _.remove(this.child, account => account.name === name);
+    const removedIndexes  = removedAccounts.map(item => item.getIndex());
+
+    this.deletedIndexes = [...this.deletedIndexes, ...removedIndexes];
   }
 
   getAccounts() {
@@ -158,7 +183,8 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
 
     return {
       child: this.child.map(account => account.getBackupData()),
-      ...data
+      ...data,
+      deletedIndexes: this.deletedIndexes,
     };
   }
 }

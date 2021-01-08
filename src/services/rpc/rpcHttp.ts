@@ -33,7 +33,7 @@ instance.interceptors.response.use(res => {
 
   // can not get response, alert to user
   if (errorData?.isAxiosError && !errResponse) {
-    throw new ErrorCode('Send request RPC failed');
+    throw new Error('Send request RPC failed');
   }
 
   return Promise.reject(errorData);

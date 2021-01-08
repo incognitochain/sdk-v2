@@ -32,7 +32,23 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
      * Use `bridgeGetHistory` method to check the histories.
      */
     bridgeGenerateDepositAddress(): Promise<any>;
-    bridgeGetHistory(): Promise<import("../../models/bridge/bridgeHistory").default[]>;
+    bridgeGetHistory(): Promise<any>;
+    bridgeRetryHistory({ id, decentralized, walletAddress, addressType, currencyType, userPaymentAddress, privacyTokenAddress, erc20TokenAddress, outChainTx, }: {
+        id: number;
+        decentralized: number;
+        walletAddress: string;
+        addressType: number;
+        currencyType: number;
+        userPaymentAddress: string;
+        privacyTokenAddress: string;
+        erc20TokenAddress: string;
+        outChainTx: string;
+    }): Promise<any>;
+    bridgeRemoveHistory({ id, currencyType, decentralized, }: {
+        id: number;
+        currencyType: number;
+        decentralized: number;
+    }): Promise<any>;
     private bridgeWithdrawCentralized;
     private bridgeWithdrawDecentralized;
     /**

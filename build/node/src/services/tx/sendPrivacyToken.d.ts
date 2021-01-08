@@ -58,7 +58,7 @@ export declare function createTx({ nativeTxInput, nativePaymentInfoList, nativeT
     lockTime: number;
     tokenID?: string;
 }>;
-export declare function hasExchangeRate(tokenId: string): Promise<boolean>;
+export declare const hasExchangeRate: (tokenId: string) => Promise<boolean>;
 export default function sendPrivacyToken({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativePaymentInfoList, privacyPaymentInfoList, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, }: SendParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendPrivacyToken.d.ts.map
