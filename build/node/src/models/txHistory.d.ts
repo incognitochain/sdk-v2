@@ -23,6 +23,7 @@ export interface TxHistoryModelParam {
     meta?: any;
     accountPublicKeySerialized: string;
     historyType?: number;
+    memo?: string;
 }
 export default class TxHistoryModel {
     txId: string;
@@ -34,7 +35,8 @@ export default class TxHistoryModel {
     meta: any;
     accountPublicKeySerialized: string;
     historyType: number;
-    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType, }: TxHistoryModelParam);
+    memo?: string;
+    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType, memo, }: TxHistoryModelParam);
     toJson(): {
         txId: string;
         txType: string;
@@ -45,6 +47,7 @@ export default class TxHistoryModel {
         meta: any;
         accountPublicKeySerialized: string;
         historyType: number;
+        memo: string;
     };
 }
 export {};

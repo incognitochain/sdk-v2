@@ -42,6 +42,7 @@ interface SendParam extends TokenInfo {
   privacyPaymentInfoList: PaymentInfoModel[];
   nativeFee: string;
   privacyFee: string;
+  memo?: string;
 }
 
 interface CreateTxParam extends TokenInfo {
@@ -62,6 +63,7 @@ interface CreateTxParam extends TokenInfo {
   customExtractInfoFromInitedTxMethod?(
     resInitTxBytes: Uint8Array
   ): { b58CheckEncodeTx: string; lockTime: number; tokenID?: TokenIdType };
+  memo?: string;
 }
 
 interface PrivacyTokenParam {
@@ -119,6 +121,7 @@ export async function createTx({
   metaData,
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
+  memo,
 }: CreateTxParam) {
   new Validator('nativeTxInput', nativeTxInput).required();
   new Validator(
@@ -189,7 +192,7 @@ export async function createTx({
     isPrivacy: usePrivacyForNativeToken,
     isPrivacyForPToken: usePrivacyForPrivacyToken,
     metaData,
-    info: '',
+    info: memo,
     commitmentIndicesForNativeToken: nativeTxInput.commitmentIndices,
     myCommitmentIndicesForNativeToken: nativeTxInput.myCommitmentIndices,
     commitmentStrsForNativeToken: nativeTxInput.commitmentStrs,
@@ -199,9 +202,7 @@ export async function createTx({
     commitmentStrsForPToken: privacyTxInput.commitmentStrs,
     sndOutputsForPToken: privacyOutputCoins,
   };
-  L.info('paramInitTx: ', paramInitTx);
   const resInitTx = await initTx(initTxMethod, paramInitTx);
-  L.info('resInitTx: ', resInitTx);
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
   return (customExtractInfoFromInitedTxMethod
@@ -223,6 +224,7 @@ export default async function sendPrivacyToken({
   tokenId,
   tokenSymbol,
   tokenName,
+  memo,
 }: SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('nativeAvailableCoins', nativeAvailableCoins).required();
@@ -284,6 +286,7 @@ export default async function sendPrivacyToken({
     tokenSymbol,
     tokenName,
     initTxMethod: goMethods.initPrivacyTokenTx,
+    memo,
   });
   const sentInfo = await sendB58CheckEncodeTxToChain(
     rpc.sendRawTxCustomTokenPrivacy,
@@ -320,5 +323,6 @@ export default async function sendPrivacyToken({
     usePrivacyForPrivacyToken,
     usePrivacyForNativeToken,
     historyType: HISTORY_TYPE.SEND_PRIVACY_TOKEN,
+    memo,
   });
 }

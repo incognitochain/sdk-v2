@@ -8,7 +8,11 @@ declare class NativeToken extends Token implements NativeTokenModel {
     symbol: string;
     isNativeToken: boolean;
     constructor(accountKeySet: AccountKeySetModel);
-    transfer(paymentInfoList: PaymentInfoModel[], nativeFee: string): Promise<import("../../..").TxHistoryModel>;
+    transfer({ paymentInfoList, nativeFee, memo, }: {
+        paymentInfoList: PaymentInfoModel[];
+        nativeFee: string;
+        memo?: string;
+    }): Promise<import("../../..").TxHistoryModel>;
     requestStaking(rewardReceiverPaymentAddress: string, nativeFee: string): Promise<import("../../..").TxHistoryModel>;
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;

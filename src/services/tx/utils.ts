@@ -47,6 +47,7 @@ export interface CreateHistoryParam {
   historyType: number;
   usePrivacyForPrivacyToken?: boolean;
   usePrivacyForNativeToken: boolean;
+  memo?: string;
 }
 
 export interface NativeTokenTxInputOptions {
@@ -380,6 +381,7 @@ export function createHistoryInfo({
   historyType,
   usePrivacyForPrivacyToken,
   usePrivacyForNativeToken,
+  memo,
 }: CreateHistoryParam) {
   const history = new TxHistoryModel({
     txId,
@@ -409,6 +411,7 @@ export function createHistoryInfo({
     meta,
     accountPublicKeySerialized,
     historyType,
+    memo,
   });
   cacheTxHistory(history.txId, history);
   return history;

@@ -36,7 +36,7 @@ async function main() {
     console.log('Incognito module', incognito);
 
     incognito.setConfig({
-      mainnet: true,
+      mainnet: false,
       wasmPath: path.resolve(__dirname, '../privacy.wasm'),
       deviceId: '1234',
       deviceToken: '1234',
@@ -106,22 +106,22 @@ async function main() {
     await section('IMPORT ACCOUNT', async () => {
       state.importedAccount = await state.wallet.masterAccount.importAccount(
         'Imported acc',
-        '112t8rnXKfvZc5iAqrGtKT7kfMnbnrMLRfTTu5xfjgGYssEMdaSBC6NuPDqq8Z4QZAWhnBu1mccsJ2dU7S9f45zGyX1qw4DCRBe6Hjkhhvx7'
+        '112t8rnXKxRbfeJWTUZNz1CjpKkKhHEL353ZVRFcwxNA4daVvptviReekjbUp5Mu9WLitC3HrQ7jbykgoSgb3BRmDUZWnbDeV6xj76TUycKj'
       );
       // console.debug('HISTORY', history);
       state.privacyToken = await state.importedAccount.getPrivacyTokenById(
         // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
-        // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',//zil
-        'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f' //eth
+        '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc' //zil
+        // 'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f' //eth
       );
-      const data = await state.privacyToken.bridgeGetHistory();
-      console.log('address', data);
+      // const data = await state.privacyToken.bridgeGetHistory();
+      // console.log('address', data);
       // const history = await state.privacyToken.getTransactionByReceiver(
       //   { skip: 0, limit: 10 }
       // );
-      // console.debug('HISTORY TOKEN', history);
-      // const txPRV = await state.importedAccount.nativeToken.transfer(
-      //   [
+      // // console.debug('HISTORY TOKEN', history);
+      // const txPRV = await state.importedAccount.nativeToken.transfer({
+      //   paymentInfoList: [
       //     {
       //       paymentAddressStr:
       //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
@@ -129,43 +129,48 @@ async function main() {
       //       message: 'send prv',
       //     },
       //   ],
-      //   '100'
-      // );
+      //   nativeFee: '100',
+      //   memo: 'send PRV nha?',
+      // });
       // console.debug('txPRV', txPRV);
-      // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
+      // // await section('GET TOTAL BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getTotalBalance()).toNumber());
       // });
-      // await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
-      //   console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
-      // });
-      // if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
-      // const txNative = await state.privacyToken.transfer(
-      //   [
-      //     {
-      //       paymentAddressStr:
-      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-      //       amount: '1248',
-      //       message: 'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
-      //     },
-      //   ],
-      //   '100',
-      //   ''
-      // );
-      // console.log(`txNative`, txNative);
-      // const txPrivacy = await state.privacyToken.transfer(
-      //   [
-      //     {
-      //       paymentAddressStr:
-      //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-      //       amount: '30814',
-      //       message: 'send zil',
-      //     },
-      //   ],
-      //   '',
-      //   '100'
-      // );
-      // console.log(`txPrivacy`, txPrivacy);
-      // }
+      await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
+        console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
+      });
+      if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
+        // const txNative = await state.privacyToken.transfer({
+        //   paymentInfoList: [
+        //     {
+        //       paymentAddressStr:
+        //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+        //       amount: '1248',
+        //       message:
+        //         'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
+        //     },
+        //   ],
+        //   nativeFee: '100',
+        //   privacyFee: '',
+        //   memo: 'Send token pay fee by prv',
+        // });
+        // console.log(`txNative`, txNative);
+        const txPrivacy = await state.privacyToken.transfer({
+          paymentInfoList: [
+            {
+              paymentAddressStr:
+                '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+              amount: '1248',
+              message:
+                'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
+            },
+          ],
+          nativeFee: '',
+          privacyFee: '100',
+          memo: 'Send token pay fee by ptoken',
+        });
+        console.log(`txPrivacy`, txPrivacy);
+      }
     });
 
     // await section('GET TOTAL BALANCE NATIVE TOKEN', async () => {
