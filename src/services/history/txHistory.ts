@@ -73,3 +73,12 @@ export async function getTxHistoryByPublicKey(
     }) || []
   );
 }
+
+const cacheServices = {
+  updateTxHistory,
+  checkCachedHistoryById,
+  checkCachedHistories,
+  getTxHistoryByPublicKey,
+};
+
+export default cacheServices;
