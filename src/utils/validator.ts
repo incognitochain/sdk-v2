@@ -46,7 +46,7 @@ class Validator {
   }
 
   _throwError(message: string) {
-    throw new ErrorCode(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);
+    throw new Error(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);
   }
 
   _isDefined() {

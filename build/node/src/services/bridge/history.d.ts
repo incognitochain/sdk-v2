@@ -2,7 +2,7 @@ export declare const getBridgeHistory: (payload: any) => Promise<any>;
 export declare const retryBridgeHistory: (payload: any) => Promise<any>;
 export declare const removeBridgeHistory: (payload: any) => Promise<any>;
 export declare const getBridgeHistoryById: ({ id, currencyType, }: {
-    id: string;
+    id: number;
     currencyType: number;
 }) => Promise<any>;
 declare const bridgeServices: {
@@ -10,7 +10,7 @@ declare const bridgeServices: {
     retryBridgeHistory: (payload: any) => Promise<any>;
     removeBridgeHistory: (payload: any) => Promise<any>;
     getBridgeHistoryById: ({ id, currencyType, }: {
-        id: string;
+        id: number;
         currencyType: number;
     }) => Promise<any>;
 };
