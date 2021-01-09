@@ -12,14 +12,14 @@ export async function updateTxHistory(txHistory: TxHistoryModel) {
   const txInfo: { [key: string]: any } = await rpc.getTransactionByHash(
     txHistory.txId
   );
-  if (txInfo?.isInBlock) {
+  if (txInfo?.IsInBlock) {
     // tx completed
     txHistory.status = TX_STATUS.CONFIRMED;
-  } else if (!txInfo.isInBlock && !txInfo.isInMempool && txInfo.err !== null) {
+  } else if (!txInfo.IsInBlock && !txInfo.IsInMempool) {
     // tx failed
     txHistory.status = TX_STATUS.FAILED;
   }
-  L.info('updateTxHistory', txInfo);
+  L.info('updateTxHistory', txHistory);
   return txHistory;
 }
 
