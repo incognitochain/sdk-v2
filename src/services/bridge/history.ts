@@ -18,7 +18,7 @@ export const getBridgeHistoryById = ({
   id,
   currencyType,
 }: {
-  id: string;
+  id: number;
   currencyType: number;
 }) => {
   new Validator('id', id).required().number();
