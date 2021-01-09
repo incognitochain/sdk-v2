@@ -21,7 +21,6 @@ import {
 } from '@src/services/bridge/deposit';
 import {
   getBridgeHistory,
-  getBridgeHistoryById,
   removeBridgeHistory,
   retryBridgeHistory,
 } from '@src/services/bridge/history';
@@ -453,32 +452,6 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       return await removeBridgeHistory(payload);
     } catch (e) {
       throw e;
-    }
-  }
-
-  async bridgeGetHistoryById({
-    id,
-    currencyType,
-  }: {
-    id: string;
-    currencyType: number;
-  }) {
-    try {
-      if (!this.bridgeInfo) {
-        throw new Error(
-          `Token ${this.tokenId} does not support bridge history function`
-        );
-      }
-      new Validator('id', id).required().number();
-      new Validator('currencyType', currencyType).required().number();
-      const payload = {
-        ID: id,
-        CurrencyType: currencyType,
-      };
-      L.info('getBridgeHistoryById', payload);
-      return await getBridgeHistoryById(payload);
-    } catch (error) {
-      throw error;
     }
   }
 
