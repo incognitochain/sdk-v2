@@ -2,31 +2,25 @@ import { http } from '@src/services/http';
 import BridgeTokenApiModel from '@src/models/bridge/bridgeTokenApi';
 import ChainTokenApiModel from '@src/models/bridge/chainTokenApi';
 import PrivacyTokenApiModel from '@src/models/bridge/privacyTokenApi';
-import _, { merge } from 'lodash';
+import remove from 'lodash/remove';
 
-/**
- * All tokens have bridge info
- */
-function getBridgeTokenList() {
+export const getBridgeTokenList = () => {
   return http.get('ptoken/list').then((res) => {
     if (res instanceof Array) {
-      return res.map((token) => new BridgeTokenApiModel(token));
+      return res;
     }
     return [];
   });
-}
+};
 
-/**
- * All tokens in Incognito chain
- */
-function getChainTokenList() {
+export const getChainTokenList = () => {
   return http.get('pcustomtoken/list').then((res) => {
     if (res instanceof Array) {
-      return res.map((token) => new ChainTokenApiModel(token));
+      return res;
     }
     return [];
   });
-}
+};
 
 /**
  * All tokens in Incognito chain with bridge info (if any)
@@ -42,15 +36,18 @@ export async function getPrivacyTokenList(
       getBridgeTokenList(),
       getChainTokenList(),
     ]);
-    bridgeTokens = bridgeTokensDt;
-    chainTokens = chainTokensDt;
+    bridgeTokens = bridgeTokensDt.map(
+      (token) => new BridgeTokenApiModel(token)
+    );
+    chainTokens = chainTokensDt.map((token) => new ChainTokenApiModel(token));
   } else {
     bridgeTokens = _bridgeTokens.map((token) => new BridgeTokenApiModel(token));
     chainTokens = _chainTokens.map((token) => new ChainTokenApiModel(token));
   }
+
   // merging
   const privacyTokens = chainTokens.map((chainToken) => {
-    const bridgeToken = _.remove(
+    const bridgeToken = remove(
       bridgeTokens,
       (bridgeToken) => bridgeToken.tokenId === chainToken.tokenId
     );

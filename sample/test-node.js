@@ -106,7 +106,7 @@ async function main() {
     await section('IMPORT ACCOUNT', async () => {
       state.importedAccount = await state.wallet.masterAccount.importAccount(
         'Imported acc',
-        '112t8rnXKxRbfeJWTUZNz1CjpKkKhHEL353ZVRFcwxNA4daVvptviReekjbUp5Mu9WLitC3HrQ7jbykgoSgb3BRmDUZWnbDeV6xj76TUycKj'
+        '112t8rnYgxdVVzLxuodo4FnFxyjafoayBTxB7FYbSosYF4NX4SswYVmJjLHTsdWfMQVfudcnwYkn7eGJpMimx7jpGoLVUjVwi3msAGdYHsFi'
       );
       // const hash = await incognito.rpcClient.getTransactionByHash(
       //   'f522cb4325e0e5260a3fcaca95053e0165eefe13b1689b023460a7416321f934'
@@ -117,15 +117,16 @@ async function main() {
         '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc' //zil
         // 'ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f' //eth
       );
+      // const signPublicKey = await state.importedAccount.getSignPublicKey();
       // const data = await state.privacyToken.bridgeGenerateDepositAddress();
       // console.debug('data', data);
       // const list = await state.privacyToken.bridgeGetHistory();
       // console.log('list', list);
-      const result = await incognito.bridgeServices.getBridgeHistoryById({
-        id: 418,
-        currencyType: 10,
-      });
-      console.log('result', result);
+      // const result = await incognito.bridgeServices.getBridgeHistoryById({
+      //   id: 418,
+      //   currencyType: 10,
+      // });
+      // console.log('result', result);
       // const history = await state.privacyToken.getTransactionByReceiver(
       //   { skip: 0, limit: 10 }
       // );
