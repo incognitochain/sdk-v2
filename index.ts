@@ -28,8 +28,24 @@ export * from '@src/models/txHistory';
 export { setConfig, getConfig } from '@src/config';
 export { getPrivacyTokenList } from '@src/services/bridge/token';
 export { default as rpcClient } from '@src/services/rpc';
-export { default as bridgeServices } from '@src/services/bridge/history';
-export { default as cacheServices } from '@src/services/history/txHistory';
+
+import * as historyBridgeServices from '@src/services/bridge/history';
+import * as depositBridgeServices from '@src/services/bridge/deposit';
+import * as tokenBridgeServices from '@src/services/bridge/token';
+import * as withdrawBridgeServices from '@src/services/bridge/withdraw';
+
+import * as txHistoryServices from '@src/services/history/txHistory';
+
+export const historyServices = {
+  ...txHistoryServices,
+};
+
+export const bridgeServices = {
+  ...historyBridgeServices,
+  ...depositBridgeServices,
+  ...withdrawBridgeServices,
+  ...tokenBridgeServices,
+};
 
 export const walletServices = {
   setPrivacyUtilRandomBytesFunc,
