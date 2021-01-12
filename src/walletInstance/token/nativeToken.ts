@@ -44,11 +44,11 @@ class NativeToken extends Token implements NativeTokenModel {
       new Validator('memo', nativeFee).string();
       L.info('Native token transfer', { paymentInfoList, nativeFee, memo });
       const history = await sendNativeToken({
-        nativePaymentInfoList: paymentInfoList,
-        nativeFee: nativeFee,
-        accountKeySet: this.accountKeySet,
-        availableCoins: await this.getAvailableCoins(),
-        memo,
+        nativePaymentInfoList: paymentInfoList, // list payment info receiver
+        nativeFee: nativeFee, // fee send tx
+        accountKeySet: this.accountKeySet, // all key of account
+        availableCoins: await this.getAvailableCoins(), //available bills (unspent)
+        memo, // memo field
       });
       L.info(`Native token transfered successfully with tx id ${history.txId}`);
       return history;

@@ -12,9 +12,9 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import TxHistoryModel from '@src/models/txHistory';
 import { BurnAddress } from '@src/constants/wallet';
 import { cacheTxHistory } from '../cache/txHistory';
-import { HISTORY_TYPE, TX_STATUS } from '@src/constants/tx';
+import { TX_STATUS } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
-import { toNumber } from 'lodash';
+import SDKError, { ERROR_CODE } from '@src/constants/error';
 
 export interface TxInputType {
   inputCoinStrs: CoinModel[];
@@ -150,7 +150,6 @@ export async function getNativeTokenTxInput(
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('usePrivacy', usePrivacy).required().boolean();
-
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const totalAmountBN = nativePaymentAmountBN.add(nativeTokenFeeBN);
   const bestCoins = options?.chooseCoinStrategy
@@ -164,7 +163,7 @@ export async function getNativeTokenTxInput(
   const coinsToSpend: CoinModel[] = bestCoins.resultInputCoins;
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
   if (totalAmountBN.cmp(totalValueToSpendBN) === 1) {
-    throw new Error('Not enough coin');
+    throw new SDKError(ERROR_CODE.NOT_ENOUGH_COIN);
   }
   const {
     commitmentIndices,
