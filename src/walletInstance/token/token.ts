@@ -56,7 +56,6 @@ class Token implements BaseTokenModel {
    */
   async getAvailableCoins(tokenId: TokenIdType = this.tokenId) {
     new Validator('tokenId', tokenId).string();
-
     return getAvailableCoins(this.accountKeySet, tokenId, this.isNativeToken);
   }
 

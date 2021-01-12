@@ -7,6 +7,7 @@ import CoinModel from "../../models/coin";
 export declare function getUnspentCoins(accountKeySet: AccountKeySetModel, tokenId?: string): Promise<CoinModel[]>;
 /**
  * Coins can use to create tx (excluding spent coins, spending coins)
+ * TODO: method check spending bill. Current we only check unspent bill.
  */
 export declare function getAvailableCoins(accountKeySet: AccountKeySetModel, tokenId: string, isNativeCoin: boolean): Promise<CoinModel[]>;
 /**

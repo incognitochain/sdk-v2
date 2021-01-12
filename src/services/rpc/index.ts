@@ -33,9 +33,7 @@ class RpcClient {
       ],
       ...(tokenID ? [tokenID] : []),
     ]);
-
     const outCoinsMap = result.Outputs;
-
     let outCoins: object[];
     for (let key in outCoinsMap) {
       if (key == paymentAdrr || (viewingKey !== '' && key == viewingKey)) {
@@ -43,7 +41,6 @@ class RpcClient {
         break;
       }
     }
-
     return {
       outCoins: outCoins?.map((data: CoinRawData) => new CoinModel(data)),
     };
