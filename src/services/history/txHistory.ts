@@ -12,17 +12,22 @@ export async function updateTxHistory(txHistory: TxHistoryModel) {
   if (txHistory.status === TX_STATUS.CONFIRMED) {
     return txHistory;
   }
-  const txInfo: { [key: string]: any } = await rpc.getTransactionByHash(
-    txHistory.txId
-  );
-  if (txInfo?.IsInBlock) {
-    // tx completed
-    txHistory.status = TX_STATUS.CONFIRMED;
-  } else if (!txInfo.IsInBlock && !txInfo.IsInMempool) {
-    // tx failed
+  try {
+    const txInfo: { [key: string]: any } = await rpc.getTransactionByHash(
+      txHistory.txId
+    );
+    if (txInfo?.IsInBlock) {
+      // tx completed
+      txHistory.status = TX_STATUS.CONFIRMED;
+    } else if (!txInfo.IsInBlock && !txInfo.IsInMempool) {
+      // tx failed
+      txHistory.status = TX_STATUS.FAILED;
+    }
+    L.info('updateTxHistory', txHistory);
+  } catch (error) {
+    L.info('updateTxHistory error', txHistory);
     txHistory.status = TX_STATUS.FAILED;
   }
-  L.info('updateTxHistory', txHistory);
   return txHistory;
 }
 
