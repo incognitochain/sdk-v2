@@ -32,12 +32,3 @@ export const getBridgeHistoryById = ({
     })
     .then((res: any) => res);
 };
-
-const bridgeServices = {
-  getBridgeHistory,
-  retryBridgeHistory,
-  removeBridgeHistory,
-  getBridgeHistoryById,
-};
-
-export default bridgeServices;

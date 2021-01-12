@@ -1,6 +1,9 @@
 import TxHistoryModel from '@src/models/txHistory';
 import rpc from '@src/services/rpc';
-import { getTxHistoryCache, cacheTxHistory } from '../cache/txHistory';
+import {
+  getTxHistoryCache,
+  cacheTxHistory,
+} from '@src/services/cache/txHistory';
 import { TX_STATUS } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
 
@@ -73,12 +76,3 @@ export async function getTxHistoryByPublicKey(
     }) || []
   );
 }
-
-const cacheServices = {
-  updateTxHistory,
-  checkCachedHistoryById,
-  checkCachedHistories,
-  getTxHistoryByPublicKey,
-};
-
-export default cacheServices;
