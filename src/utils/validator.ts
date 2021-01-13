@@ -38,7 +38,7 @@ class Validator {
   isRequired: boolean;
 
   constructor(label: string, value: any) {
-    if (!label && typeof label !== 'string') throw new ErrorCode('Missing or invalid label');
+    if (!label && typeof label !== 'string') throw new Error('Missing or invalid label');
 
     this.value = value;
     this.label = label;

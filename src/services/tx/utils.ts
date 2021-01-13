@@ -263,7 +263,7 @@ export async function initTx(handler: Function, param: object) {
 
   const response = await handler(jsonStringParam);
   if (!response) {
-    throw new ErrorCode('Can not init transaction');
+    throw new Error('Can not init transaction');
   }
 
   return response;
@@ -337,7 +337,7 @@ export async function sendB58CheckEncodeTxToChain(
     return response;
   }
 
-  throw new ErrorCode('Send tx failed');
+  throw new Error('Send tx failed');
 }
 
 export function getCoinInfoForCache(coins: CoinModel[]) {

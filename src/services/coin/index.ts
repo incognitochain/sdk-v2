@@ -89,7 +89,7 @@ export async function deriveSerialNumbers(
     let paramJson = JSON.stringify(param);
     let res = await goMethods.deriveSerialNumber(paramJson);
     if (res === null || res === '') {
-      throw new ErrorCode('Can not derive serial number');
+      throw new Error('Can not derive serial number');
     }
     let tmpBytes = base64Decode(res);
     for (let i = 0; i < snds.length; i++) {

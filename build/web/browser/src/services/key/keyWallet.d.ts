@@ -17,7 +17,7 @@ export declare function deserializePublicKeyBytes(bytes: KeyBytes): KeyBytes;
 export declare function base58CheckSerialize(key: AllKeyModelType, depth: KeyWalletDepth, childNumber: KeyWalletChildNumber, chainCode: KeyWalletChainCode): string;
 export declare function base58CheckDeserialize(keyStr: string): {
     type: KeyTypeString;
-    key: Uint8Array | PaymentAddressKeyModel | ViewingKeyModel | {
+    key: PaymentAddressKeyModel | Uint8Array | ViewingKeyModel | {
         depth: number;
         childNumber: Uint8Array;
         chainCode: Uint8Array;
