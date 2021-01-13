@@ -1,4 +1,6 @@
-export declare const ERROR_CODE: any;
+export declare const ERROR_CODE: {
+    NOT_ENOUGH_COIN: string;
+};
 export declare const ERROR_MESSAGE: any;
 declare class SDKError extends Error {
     message: string;

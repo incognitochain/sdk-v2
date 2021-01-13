@@ -227,7 +227,7 @@ export async function getPrivacyTokenTxInput(
     totalValueToSpentBN = getValueFromCoins(coinsToSpend);
 
     if (totalAmountBN.cmp(totalValueToSpentBN) === 1) {
-      throw new ErrorCode('Not enough coin');
+      throw new SDKError(ERROR_CODE.NOT_ENOUGH_COIN);
     }
 
     const RandomCommitmentData = await getRandomCommitments(

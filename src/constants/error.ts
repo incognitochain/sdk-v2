@@ -1,15 +1,10 @@
-export const ERROR_CODE: any = {
+export const ERROR_CODE = {
   NOT_ENOUGH_COIN: '-5',
 };
 
 export const ERROR_MESSAGE: any = {
-  '-5': 'Your balance is not enough for this transaction.',
+  '-5': 'Your balance is insufficient.',
 };
-
-interface IObject {
-  message: string;
-  code: string;
-}
 
 class SDKError extends Error {
   message: string;
