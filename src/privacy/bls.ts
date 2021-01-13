@@ -17,7 +17,7 @@ async function generateBLSKeyPair(seed: any) {
       blsPublicKey: publicKey
     };
   } else {
-    throw new ErrorCode('Can not generate bls key pair');
+    throw new Error('Can not generate bls key pair');
   }
 }
 

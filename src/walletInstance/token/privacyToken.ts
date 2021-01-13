@@ -584,7 +584,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         });
 
         if (!isAdded) {
-          throw new ErrorCode('Add ETH tx withdraw failed');
+          throw new Error('Add ETH tx withdraw failed');
         }
 
         L.info(
@@ -603,7 +603,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         });
 
         if (!isAdded) {
-          throw new ErrorCode('Add ERC20 tx withdraw failed');
+          throw new Error('Add ERC20 tx withdraw failed');
         }
 
         L.info(
@@ -659,7 +659,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       });
 
       if (!this.bridgeInfo) {
-        throw new ErrorCode(
+        throw new Error(
           `Token ${this.tokenId} does not support withdraw function`
         );
       }
