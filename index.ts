@@ -28,6 +28,7 @@ export * from '@src/models/txHistory';
 export { setConfig, getConfig } from '@src/config';
 export { getPrivacyTokenList } from '@src/services/bridge/token';
 export { default as rpcClient } from '@src/services/rpc';
+export { default as SDKError } from '@src/constants/error';
 
 export * from '@src/services/history/txHistory';
 export * from '@src/services/bridge/deposit';
