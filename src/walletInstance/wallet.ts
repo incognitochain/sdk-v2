@@ -3,6 +3,7 @@ import { MasterAccount } from "./account";
 import { initWalletData, encryptWalletData, decryptWalletData } from '@src/services/wallet';
 import Validator from "@src/utils/validator";
 import mnemonicService from '@src/services/wallet/mnemonic';
+import SDKError, { ERROR_CODE } from '@src/constants/error';
 
 const  DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
 
@@ -28,7 +29,9 @@ class Wallet implements WalletModel {
       const { masterAccount, name, mnemonic, seed } = data;
       const wallet = new Wallet();
 
-      await wallet.restore(name, mnemonic, Buffer.from(seed), MasterAccount.restoreFromBackupData(masterAccount, seed));
+      const seedBuffer = Buffer.from(seed);
+
+      await wallet.restore(name, mnemonic, seedBuffer, MasterAccount.restoreFromBackupData(masterAccount, seedBuffer));
 
       L.info(`Restored wallet "${name}"`);
 
@@ -79,6 +82,12 @@ class Wallet implements WalletModel {
   async import(name: string, mnemonic: string) {
     new Validator('name', name).required().string();
     new Validator('mnemonic', mnemonic).required().string();
+
+    const isValid = mnemonicService.validateMnemonic(mnemonic);
+
+    if (!isValid) {
+      throw new SDKError(ERROR_CODE.INVALID_MNEMONIC);
+    }
 
     const seed = mnemonicService.newSeed(mnemonic);
 
