@@ -93,6 +93,10 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     bridgeWithdrawCheckValAddress({ address }: {
         address: string;
     }): Promise<any>;
+    bridgeGetMinMaxWithdraw(): Promise<{
+        minAmount: any;
+        maxAmount: any;
+    }>;
 }
 export default PrivacyToken;
 //# sourceMappingURL=privacyToken.d.ts.map
