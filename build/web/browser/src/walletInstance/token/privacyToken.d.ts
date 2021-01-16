@@ -30,6 +30,9 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     }): Promise<import("../../..").TxHistoryModel>;
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;
+    getEstFeeFromNativeFee({ nativeFee }: {
+        nativeFee: number;
+    }): Promise<any>;
     bridgeGenerateDepositAddress(): Promise<any>;
     bridgeGetHistory(): Promise<any>;
     bridgeRetryHistory({ id, decentralized, walletAddress, addressType, currencyType, userPaymentAddress, privacyTokenAddress, erc20TokenAddress, outChainTx, }: {
@@ -86,6 +89,9 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         userFeeId: string;
         userFeeSelection: number;
         userFeeLevel: number;
+    }): Promise<any>;
+    bridgeWithdrawCheckValAddress({ address }: {
+        address: string;
     }): Promise<any>;
 }
 export default PrivacyToken;

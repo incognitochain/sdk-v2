@@ -1,4 +1,7 @@
-export declare const checkValidAddress: (address: string, currencyType: number) => Promise<any>;
+export declare const checkValidAddress: ({ address, currencyType, }: {
+    address: string;
+    currencyType: number;
+}) => Promise<any>;
 export declare const estUserFeeCentralizedWithdraw: ({ incognitoAmount, requestedAmount, paymentAddress, walletAddress, tokenId, currencyType, memo, }: {
     incognitoAmount: string;
     requestedAmount: string;
