@@ -72,12 +72,6 @@ declare class RpcClient {
     listRewardAmount: () => Promise<any>;
     getBeaconBestStateDetail: () => Promise<any>;
     getBeaconHeight: () => Promise<any>;
-    /**
-     *
-     * @param {string} tokenIDStr1
-     * @param {string} tokenIDStr2, default is PRV
-     */
-    isExchangeRatePToken: (tokenIDStr1: any, tokenIDStr2?: string) => Promise<boolean>;
     getTransactionByReceiver: (paymentAdrr: any, viewingKey: any) => Promise<{
         receivedTransactions: any;
     }>;

@@ -131,12 +131,12 @@ async function main() {
         tokenId
       );
 
-      try {
-        const result = await state.privacyToken.bridgeGetMinMaxWithdraw();
-        console.log(result);
-      } catch (error) {
-        console.log(error);
-      }
+      // try {
+      //   const result = await state.privacyToken.bridgeGetMinMaxWithdraw();
+      //   console.log(result);
+      // } catch (error) {
+      //   console.log(error);
+      // }
 
       // try {
       //   const result = await state.privacyToken.bridgeWithdrawCheckValAddress({
@@ -286,38 +286,49 @@ async function main() {
       // await section('GET AVAILABALE BALANCE PRIVACY TOKEN', async () => {
       //   console.log((await state.privacyToken.getAvaiableBalance()).toNumber());
       // });
-      if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
-        // const txNative = await state.privacyToken.transfer({
-        //   paymentInfoList: [
-        //     {
-        //       paymentAddressStr:
-        //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-        //       amount: '10',
-        //       message: '',
-        //     },
-        //   ],
-        //   nativeFee: '100',
-        //   privacyFee: '',
-        //   memo: 'Send token pay fee by prv',
-        // });
-        // console.log('txNative', txNative);
-        // const txPrivacy = await state.privacyToken.transfer({
-        //   paymentInfoList: [
-        //     {
-        //       paymentAddressStr:
-        //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-        //       amount: '1248',
-        //       message:
-        //         'send 880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc',
-        //     },
-        //   ],
-        //   nativeFee: '',
-        //   privacyFee: '100',
-        //   memo: 'Send token pay fee by ptoken',
-        // });
-        // console.log(`txPrivacy`, txPrivacy);
-      }
     });
+    if (state.privacyToken instanceof incognito.PrivacyTokenInstance) {
+      // await section('TRANSFER PRIVACY TOKEN BY PRIVACY FEE', async () => {
+      //   try {
+      //     const tx = await state.privacyToken.transfer({
+      //       paymentInfoList: [
+      //         {
+      //           paymentAddressStr:
+      //             '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+      //           amount: '1248',
+      //           message: '',
+      //         },
+      //       ],
+      //       nativeFee: '',
+      //       privacyFee: '100',
+      //       memo: 'Send token pay fee by ptoken',
+      //     });
+      //     console.log('tx', tx);
+      //   } catch (error) {
+      //     console.log('ERROR', error);
+      //   }
+      // });
+      // await section('TRANSFER PRIVACY TOKEN BY NATIVE FEE', async () => {
+      //   try {
+      //     const tx = await state.privacyToken.transfer({
+      //       paymentInfoList: [
+      //         {
+      //           paymentAddressStr:
+      //             '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
+      //           amount: '10',
+      //           message: '',
+      //         },
+      //       ],
+      //       nativeFee: '100',
+      //       privacyFee: '',
+      //       memo: 'Send token pay fee by prv',
+      //     });
+      //     console.log('tx', tx);
+      //   } catch (error) {
+      //     console.log('ERROR', error);
+      //   }
+      // });
+    }
 
     // await section('GET TOTAL BALANCE NATIVE TOKEN', async () => {
     //   console.log((await state.importedAccount.nativeToken.getTotalBalance()).toNumber());

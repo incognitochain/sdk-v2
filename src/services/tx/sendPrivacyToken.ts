@@ -1,3 +1,4 @@
+import { getEstFeeFromChain } from '@src/services/bridge/token';
 import bn from 'bn.js';
 import {
   getTotalAmountFromPaymentList,
@@ -210,8 +211,18 @@ export async function createTx({
     : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
-export const hasExchangeRate = async (tokenId: string) =>
-  rpc.isExchangeRatePToken(tokenId);
+export const hasExchangeRate = async (tokenId: string) => {
+  let tokenFee;
+  try {
+    tokenFee = await getEstFeeFromChain({
+      Prv: Number(DEFAULT_NATIVE_FEE),
+      TokenID: tokenId,
+    });
+  } catch (error) {
+    L.error(`Token ${tokenId} is not has exchange rate.`);
+  }
+  return !!tokenFee;
+};
 
 export default async function sendPrivacyToken({
   accountKeySet,
@@ -241,7 +252,7 @@ export default async function sendPrivacyToken({
   new Validator('tokenId', tokenId).required().string();
   new Validator('tokenName', tokenName).required().string();
   new Validator('tokenSymbol', tokenSymbol).required().string();
-  const isTokenHasExchangeRate = await rpc.isExchangeRatePToken(tokenId);
+  const isTokenHasExchangeRate = await hasExchangeRate(tokenId);
   if (privacyFee && !isTokenHasExchangeRate) {
     throw new Error(
       `Token ${tokenId} can not use for paying fee, has no exchange rate!`
