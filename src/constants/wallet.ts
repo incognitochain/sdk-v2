@@ -21,7 +21,7 @@ const StopAutoStakingMeta = 127;
 const ShardStakingType = 0;
 const BeaconStakingType = 1;
 
-const MaxTxSize = 100;    // in kb
+const MaxTxSize = 100; // in kb
 
 const ChildNumberSize = 4;
 const ChainCodeSize = 32;
@@ -30,7 +30,7 @@ const NanoUnit = 1e-9;
 const BurnAddress =
   '15pABFiJVeh9D5uiQEhQX4SVibGGbdAVipQxBdxkmDqAJaoG1EdFKHBrNfs';
 
-const BurningRequestMeta = 27;
+const BurningRequestMeta = 240;
 const WithDrawRewardRequestMeta = 44;
 const PDEContributionMeta = 90;
 const PDETradeRequestMeta = 91;
@@ -39,7 +39,8 @@ const PDEWithdrawalRequestMeta = 93;
 const PDEWithdrawalResponseMeta = 94;
 
 const PRVID = [4];
-const PRVIDSTR = '0000000000000000000000000000000000000000000000000000000000000004';
+const PRVIDSTR =
+  '0000000000000000000000000000000000000000000000000000000000000004';
 const PDEPOOLKEY = 'pdepool';
 
 const NoStakeStatus = -1;

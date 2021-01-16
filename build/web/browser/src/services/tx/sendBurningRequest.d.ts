@@ -1,3 +1,4 @@
+import PaymentInfoModel from "../../models/paymentInfo";
 import AccountKeySetModel from "../../models/key/accountKeySet";
 import CoinModel from "../../models/coin";
 interface TokenInfo {
@@ -5,7 +6,7 @@ interface TokenInfo {
     tokenSymbol: TokenSymbolType;
     tokenName: TokenNameType;
 }
-interface SendParam extends TokenInfo {
+interface BurnParam extends TokenInfo {
     accountKeySet: AccountKeySetModel;
     nativeAvailableCoins: CoinModel[];
     privacyAvailableCoins: CoinModel[];
@@ -13,7 +14,10 @@ interface SendParam extends TokenInfo {
     privacyFee: string;
     outchainAddress: string;
     burningAmount: string;
+    subNativePaymentInfoList?: PaymentInfoModel[];
+    subPrivacyPaymentInfoList?: PaymentInfoModel[];
+    memo?: string;
 }
-export default function sendBurningRequest({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, outchainAddress, burningAmount, }: SendParam): Promise<import("../../..").TxHistoryModel>;
+export default function sendBurningRequest({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, outchainAddress, burningAmount, subNativePaymentInfoList, subPrivacyPaymentInfoList, memo, }: BurnParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendBurningRequest.d.ts.map
