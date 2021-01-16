@@ -1,32 +1,41 @@
-export declare const genCentralizedWithdrawAddress: ({ amount, paymentAddress, walletAddress, tokenId, currencyType, memo }: {
-    amount: string;
+export declare const checkValidAddress: (address: string, currencyType: number) => Promise<any>;
+export declare const estUserFeeCentralizedWithdraw: ({ incognitoAmount, requestedAmount, paymentAddress, walletAddress, tokenId, currencyType, memo, }: {
+    incognitoAmount: string;
+    requestedAmount: string;
     paymentAddress: string;
     walletAddress: string;
     tokenId: string;
     currencyType: number;
     memo?: string;
 }) => Promise<string>;
-export declare const addETHTxWithdraw: ({ amount, originalAmount, paymentAddress, walletAddress, tokenId, burningTxId, currencyType }: {
-    amount: string;
+export declare const centralizedWithdraw: ({ privacyFee, tokenFee, address, userFeeSelection, userFeeLevel, incognitoTxToPayOutsideChainFee, }: {
+    privacyFee: string;
+    tokenFee: string;
+    address: string;
+    userFeeSelection: number;
+    userFeeLevel: number;
+    incognitoTxToPayOutsideChainFee: string;
+}) => Promise<any>;
+export declare const decentralizedWithdraw: ({ incognitoAmount, requestedAmount, paymentAddress, walletAddress, tokenId, incognitoTx, currencyType, erc20TokenAddress, id, userFeeSelection, userFeeLevel, }: {
+    incognitoAmount: string;
+    requestedAmount: string;
     paymentAddress: string;
     walletAddress: string;
     tokenId: string;
     currencyType: number;
-    originalAmount: string;
-    burningTxId: string;
-}) => Promise<import("axios").AxiosResponse<any>>;
-export declare const addERC20TxWithdraw: ({ amount, originalAmount, paymentAddress, walletAddress, tokenContractID, tokenId, burningTxId, currencyType }: {
-    amount: string;
+    incognitoTx: string;
+    erc20TokenAddress?: string;
+    id: string;
+    userFeeSelection: number;
+    userFeeLevel: number;
+}) => Promise<any>;
+export declare const estUserFeeDecentralizedWithdraw: ({ tokenId, requestedAmount, currencyType, incognitoAmount, paymentAddress, walletAddress, erc20TokenAddress, }: {
+    tokenId: string;
+    requestedAmount: string;
+    currencyType: number;
+    incognitoAmount: string;
     paymentAddress: string;
     walletAddress: string;
-    tokenId: string;
-    currencyType: number;
-    originalAmount: string;
-    burningTxId: string;
-    tokenContractID: string;
-}) => Promise<import("axios").AxiosResponse<any>>;
-export declare const updatePTokenFee: ({ fee, paymentAddress }: {
-    fee: string;
-    paymentAddress: string;
-}) => Promise<import("axios").AxiosResponse<any>>;
+    erc20TokenAddress?: string;
+}) => Promise<any>;
 //# sourceMappingURL=withdraw.d.ts.map

@@ -19,6 +19,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     get bridgeEthereum(): boolean;
     get bridgeBinance(): boolean;
     get bridgeBEP2(): boolean;
+    get bridgeDecentralized(): boolean;
     hasExchangeRate(): Promise<boolean>;
     getNativeAvailableCoins(): Promise<import("../../models/coin").default[]>;
     transfer({ paymentInfoList, nativeFee, privacyFee, memo, }: {
@@ -27,15 +28,8 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         privacyFee?: string;
         memo?: string;
     }): Promise<import("../../..").TxHistoryModel>;
-    burning(outchainAddress: string, burningAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;
-    /**
-     * Convert your crypto from other chains to privacy version from the Incognito chain - private 100%.
-     * This method will generate a temporary address, this temp address will be expired in 60 minutes.
-     * Then, send/transfer you crypto to this temp address, the process will be completed in several minutes.
-     * Use `bridgeGetHistory` method to check the histories.
-     */
     bridgeGenerateDepositAddress(): Promise<any>;
     bridgeGetHistory(): Promise<any>;
     bridgeRetryHistory({ id, decentralized, walletAddress, addressType, currencyType, userPaymentAddress, privacyTokenAddress, erc20TokenAddress, outChainTx, }: {
@@ -54,14 +48,45 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         currencyType: number;
         decentralized: number;
     }): Promise<any>;
-    private bridgeWithdrawCentralized;
-    private bridgeWithdrawDecentralized;
-    /**
-     * Convert privacy token to origin, your privacy token will be burned and the origin will be returned
-     * @param {number} decimalAmount accept amount in decimal number (ex: 1.2 ETH, 0.5 BTC,...)
-     * @note aaa
-     */
-    bridgeWithdraw(outchainAddress: string, decimalAmount: string, nativeFee?: string, privacyFee?: string, memo?: string): Promise<void>;
+    bridgeWithdrawEstUserFee({ requestedAmount, incognitoAmount, paymentAddress, memo, }: {
+        requestedAmount: string;
+        incognitoAmount: string;
+        paymentAddress: string;
+        memo?: string;
+    }): Promise<any>;
+    bridgeBurningDecentralized({ outchainAddress, burningAmount, nativeFee, privacyFee, privacyPaymentInfoList, nativePaymentInfoList, memo, }: {
+        outchainAddress: string;
+        burningAmount: string;
+        nativeFee: string;
+        privacyFee: string;
+        privacyPaymentInfoList: PaymentInfoModel[];
+        nativePaymentInfoList?: PaymentInfoModel[];
+        memo?: string;
+    }): Promise<import("../../..").TxHistoryModel>;
+    bridgeBurningCentralized({ privacyPaymentInfoList, nativePaymentInfoList, nativeFee, privacyFee, memo, }: {
+        privacyPaymentInfoList: PaymentInfoModel[];
+        nativePaymentInfoList?: PaymentInfoModel[];
+        nativeFee?: string;
+        privacyFee?: string;
+        memo?: string;
+    }): Promise<import("../../..").TxHistoryModel>;
+    bridgeWithdrawCentralized({ burningTxId, userFeeSelection, userFeeLevel, tempAddress, privacyFee, tokenFee, }: {
+        burningTxId: string;
+        userFeeSelection: number;
+        userFeeLevel: number;
+        tempAddress: string;
+        privacyFee?: string;
+        tokenFee?: string;
+    }): Promise<any>;
+    bridgeWithdrawDecentralized({ incognitoAmount, requestedAmount, paymentAddress, burningTxId, userFeeId, userFeeSelection, userFeeLevel, }: {
+        incognitoAmount: string;
+        requestedAmount: string;
+        paymentAddress: string;
+        burningTxId: string;
+        userFeeId: string;
+        userFeeSelection: number;
+        userFeeLevel: number;
+    }): Promise<any>;
 }
 export default PrivacyToken;
 //# sourceMappingURL=privacyToken.d.ts.map

@@ -178,7 +178,7 @@ export async function createTx({
     amount: '0',
     tokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     fee: privacyTokenFeeBN.toString(),
-    paymentInfoForPToken: privacyPaymentInfoList,
+    paymentInfoForPToken: privacyPaymentInfoList || [],
     tokenInputs: privacyTxInput.inputCoinStrs.map((coin) => coin.toJson()),
     ...privacyTokenParamAdditional,
   };
@@ -192,7 +192,7 @@ export async function createTx({
     isPrivacy: usePrivacyForNativeToken,
     isPrivacyForPToken: usePrivacyForPrivacyToken,
     metaData,
-    info: memo,
+    info: memo || '',
     commitmentIndicesForNativeToken: nativeTxInput.commitmentIndices,
     myCommitmentIndicesForNativeToken: nativeTxInput.myCommitmentIndices,
     commitmentStrsForNativeToken: nativeTxInput.commitmentStrs,
@@ -220,7 +220,7 @@ export default async function sendPrivacyToken({
   nativePaymentInfoList,
   privacyPaymentInfoList,
   nativeFee = DEFAULT_NATIVE_FEE,
-  privacyFee,
+  privacyFee = '',
   tokenId,
   tokenSymbol,
   tokenName,
@@ -236,8 +236,8 @@ export default async function sendPrivacyToken({
   new Validator('privacyPaymentInfoList', privacyPaymentInfoList)
     .required()
     .paymentInfoList();
-  new Validator('nativeFee', nativeFee).required().amount();
-  new Validator('privacyFee', privacyFee).required().amount();
+  new Validator('nativeFee', nativeFee).amount();
+  new Validator('privacyFee', privacyFee).amount();
   new Validator('tokenId', tokenId).required().string();
   new Validator('tokenName', tokenName).required().string();
   new Validator('tokenSymbol', tokenSymbol).required().string();
@@ -272,7 +272,7 @@ export default async function sendPrivacyToken({
     privacyTokenFeeBN,
     usePrivacyForPrivacyToken
   );
-  const txInfo = await createTx({
+  const txInfoParams = {
     nativeTxInput,
     nativePaymentInfoList,
     nativeTokenFeeBN,
@@ -287,7 +287,8 @@ export default async function sendPrivacyToken({
     tokenName,
     initTxMethod: goMethods.initPrivacyTokenTx,
     memo,
-  });
+  };
+  const txInfo = await createTx(txInfoParams);
   const sentInfo = await sendB58CheckEncodeTxToChain(
     rpc.sendRawTxCustomTokenPrivacy,
     txInfo.b58CheckEncodeTx

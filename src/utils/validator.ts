@@ -1,7 +1,6 @@
-// TODO: Update it
-
-import { getKeyBytes } from "./key";
-import { PaymentAddressType, PriKeyType } from "@src/constants/wallet";
+import isArray from 'lodash/isArray';
+import { getKeyBytes } from './key';
+import { PaymentAddressType, PriKeyType } from '@src/constants/wallet';
 
 function isPaymentAddress(paymentAddrStr: string) {
   try {
@@ -31,14 +30,14 @@ function isPrivateKey(privateKeyStr: string) {
   return false;
 }
 
-
 class Validator {
   value: any;
   label: string;
   isRequired: boolean;
 
   constructor(label: string, value: any) {
-    if (!label && typeof label !== 'string') throw new Error('Missing or invalid label');
+    if (!label && typeof label !== 'string')
+      throw new ErrorCode('Missing or invalid label');
 
     this.value = value;
     this.label = label;
@@ -46,7 +45,11 @@ class Validator {
   }
 
   _throwError(message: string) {
-    throw new Error(`Validating "${this.label}" failed: ${message}. Found ${this.value} (type of ${typeof this.value})`);
+    throw new Error(
+      `Validating "${this.label}" failed: ${message}. Found ${
+        this.value
+      } (type of ${typeof this.value})`
+    );
   }
 
   _isDefined() {
@@ -54,7 +57,10 @@ class Validator {
   }
 
   _onCondition(condition: Function, message: string) {
-    if (((!this.isRequired && this._isDefined()) || this.isRequired) && !condition()) {
+    if (
+      ((!this.isRequired && this._isDefined()) || this.isRequired) &&
+      !condition()
+    ) {
       this._throwError(message);
     }
 
@@ -67,7 +73,17 @@ class Validator {
   }
 
   maxLength(length: number, message?: string) {
-    return this._onCondition(() => this.value.length <= length, message || `Max length is ${length}`);
+    return this._onCondition(
+      () => this.value.length > length,
+      message || `Max length is ${length}`
+    );
+  }
+
+  minLength(length: number, message?: string) {
+    return this._onCondition(
+      () => this.value.length < length,
+      message || `min length is ${length}`
+    );
   }
 
   string(message = 'Must be string') {
@@ -93,25 +109,37 @@ class Validator {
   min(min: number, message?: string) {
     new Validator('min', min).required().number();
 
-    return this._onCondition(() => this.value >= min, message || `Minimum is ${min}`);
+    return this._onCondition(
+      () => this.value >= min,
+      message || `Minimum is ${min}`
+    );
   }
 
   max(max: number, message?: string) {
     new Validator('max', max).required().number();
 
-    return this._onCondition(() => this.value <= max, message || `Maximum is ${max}`);
+    return this._onCondition(
+      () => this.value <= max,
+      message || `Maximum is ${max}`
+    );
   }
 
   largerThan(number: number, message?: string) {
     new Validator('number', number).required().number();
 
-    return this._onCondition(() => this.value > number, message || `Must be larger than ${number}`);
+    return this._onCondition(
+      () => this.value > number,
+      message || `Must be larger than ${number}`
+    );
   }
 
   lessThan(number: number, message?: string) {
     new Validator('number', number).required().number();
 
-    return this._onCondition(() => this.value < number, message || `Must be less than ${number}`);
+    return this._onCondition(
+      () => this.value < number,
+      message || `Must be less than ${number}`
+    );
   }
 
   inList(list: any[], message = 'Must be in provided list') {
@@ -126,15 +154,24 @@ class Validator {
   }
 
   paymentAddress(message = 'Invalid payment address') {
-    return this._onCondition(() => this.string() && isPaymentAddress(this.value), message);
+    return this._onCondition(
+      () => this.string() && isPaymentAddress(this.value),
+      message
+    );
   }
 
   privateKey(message = 'Invalid private key') {
-    return this._onCondition(() => this.string() && isPrivateKey(this.value), message);
+    return this._onCondition(
+      () => this.string() && isPrivateKey(this.value),
+      message
+    );
   }
 
   shardId(message = 'Shard ID must be between 0 to 7') {
-    return this._onCondition(() => this.intergerNumber() && this.inList([0, 1, 2, 3, 4, 5, 6, 7]), message);
+    return this._onCondition(
+      () => this.intergerNumber() && this.inList([0, 1, 2, 3, 4, 5, 6, 7]),
+      message
+    );
   }
 
   /**
@@ -143,18 +180,20 @@ class Validator {
    * @param {string} message error message
    */
   amount(message = 'Invalid amount') {
-    return this._onCondition(() => (this.string() && this.value >= 0), message);
+    return this._onCondition(() => this.string() && this.value >= 0, message);
   }
 
-  paymentInfoList(message = 'Invalid paymentInfoList, must be array of payment info "{ paymentAddressStr: string, amount: number, message: string }" (max 30 payment info)') {
+  paymentInfoList(
+    message = 'Invalid paymentInfoList, must be array of payment info "{ paymentAddressStr: string, amount: number, message: string }" (max 30 payment info)'
+  ) {
     return this._onCondition(() => {
-      if (!(this.value instanceof Array) || this.value.length === 0 || this.value.length > 30) return false;
-      return this.value.every(paymentInfo => {
+      if (!isArray(this.value) || this.value.length > 30) return false;
+      return this.value.every((paymentInfo) => {
         new Validator('payment info', paymentInfo).required();
-
         const { paymentAddressStr, amount, message } = paymentInfo;
-
-        new Validator('payment info paymentAddressStr', paymentAddressStr).required().paymentAddress();
+        new Validator('payment info paymentAddressStr', paymentAddressStr)
+          .required()
+          .paymentAddress();
         new Validator('payment info amount', amount).required().amount();
         new Validator('payment info message', message).required().string();
         return true;

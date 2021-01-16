@@ -8,6 +8,7 @@ declare class Validator {
     _onCondition(condition: Function, message: string): this;
     required(message?: string): this;
     maxLength(length: number, message?: string): this;
+    minLength(length: number, message?: string): this;
     string(message?: string): this;
     function(message?: string): this;
     boolean(message?: string): this;
