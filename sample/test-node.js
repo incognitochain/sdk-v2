@@ -119,7 +119,7 @@ async function main() {
       // );
       // console.debug('hash', hash);
       const tokenId =
-        '9fca0a0947f4393994145ef50eecd2da2aa15da2483b310c2c0650301c59b17d';
+        'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df';
       state.privacyToken = await state.unshieldAccount.getPrivacyTokenById(
         // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
         // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc' //zil
@@ -132,13 +132,20 @@ async function main() {
       );
 
       try {
-        const result = await state.privacyToken.bridgeWithdrawCheckValAddress({
-          address: 'tbnb18gpq7t8p0zd8laqfr7cs6zphxvglnkm3svkwyx',
-        });
-        console.log('result', result);
+        const result = await state.privacyToken.bridgeGetMinMaxWithdraw();
+        console.log(result);
       } catch (error) {
         console.log(error);
       }
+
+      // try {
+      //   const result = await state.privacyToken.bridgeWithdrawCheckValAddress({
+      //     address: 'tbnb18gpq7t8p0zd8laqfr7cs6zphxvglnkm3svkwyx',
+      //   });
+      //   console.log('result', result);
+      // } catch (error) {
+      //   console.log(error);
+      // }
 
       // let tokenFee;
       // try {

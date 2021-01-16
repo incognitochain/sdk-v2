@@ -715,6 +715,30 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       throw error;
     }
   }
+
+  async bridgeGetMinMaxWithdraw() {
+    try {
+      if (!this.bridgeInfo) {
+        throw new Error(
+          `Token ${this.tokenId} does not support deposit function`
+        );
+      }
+      const minMaxTokens = await getMinMaxDepositAmount();
+      const findMinMaxToken = minMaxTokens.find(
+        (token: IMinMaxToken) => token?.TokenID === this.tokenId
+      );
+      let payload;
+      if (findMinMaxToken) {
+        payload = {
+          minAmount: findMinMaxToken?.MinAmount,
+          maxAmount: findMinMaxToken?.MaxAmount,
+        };
+      }
+      return payload;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default PrivacyToken;
