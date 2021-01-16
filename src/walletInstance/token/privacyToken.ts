@@ -1,7 +1,8 @@
 import {
   centralizedWithdraw,
   decentralizedWithdraw,
-} from './../../services/bridge/withdraw';
+  checkValidAddress,
+} from '@src/services/bridge/withdraw';
 import { getMinMaxDepositAmount } from '@src/services/bridge/deposit';
 import Token from './token';
 import PrivacyTokenModel from '@src/models/token/privacyToken';
@@ -32,9 +33,7 @@ import {
   estUserFeeCentralizedWithdraw,
   estUserFeeDecentralizedWithdraw,
 } from '@src/services/bridge/withdraw';
-import { getBurningAddress, toBNAmount } from '@src/services/tx/utils';
-// import { convertDecimalToNanoAmount } from '@src/utils/common';
-// import BN from 'bn.js';
+import { getEstFeeFromChain } from '@src/services/bridge/token';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel;
@@ -256,6 +255,19 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
+  async getEstFeeFromNativeFee({ nativeFee }: { nativeFee: number }) {
+    try {
+      if (!this.bridgeInfo) {
+        throw new Error(
+          `Token ${this.tokenId} does not support bridge history function`
+        );
+      }
+      return getEstFeeFromChain({ Prv: nativeFee, TokenID: this.tokenId });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // bridge shield
   async bridgeGenerateDepositAddress() {
     try {
@@ -417,7 +429,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
 
   // bridge withdraw
 
-  bridgeWithdrawEstUserFee({
+  async bridgeWithdrawEstUserFee({
     requestedAmount,
     incognitoAmount,
     paymentAddress,
@@ -683,6 +695,22 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         userFeeLevel,
       });
       return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async bridgeWithdrawCheckValAddress({ address }: { address: string }) {
+    try {
+      if (!this.bridgeInfo) {
+        throw new Error(
+          `Token ${this.tokenId} does not support bridge history function`
+        );
+      }
+      return checkValidAddress({
+        address,
+        currencyType: this.bridgeInfo.currencyType,
+      });
     } catch (error) {
       throw error;
     }

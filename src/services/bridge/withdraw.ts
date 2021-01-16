@@ -1,10 +1,20 @@
 import { http } from '@src/services/http';
 import { TokenInfo } from '@src/constants';
 import Validator from '@src/utils/validator';
-import toString from 'lodash/toString';
 
-export const checkValidAddress = (address: string, currencyType: number) =>
-  http.get(`ota/valid/${currencyType}/${address}`).then((res: any) => res);
+export const checkValidAddress = ({
+  address,
+  currencyType,
+}: {
+  address: string;
+  currencyType: number;
+}) => {
+  new Validator('address', address).required().string();
+  new Validator('currencyType', currencyType).required().number();
+  return http
+    .get(`ota/valid/${currencyType}/${address}`)
+    .then((res: any) => res);
+};
 
 // Withdraw centralized:
 // Step 1: Check valid address
