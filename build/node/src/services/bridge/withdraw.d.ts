@@ -11,9 +11,9 @@ export declare const estUserFeeCentralizedWithdraw: ({ incognitoAmount, requeste
     currencyType: number;
     memo?: string;
 }) => Promise<string>;
-export declare const centralizedWithdraw: ({ privacyFee, tokenFee, address, userFeeSelection, userFeeLevel, incognitoTxToPayOutsideChainFee, }: {
+export declare const centralizedWithdraw: ({ privacyFee, nativeFee, address, userFeeSelection, userFeeLevel, incognitoTxToPayOutsideChainFee, }: {
     privacyFee: string;
-    tokenFee: string;
+    nativeFee: string;
     address: string;
     userFeeSelection: number;
     userFeeLevel: number;

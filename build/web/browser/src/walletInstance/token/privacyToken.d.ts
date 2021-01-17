@@ -73,13 +73,13 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         privacyFee?: string;
         memo?: string;
     }): Promise<import("../../..").TxHistoryModel>;
-    bridgeWithdrawCentralized({ burningTxId, userFeeSelection, userFeeLevel, tempAddress, privacyFee, tokenFee, }: {
+    bridgeWithdrawCentralized({ burningTxId, userFeeSelection, userFeeLevel, tempAddress, privacyFee, nativeFee, }: {
         burningTxId: string;
         userFeeSelection: number;
         userFeeLevel: number;
         tempAddress: string;
         privacyFee?: string;
-        tokenFee?: string;
+        nativeFee?: string;
     }): Promise<any>;
     bridgeWithdrawDecentralized({ incognitoAmount, requestedAmount, paymentAddress, burningTxId, userFeeId, userFeeSelection, userFeeLevel, }: {
         incognitoAmount: string;
