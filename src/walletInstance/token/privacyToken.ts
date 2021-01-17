@@ -607,14 +607,14 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     userFeeLevel,
     tempAddress,
     privacyFee,
-    tokenFee,
+    nativeFee,
   }: {
     burningTxId: string;
     userFeeSelection: number;
     userFeeLevel: number;
     tempAddress: string;
     privacyFee?: string;
-    tokenFee?: string;
+    nativeFee?: string;
   }) {
     try {
       L.info(`Bridge withdraw centralized token ${this.tokenId} params`, {
@@ -623,11 +623,11 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         userFeeLevel,
         tempAddress,
         privacyFee,
-        tokenFee,
+        nativeFee,
       });
       const result = await centralizedWithdraw({
         privacyFee,
-        tokenFee,
+        nativeFee,
         address: tempAddress,
         userFeeSelection,
         userFeeLevel,

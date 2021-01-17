@@ -71,21 +71,21 @@ export const estUserFeeCentralizedWithdraw = ({
 // update token fee
 export const centralizedWithdraw = ({
   privacyFee,
-  tokenFee,
+  nativeFee,
   address,
   userFeeSelection,
   userFeeLevel,
   incognitoTxToPayOutsideChainFee,
 }: {
   privacyFee: string;
-  tokenFee: string;
+  nativeFee: string;
   address: string;
   userFeeSelection: number;
   userFeeLevel: number;
   incognitoTxToPayOutsideChainFee: string;
 }) => {
   new Validator('privacyFee', privacyFee).amount();
-  new Validator('privacyFee', privacyFee).amount();
+  new Validator('nativeFee', nativeFee).amount();
   new Validator('address', address).required().string();
   new Validator('userFeeSelection', userFeeSelection).required().number();
   new Validator('userFeeLevel', userFeeLevel).required().number();
@@ -97,8 +97,8 @@ export const centralizedWithdraw = ({
     .string();
   const payload = {
     Address: address, //temp address
-    PrivacyFee: privacyFee,
-    TokenFee: tokenFee,
+    PrivacyFee: nativeFee,
+    TokenFee: privacyFee,
     ID: '',
     UserFeeSelection: userFeeSelection,
     UserFeeLevel: userFeeLevel,
