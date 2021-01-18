@@ -168,7 +168,13 @@ class Wallet implements WalletModel {
     const serverAccounts = await apiGetWalletAccounts(this);
     const currentAccounts = this.masterAccount.getAccounts();
 
-    if (serverAccounts.length < currentAccounts.length) {
+    const serverAccountIds = serverAccounts.map((item: any) => item.id);
+
+    if (_.some(currentAccounts, account =>{
+      const accountInfo = account.getSerializedInformations();
+      const id = accountInfo.index;
+      return !account.isImport && !serverAccountIds.includes(id);
+    })) {
       await apiUpdateWalletAccounts(this);
     }
   }
