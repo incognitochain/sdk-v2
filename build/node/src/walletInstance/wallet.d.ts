@@ -13,6 +13,15 @@ declare class Wallet implements WalletModel {
     import(name: string, mnemonic: string): Promise<void>;
     isIncorrectBIP44(): Promise<boolean>;
     backup(password: string): string;
+    /**
+     * Sync this wallet with the wallet stored on the api
+     * This will get new keychains from the api (if have any)
+     */
+    sync(): Promise<void>;
+    /**
+     * This will update keychain list stored on api with this keychain list
+     */
+    update(): Promise<void>;
 }
 export default Wallet;
 //# sourceMappingURL=wallet.d.ts.map
