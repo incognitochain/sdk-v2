@@ -5,6 +5,7 @@ import Validator from "@src/utils/validator";
 import mnemonicService from '@src/services/wallet/mnemonic';
 import SDKError, { ERROR_CODE } from '@src/constants/error';
 import { apiGetWalletAccounts, apiUpdateWalletAccounts } from '@src/services/api';
+import _ from 'lodash';
 
 const  DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
 
