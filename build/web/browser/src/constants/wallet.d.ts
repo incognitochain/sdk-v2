@@ -22,8 +22,8 @@ declare const BurnAddress = "15pABFiJVeh9D5uiQEhQX4SVibGGbdAVipQxBdxkmDqAJaoG1Ed
 declare const BurningRequestMeta = 240;
 declare const WithDrawRewardRequestMeta = 44;
 declare const PDEContributionMeta = 90;
-declare const PDETradeRequestMeta = 91;
-declare const PDETradeResponseMeta = 92;
+declare const PDETradeRequestMeta = 205;
+declare const PDETradeResponseMeta = 206;
 declare const PDEWithdrawalRequestMeta = 93;
 declare const PDEWithdrawalResponseMeta = 94;
 declare const PRVID: number[];
