@@ -24,6 +24,25 @@ export interface TxHistoryModelParam {
     accountPublicKeySerialized: string;
     historyType?: number;
     memo?: string;
+    decentralizedWithdrawData?: IDecentralizedWithdrawData;
+    centralizedWithdrawData?: ICentralizedWithdrawData;
+}
+export interface IDecentralizedWithdrawData {
+    incognitoAmount: string;
+    requestedAmount: string;
+    paymentAddress: string;
+    burningTxId: string;
+    userFeeId: string;
+    userFeeSelection: number;
+    userFeeLevel: number;
+}
+export interface ICentralizedWithdrawData {
+    burningTxId: string;
+    userFeeSelection: number;
+    userFeeLevel: number;
+    tempAddress: string;
+    privacyFee?: string;
+    nativeFee?: string;
 }
 export default class TxHistoryModel {
     txId: string;
@@ -36,7 +55,9 @@ export default class TxHistoryModel {
     accountPublicKeySerialized: string;
     historyType: number;
     memo?: string;
-    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType, memo, }: TxHistoryModelParam);
+    decentralizedWithdrawData?: IDecentralizedWithdrawData;
+    centralizedWithdrawData?: ICentralizedWithdrawData;
+    constructor({ txId, txType, lockTime, status, nativeTokenInfo, privacyTokenInfo, meta, accountPublicKeySerialized, historyType, memo, decentralizedWithdrawData, centralizedWithdrawData, }: TxHistoryModelParam);
     toJson(): {
         txId: string;
         txType: string;
@@ -48,6 +69,8 @@ export default class TxHistoryModel {
         accountPublicKeySerialized: string;
         historyType: number;
         memo: string;
+        decentralizedWithdrawData: IDecentralizedWithdrawData;
+        centralizedWithdrawData: ICentralizedWithdrawData;
     };
 }
 export {};

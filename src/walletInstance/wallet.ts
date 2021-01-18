@@ -1,12 +1,20 @@
-import WalletModel from "@src/models/wallet";
-import { MasterAccount } from "./account";
-import { initWalletData, encryptWalletData, decryptWalletData } from '@src/services/wallet';
-import Validator from "@src/utils/validator";
+import WalletModel from '@src/models/wallet';
+import { MasterAccount } from './account';
+import {
+  initWalletData,
+  encryptWalletData,
+  decryptWalletData,
+} from '@src/services/wallet';
+import Validator from '@src/utils/validator';
 import mnemonicService from '@src/services/wallet/mnemonic';
 import SDKError, { ERROR_CODE } from '@src/constants/error';
-import { apiGetWalletAccounts, apiUpdateWalletAccounts } from '@src/services/api';
+import {
+  apiGetWalletAccounts,
+  apiUpdateWalletAccounts,
+} from '@src/services/api';
+import _ from 'lodash';
 
-const  DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
+const DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
 
 class Wallet implements WalletModel {
   seed: Buffer;
@@ -32,7 +40,12 @@ class Wallet implements WalletModel {
 
       const seedBuffer = Buffer.from(seed);
 
-      await wallet.restore(name, mnemonic, seedBuffer, MasterAccount.restoreFromBackupData(masterAccount, seedBuffer));
+      await wallet.restore(
+        name,
+        mnemonic,
+        seedBuffer,
+        MasterAccount.restoreFromBackupData(masterAccount, seedBuffer)
+      );
 
       L.info(`Restored wallet "${name}"`);
 
@@ -56,13 +69,18 @@ class Wallet implements WalletModel {
       L.info(`Initialized new wallet "${this.name}"`);
 
       return this;
-    } catch(e) {
+    } catch (e) {
       L.error('Initialized wallet failed', e);
       throw e;
     }
   }
 
-  async restore(name: string, mnemonic: string, seed: Buffer, masterAccount: MasterAccount) {
+  async restore(
+    name: string,
+    mnemonic: string,
+    seed: Buffer,
+    masterAccount: MasterAccount
+  ) {
     new Validator('name', name).required().string();
     new Validator('mnemonic', mnemonic).required().string();
     new Validator('seed', seed).required();
@@ -76,7 +94,9 @@ class Wallet implements WalletModel {
     const isIncorrectBIP44 = await this.isIncorrectBIP44();
 
     if (isIncorrectBIP44) {
-      console.warn('Your master key is not supported back up accounts with mnemonic. Please create another master key then transfer all your funds to it.');
+      console.warn(
+        'Your master key is not supported back up accounts with mnemonic. Please create another master key then transfer all your funds to it.'
+      );
     }
   }
 
@@ -108,7 +128,10 @@ class Wallet implements WalletModel {
     const newMasterAccount = new MasterAccount('master', seed);
     await newMasterAccount.init();
 
-    if (newMasterAccount.key.keySet.privateKeySerialized !== this.masterAccount.key.keySet.paymentAddressKeySerialized) {
+    if (
+      newMasterAccount.key.keySet.privateKeySerialized !==
+      this.masterAccount.key.keySet.paymentAddressKeySerialized
+    ) {
       return true;
     }
 
@@ -144,20 +167,26 @@ class Wallet implements WalletModel {
     const accountIds: number[] = this.masterAccount.deletedIndexes || [];
 
     for (const account of this.masterAccount.getAccounts()) {
-        accountIds.push(account.getIndex());
+      accountIds.push(account.getIndex());
     }
 
     const newAccounts = serverAccounts.filter(
-        (item: any) => !accountIds.includes(item.id) && !(this.masterAccount.deletedIndexes || []).includes(item.id),
+      (item: any) =>
+        !accountIds.includes(item.id) &&
+        !(this.masterAccount.deletedIndexes || []).includes(item.id)
     );
 
     if (newAccounts.length > 0) {
-        const newCreatedAccounts = [];
-        for (const account of newAccounts) {
-            // eslint-disable-next-line no-await-in-loop
-            const newAccount = await this.masterAccount.addAccount(account.name, undefined, account.id);
-            newCreatedAccounts.push(newAccount);
-        }
+      const newCreatedAccounts = [];
+      for (const account of newAccounts) {
+        // eslint-disable-next-line no-await-in-loop
+        const newAccount = await this.masterAccount.addAccount(
+          account.name,
+          undefined,
+          account.id
+        );
+        newCreatedAccounts.push(newAccount);
+      }
     }
   }
 
@@ -170,11 +199,13 @@ class Wallet implements WalletModel {
 
     const serverAccountIds = serverAccounts.map((item: any) => item.id);
 
-    if (_.some(currentAccounts, account =>{
-      const accountInfo = account.getSerializedInformations();
-      const id = accountInfo.index;
-      return !account.isImport && !serverAccountIds.includes(id);
-    })) {
+    if (
+      _.some(currentAccounts, (account) => {
+        const accountInfo = account.getSerializedInformations();
+        const id = accountInfo.index;
+        return !account.isImport && !serverAccountIds.includes(id);
+      })
+    ) {
       await apiUpdateWalletAccounts(this);
     }
   }

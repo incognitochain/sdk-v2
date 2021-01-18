@@ -3,6 +3,7 @@ import PrivacyTokenModel from "../../models/token/privacyToken";
 import AccountKeySetModel from "../../models/key/accountKeySet";
 import PaymentInfoModel from "../../models/paymentInfo";
 import PrivacyTokenApiModel, { BridgeInfoInterface } from "../../models/bridge/privacyTokenApi";
+import TxHistoryModel, { IDecentralizedWithdrawData, ICentralizedWithdrawData } from "../../models/txHistory";
 interface PrivacyTokenParam {
     privacyTokenApi: PrivacyTokenApiModel;
     accountKeySet: AccountKeySetModel;
@@ -27,9 +28,9 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         nativeFee?: string;
         privacyFee?: string;
         memo?: string;
-    }): Promise<import("../../..").TxHistoryModel>;
-    pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
-    requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;
+    }): Promise<TxHistoryModel>;
+    pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<TxHistoryModel>;
+    requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<TxHistoryModel>;
     getEstFeeFromNativeFee({ nativeFee }: {
         nativeFee: number;
     }): Promise<any>;
@@ -57,7 +58,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         paymentAddress: string;
         memo?: string;
     }): Promise<any>;
-    bridgeBurningDecentralized({ outchainAddress, burningAmount, nativeFee, privacyFee, privacyPaymentInfoList, nativePaymentInfoList, memo, }: {
+    bridgeBurningDecentralized({ outchainAddress, burningAmount, nativeFee, privacyFee, privacyPaymentInfoList, nativePaymentInfoList, memo, decentralizedWithdrawData, }: {
         outchainAddress: string;
         burningAmount: string;
         nativeFee: string;
@@ -65,14 +66,16 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         privacyPaymentInfoList: PaymentInfoModel[];
         nativePaymentInfoList?: PaymentInfoModel[];
         memo?: string;
-    }): Promise<import("../../..").TxHistoryModel>;
-    bridgeBurningCentralized({ privacyPaymentInfoList, nativePaymentInfoList, nativeFee, privacyFee, memo, }: {
+        decentralizedWithdrawData?: IDecentralizedWithdrawData;
+    }): Promise<TxHistoryModel>;
+    bridgeBurningCentralized({ privacyPaymentInfoList, nativePaymentInfoList, nativeFee, privacyFee, memo, centralizedWithdrawData, }: {
         privacyPaymentInfoList: PaymentInfoModel[];
         nativePaymentInfoList?: PaymentInfoModel[];
         nativeFee?: string;
         privacyFee?: string;
         memo?: string;
-    }): Promise<import("../../..").TxHistoryModel>;
+        centralizedWithdrawData?: ICentralizedWithdrawData;
+    }): Promise<TxHistoryModel>;
     bridgeWithdrawCentralized({ burningTxId, userFeeSelection, userFeeLevel, tempAddress, privacyFee, nativeFee, }: {
         burningTxId: string;
         userFeeSelection: number;

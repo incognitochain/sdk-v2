@@ -34,6 +34,15 @@ import {
   estUserFeeDecentralizedWithdraw,
 } from '@src/services/bridge/withdraw';
 import { getEstFeeFromChain } from '@src/services/bridge/token';
+import TxHistoryModel, {
+  IDecentralizedWithdrawData,
+  ICentralizedWithdrawData,
+} from '@src/models/txHistory';
+import {
+  updateBurningDecentralizedWithdrawTxHistory,
+  updateBurningCentralizedWithdrawTxHistory,
+} from '@src/services/history/txHistory';
+import isEmpty from 'lodash/isEmpty';
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel;
@@ -482,6 +491,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     privacyPaymentInfoList,
     nativePaymentInfoList,
     memo,
+    decentralizedWithdrawData,
   }: {
     outchainAddress: string;
     burningAmount: string;
@@ -490,6 +500,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     privacyPaymentInfoList: PaymentInfoModel[];
     nativePaymentInfoList?: PaymentInfoModel[];
     memo?: string;
+    decentralizedWithdrawData?: IDecentralizedWithdrawData;
   }) {
     try {
       if (!this.bridgeInfo) {
@@ -519,7 +530,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         nativePaymentInfoList
       ).paymentInfoList();
       new Validator('memo', memo).string();
-      const history = await sendBurningRequest({
+      let history = await sendBurningRequest({
         accountKeySet: this.accountKeySet,
         nativeAvailableCoins: await this.getNativeAvailableCoins(),
         privacyAvailableCoins: await this.getAvailableCoins(),
@@ -534,6 +545,19 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         subPrivacyPaymentInfoList: privacyPaymentInfoList || [],
         memo,
       });
+      let historyUpdated;
+      if (decentralizedWithdrawData && history.txId) {
+        historyUpdated = await updateBurningDecentralizedWithdrawTxHistory({
+          txId: history.txId,
+          decentralizedWithdrawData,
+        });
+      }
+      if (
+        !isEmpty(historyUpdated) &&
+        historyUpdated instanceof TxHistoryModel
+      ) {
+        return historyUpdated;
+      }
       L.info(
         `Privacy token ${this.tokenId} send burning request successfully with tx id ${history.txId}`
       );
@@ -549,12 +573,14 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     nativeFee,
     privacyFee,
     memo,
+    centralizedWithdrawData,
   }: {
     privacyPaymentInfoList: PaymentInfoModel[];
     nativePaymentInfoList?: PaymentInfoModel[];
     nativeFee?: string;
     privacyFee?: string;
     memo?: string;
+    centralizedWithdrawData?: ICentralizedWithdrawData;
   }) {
     try {
       if (!this.bridgeInfo) {
@@ -579,7 +605,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         privacyFee,
         memo,
       });
-      const history = await sendPrivacyToken({
+      let history = await sendPrivacyToken({
         accountKeySet: this.accountKeySet,
         nativeAvailableCoins: await this.getNativeAvailableCoins(),
         privacyAvailableCoins: await this.getAvailableCoins(),
@@ -592,6 +618,19 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         tokenSymbol: this.symbol,
         memo,
       });
+      let historyUpdated;
+      if (centralizedWithdrawData && history.txId) {
+        historyUpdated = await updateBurningCentralizedWithdrawTxHistory({
+          txId: history.txId,
+          centralizedWithdrawData,
+        });
+      }
+      if (
+        !isEmpty(historyUpdated) &&
+        historyUpdated instanceof TxHistoryModel
+      ) {
+        return historyUpdated;
+      }
       L.info(
         `Privacy token ${this.tokenId} send burning request successfully with tx id ${history.txId}`
       );

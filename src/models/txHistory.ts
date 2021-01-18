@@ -38,6 +38,27 @@ export interface TxHistoryModelParam {
   accountPublicKeySerialized: string;
   historyType?: number;
   memo?: string;
+  decentralizedWithdrawData?: IDecentralizedWithdrawData;
+  centralizedWithdrawData?: ICentralizedWithdrawData;
+}
+
+export interface IDecentralizedWithdrawData {
+  incognitoAmount: string;
+  requestedAmount: string;
+  paymentAddress: string;
+  burningTxId: string;
+  userFeeId: string;
+  userFeeSelection: number;
+  userFeeLevel: number;
+}
+
+export interface ICentralizedWithdrawData {
+  burningTxId: string;
+  userFeeSelection: number;
+  userFeeLevel: number;
+  tempAddress: string;
+  privacyFee?: string;
+  nativeFee?: string;
 }
 
 export default class TxHistoryModel {
@@ -51,6 +72,8 @@ export default class TxHistoryModel {
   accountPublicKeySerialized: string;
   historyType: number;
   memo?: string;
+  decentralizedWithdrawData?: IDecentralizedWithdrawData;
+  centralizedWithdrawData?: ICentralizedWithdrawData;
   constructor({
     txId,
     txType,
@@ -62,6 +85,8 @@ export default class TxHistoryModel {
     accountPublicKeySerialized,
     historyType,
     memo,
+    decentralizedWithdrawData,
+    centralizedWithdrawData,
   }: TxHistoryModelParam) {
     this.txId = txId;
     this.txType = txType;
@@ -73,6 +98,8 @@ export default class TxHistoryModel {
     this.accountPublicKeySerialized = accountPublicKeySerialized;
     this.historyType = historyType;
     this.memo = memo;
+    this.decentralizedWithdrawData = decentralizedWithdrawData;
+    this.centralizedWithdrawData = centralizedWithdrawData;
   }
 
   toJson() {
@@ -87,6 +114,8 @@ export default class TxHistoryModel {
       accountPublicKeySerialized: this.accountPublicKeySerialized,
       historyType: this.historyType,
       memo: this.memo,
+      decentralizedWithdrawData: this.decentralizedWithdrawData,
+      centralizedWithdrawData: this.centralizedWithdrawData,
     };
   }
 }

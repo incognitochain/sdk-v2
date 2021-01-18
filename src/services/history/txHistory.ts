@@ -1,4 +1,7 @@
-import TxHistoryModel from '@src/models/txHistory';
+import TxHistoryModel, {
+  IDecentralizedWithdrawData,
+  ICentralizedWithdrawData,
+} from '@src/models/txHistory';
 import rpc from '@src/services/rpc';
 import {
   getTxHistoryCache,
@@ -6,6 +9,7 @@ import {
 } from '@src/services/cache/txHistory';
 import { TX_STATUS } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
+import isEmpty from 'lodash/isEmpty';
 
 export async function updateTxHistory(txHistory: TxHistoryModel) {
   new Validator('txHistory', txHistory).required();
@@ -44,6 +48,56 @@ export async function checkCachedHistories() {
   const tasks = Object.keys(cached).map((txId) => checkCachedHistoryById(txId));
   await Promise.all(tasks);
 }
+
+export const updateBurningDecentralizedWithdrawTxHistory = async ({
+  txId,
+  decentralizedWithdrawData,
+}: {
+  txId: string;
+  decentralizedWithdrawData: IDecentralizedWithdrawData;
+}) => {
+  let history;
+  try {
+    new Validator('txId', txId).required().string();
+    const cached = await getTxHistoryCache();
+    if (!isEmpty(cached) && !isEmpty(cached[txId])) {
+      history = cached[txId];
+      history.decentralizedWithdrawData = {
+        ...decentralizedWithdrawData,
+        burningTxId: txId,
+      };
+      cacheTxHistory(txId, history);
+    }
+  } catch (error) {
+    L.error('Cant update burning decentralized withdraw data!', error);
+  }
+  return history;
+};
+
+export const updateBurningCentralizedWithdrawTxHistory = async ({
+  txId,
+  centralizedWithdrawData,
+}: {
+  txId: string;
+  centralizedWithdrawData: ICentralizedWithdrawData;
+}) => {
+  let history;
+  try {
+    new Validator('txId', txId).required().string();
+    const cached = await getTxHistoryCache();
+    if (!isEmpty(cached) && !isEmpty(cached[txId])) {
+      history = cached[txId];
+      history.centralizedWithdrawData = {
+        ...centralizedWithdrawData,
+        burningTxId: txId,
+      };
+      cacheTxHistory(txId, history);
+    }
+  } catch (error) {
+    L.error('Cant update burning centralized withdraw data!', error);
+  }
+  return history;
+};
 
 /**
  *

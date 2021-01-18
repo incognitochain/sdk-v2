@@ -290,6 +290,9 @@ async function main() {
       //       paymentAddress,
       //     });
       //     console.log('userFees', userFees);
+      //     const userFeeId = userFees.ID;
+      //     const userFeeSelection = 2;
+      //     const userFeeLevel = 1;
       //     const txBurn = await state.privacyToken.bridgeBurningDecentralized({
       //       outchainAddress: paymentAddress,
       //       burningAmount: incognitoAmount,
@@ -304,17 +307,25 @@ async function main() {
       //         },
       //       ],
       //       memo: 'burn tx',
+      //       decentralizedWithdrawData: {
+      //         incognitoAmount,
+      //         requestedAmount,
+      //         paymentAddress,
+      //         userFeeId,
+      //         userFeeSelection,
+      //         userFeeLevel,
+      //       },
       //     });
-      //     console.log('tx burn', txBurn);
+      //     console.log('tx burn', txBurn, txBurn.decentralizedWithdrawData);
       //     const withdraw = await state.privacyToken.bridgeWithdrawDecentralized(
       //       {
       //         incognitoAmount,
       //         requestedAmount,
       //         paymentAddress,
       //         burningTxId: txBurn.txId,
-      //         userFeeId: userFees.ID,
-      //         userFeeSelection: 2, // NATIVE FEE
-      //         userFeeLevel: 1,
+      //         userFeeId,
+      //         userFeeSelection, // NATIVE FEE
+      //         userFeeLevel,
       //       }
       //     );
       //     console.log('withdraw', withdraw);
@@ -389,6 +400,10 @@ async function main() {
           });
           console.log('userFees', userFees);
           let tempAddress = userFees.Address;
+          const userFeeSelection = 2;
+          const userFeeLevel = 1;
+          const privacyFee = '';
+          const nativeFee = '100';
           const txBurn = await state.privacyToken.bridgeBurningCentralized({
             privacyPaymentInfoList: [
               {
@@ -410,6 +425,13 @@ async function main() {
               },
             ],
             memo: 'burn tx tomo',
+            centralizedWithdrawData: {
+              userFeeSelection,
+              userFeeLevel,
+              tempAddress,
+              privacyFee,
+              nativeFee,
+            },
           });
           console.log('tx burn', txBurn);
           const withdraw = await state.privacyToken.bridgeWithdrawCentralized({
@@ -417,8 +439,8 @@ async function main() {
             nativeFee: '100',
             tempAddress,
             burningTxId: txBurn.txId,
-            userFeeSelection: 2, // NATIVE FEE
-            userFeeLevel: 1, 
+            userFeeSelection, // NATIVE FEE
+            userFeeLevel,
           });
           console.log('withdraw', withdraw);
         } catch (error) {
