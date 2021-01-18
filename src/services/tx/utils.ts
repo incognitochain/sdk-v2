@@ -12,9 +12,9 @@ import AccountKeySetModel from '@src/models/key/accountKeySet';
 import TxHistoryModel from '@src/models/txHistory';
 import { BurnAddress } from '@src/constants/wallet';
 import { cacheTxHistory } from '../cache/txHistory';
-import { HISTORY_TYPE, TX_STATUS } from '@src/constants/tx';
+import { TX_STATUS } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
-import { toNumber } from 'lodash';
+import SDKError, { ERROR_CODE } from '@src/constants/error';
 
 export interface TxInputType {
   inputCoinStrs: CoinModel[];
@@ -47,6 +47,7 @@ export interface CreateHistoryParam {
   historyType: number;
   usePrivacyForPrivacyToken?: boolean;
   usePrivacyForNativeToken: boolean;
+  memo?: string;
 }
 
 export interface NativeTokenTxInputOptions {
@@ -149,7 +150,6 @@ export async function getNativeTokenTxInput(
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('usePrivacy', usePrivacy).required().boolean();
-
   const paymentAddress = accountKeySet.paymentAddressKeySerialized;
   const totalAmountBN = nativePaymentAmountBN.add(nativeTokenFeeBN);
   const bestCoins = options?.chooseCoinStrategy
@@ -163,7 +163,7 @@ export async function getNativeTokenTxInput(
   const coinsToSpend: CoinModel[] = bestCoins.resultInputCoins;
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
   if (totalAmountBN.cmp(totalValueToSpendBN) === 1) {
-    throw new Error('Not enough coin');
+    throw new SDKError(ERROR_CODE.NOT_ENOUGH_COIN);
   }
   const {
     commitmentIndices,
@@ -227,7 +227,7 @@ export async function getPrivacyTokenTxInput(
     totalValueToSpentBN = getValueFromCoins(coinsToSpend);
 
     if (totalAmountBN.cmp(totalValueToSpentBN) === 1) {
-      throw new ErrorCode('Not enough coin');
+      throw new SDKError(ERROR_CODE.NOT_ENOUGH_COIN);
     }
 
     const RandomCommitmentData = await getRandomCommitments(
@@ -263,7 +263,7 @@ export async function initTx(handler: Function, param: object) {
 
   const response = await handler(jsonStringParam);
   if (!response) {
-    throw new ErrorCode('Can not init transaction');
+    throw new Error('Can not init transaction');
   }
 
   return response;
@@ -337,7 +337,7 @@ export async function sendB58CheckEncodeTxToChain(
     return response;
   }
 
-  throw new ErrorCode('Send tx failed');
+  throw new Error('Send tx failed');
 }
 
 export function getCoinInfoForCache(coins: CoinModel[]) {
@@ -380,6 +380,7 @@ export function createHistoryInfo({
   historyType,
   usePrivacyForPrivacyToken,
   usePrivacyForNativeToken,
+  memo,
 }: CreateHistoryParam) {
   const history = new TxHistoryModel({
     txId,
@@ -409,6 +410,7 @@ export function createHistoryInfo({
     meta,
     accountPublicKeySerialized,
     historyType,
+    memo,
   });
   cacheTxHistory(history.txId, history);
   return history;

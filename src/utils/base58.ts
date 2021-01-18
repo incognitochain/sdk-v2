@@ -75,7 +75,7 @@ function encode(source: Buffer) {
       carry = (carry / base) >>> 0;
     }
 
-    if (carry !== 0) throw new ErrorCode('Non-zero carry');
+    if (carry !== 0) throw new Error('Non-zero carry');
     length = i;
     pbegin++;
   }
@@ -160,7 +160,7 @@ function decodeUnsafe(source: string) : Buffer {
       carry = (carry / 256) >>> 0;
     }
 
-    if (carry !== 0) throw new ErrorCode('Non-zero carry');
+    if (carry !== 0) throw new Error('Non-zero carry');
     length = i;
     psz++;
   }
@@ -190,13 +190,13 @@ function decodeUnsafe(source: string) : Buffer {
 function decode(string: string) : Buffer {
   let buffer = decodeUnsafe(string);
   if (buffer) return buffer;
-  throw new ErrorCode('Non-base' + base + ' character');
+  throw new Error('Non-base' + base + ' character');
 }
 
 export function checkEncode(bytearrays: any, version: any) {
   let res = new Uint8Array(bytearrays.length + 5);
   if (!(Number(version) === version) || !(Number(version) < 256) || !(Number(version) >= 0)) {
-    throw new ErrorCode('CheckEncode: Wrong version!');
+    throw new Error('CheckEncode: Wrong version!');
   }
   res[0] = version;
   res.set(bytearrays, 1);
@@ -210,7 +210,7 @@ export function checkDecode(string: string) {
   let checkSum = checkSumFirst4Bytes(dCode.slice(0, dCode.length - 4));
   let last4Bytes = dCode.slice(dCode.length - 4, dCode.length);
   if (!(checkSum).equals(last4Bytes)) {
-    throw new ErrorCode('CheckDecode: Wrong checksum!');
+    throw new Error('CheckDecode: Wrong checksum!');
   }
   return {
     version: dCode[0],

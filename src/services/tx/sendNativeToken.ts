@@ -27,6 +27,7 @@ interface SendParam {
   availableCoins: CoinModel[];
   nativePaymentInfoList: PaymentInfoModel[];
   nativeFee: string;
+  memo?: string;
 }
 
 interface CreateNativeTxParam {
@@ -41,6 +42,7 @@ interface CreateNativeTxParam {
   customExtractInfoFromInitedTxMethod?(
     resInitTxBytes: Uint8Array
   ): { b58CheckEncodeTx: string; lockTime: number };
+  memo?: string;
 }
 
 export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
@@ -72,6 +74,7 @@ export async function createTx({
   metaData,
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
+  memo,
 }: CreateNativeTxParam) {
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
@@ -106,7 +109,7 @@ export async function createTx({
     isPrivacy: usePrivacyForNativeToken,
     tokenID: '',
     metaData,
-    info: '',
+    info: memo,
     commitmentIndices: nativeTxInput.commitmentIndices,
     myCommitmentIndices: nativeTxInput.myCommitmentIndices,
     commitmentStrs: nativeTxInput.commitmentStrs,
@@ -127,6 +130,7 @@ export default async function sendNativeToken({
   nativeFee = DEFAULT_NATIVE_FEE,
   accountKeySet,
   availableCoins,
+  memo,
 }: SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('availableCoins', availableCoins).required();
@@ -134,13 +138,11 @@ export default async function sendNativeToken({
     .required()
     .paymentInfoList();
   new Validator('nativeFee', nativeFee).required().amount();
-
   const usePrivacyForNativeToken = true;
   const nativePaymentAmountBN = getTotalAmountFromPaymentList(
     nativePaymentInfoList
   );
   const nativeTokenFeeBN = toBNAmount(nativeFee);
-
   const nativeTxInput = await getNativeTokenTxInput(
     accountKeySet,
     availableCoins,
@@ -156,6 +158,7 @@ export default async function sendNativeToken({
     nativePaymentInfoList,
     initTxMethod: goMethods.initPrivacyTx,
     usePrivacyForNativeToken,
+    memo,
   });
   const sentInfo = await sendB58CheckEncodeTxToChain(
     rpc.sendRawTx,
@@ -176,6 +179,7 @@ export default async function sendNativeToken({
     accountPublicKeySerialized: accountKeySet.publicKeySerialized,
     usePrivacyForNativeToken,
     historyType: HISTORY_TYPE.SEND_NATIVE_TOKEN,
+    memo,
   });
   return history;
 }

@@ -27,7 +27,7 @@ export async function generatePrivateKey(seed: Buffer) : Promise<KeyBytes> {
     privateKeyB64Encode = await goMethods.generateKeyFromSeed(seedB64Encode);
   }
   if (privateKeyB64Encode == null) {
-    throw new ErrorCode('Can not generate private key');
+    throw new Error('Can not generate private key');
   }
   console.log('privateKeyB64Encode', privateKeyB64Encode);
   let spendingKey = base64Decode(privateKeyB64Encode);
@@ -45,7 +45,7 @@ export async function generatePublicKey(privateKey: KeyBytes) : Promise<KeyBytes
     publicKeyB64Encode = await goMethods.scalarMultBase(privateKeyB64Encode);
   }
   if (publicKeyB64Encode == null) {
-    throw new ErrorCode('Can not generate public key');
+    throw new Error('Can not generate public key');
   }
 
   let publicKey = base64Decode(publicKeyB64Encode);
@@ -63,7 +63,7 @@ export async function generateReceivingKey(privateKey: KeyBytes) : Promise<KeyBy
     receivingKeyB64Encode = await goMethods.generateKeyFromSeed(privateKeyB64Encode);
   }
   if (receivingKeyB64Encode == null) {
-    throw new ErrorCode('Can not generate private key');
+    throw new Error('Can not generate private key');
   }
 
   let receivingKey = base64Decode(receivingKeyB64Encode);
@@ -81,7 +81,7 @@ export async function generateTransmissionKey(receivingKey: KeyBytes) : Promise<
     transmissionKeyB64Encode = await goMethods.scalarMultBase(receivingKeyB64Encode);
   }
   if (transmissionKeyB64Encode == null) {
-    throw new ErrorCode('Can not generate public key');
+    throw new Error('Can not generate public key');
   }
 
   let transmissionKey = base64Decode(transmissionKeyB64Encode);

@@ -18,7 +18,7 @@ interface MasterAccountInterface extends MasterAccountModel {};
 class MasterAccount extends BaseAccount implements MasterAccountInterface {
   seed: Buffer;
   child: Account[];
-  deletedIndexes: Number[];
+  deletedIndexes: number[];
 
   constructor(name: string = DEFAULT_MASTER_ACCOUNT_NAME, seed: Buffer) {
     new Validator('walletSeed', seed).required();
@@ -79,11 +79,11 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
       L.info('Add new account', { name, shardId });
 
       if (this.getAccountByName(name)) {
-        throw new ErrorCode(`Account with name ${name} was existed`);
+        throw new Error(`Account with name ${name} was existed`);
       }
 
       if (index > -1 && accountIndexes.includes(index)) {
-        throw new ErrorCode(`Account with index ${index} was existed`);
+        throw new Error(`Account with index ${index} was existed`);
       }
 
       const lastChildAccountIndex = _.findLastIndex(this.child, account => !account.isImport && !!account.key.childNumber);
@@ -147,11 +147,11 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
       L.info('Import account', { name, privateKey: `${privateKey.substring(0, 15)}...` });
 
       if (this.getAccountByName(name)) {
-        throw new ErrorCode(`Account with name ${name} was existed`);
+        throw new Error(`Account with name ${name} was existed`);
       }
 
       if (this.getAccountByPrivateKey(privateKey)) {
-        throw new ErrorCode('Account with this private key was existed');
+        throw new Error('Account with this private key was existed');
       }
 
       const { key, type } = base58CheckDeserialize(privateKey);
@@ -170,7 +170,7 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
 
         return account;
       } else {
-        throw new ErrorCode('Import account failed, private key is invalid');
+        throw new Error('Import account failed, private key is invalid');
       }
     } catch (e) {
       L.error('Import account failed', e);

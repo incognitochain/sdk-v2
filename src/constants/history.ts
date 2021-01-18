@@ -35,9 +35,9 @@ export const HISTORY = {
   //shield centralized
   STATUS_CODE_SHIELD_CENTRALIZED: {
     PENDING: 0,
-    PROCESSING: [1, 2],
+    PROCESSING: [1, 2, 14],
     COMPLETE: [3, 5],
-    TIMED_OUT: [14, 16],
+    TIMED_OUT: [16],
   },
   //unshield decentralized
   STATUS_CODE_UNSHIELD_DECENTRALIZED: {

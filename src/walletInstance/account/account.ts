@@ -3,7 +3,7 @@ import BaseAccount from './baseAccount';
 import { NativeToken, PrivacyToken } from '../token';
 import AccountModel from '@src/models/account/account';
 import KeyWalletModel from '@src/models/key/keyWallet';
-import rpc from '@src/services/rpc';
+import goMethods from '@src/go';
 import initPrivacyToken from '@src/services/tx/initPrivacyToken';
 import { restoreKeyWalletFromBackupData } from '@src/services/key/keyWallet';
 import { getBLSPublicKeyB58CheckEncode } from '@src/services/key/accountKeySet';
@@ -202,6 +202,22 @@ class Account extends BaseAccount implements AccountModelInterface {
 
   async getNodeStatus() {
     return getStakerStatus(await this.getBLSPublicKeyB58CheckEncode());
+  }
+
+  getSignPublicKey() {
+    const privateKey = this.key.keySet.privateKeySerialized;
+    new Validator('privateKey', privateKey).string().required();
+    if (!privateKey) {
+      throw new Error('Private key is missing');
+    }
+    const args = {
+      data: {
+        privateKey,
+      },
+    };
+    if (typeof goMethods.getSignPublicKey === 'function') {
+      return goMethods.getSignPublicKey(JSON.stringify(args));
+    }
   }
 }
 

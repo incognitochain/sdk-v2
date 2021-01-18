@@ -1,3 +1,4 @@
+import { getEstFeeFromChain } from '@src/services/bridge/token';
 import bn from 'bn.js';
 import {
   getTotalAmountFromPaymentList,
@@ -42,6 +43,7 @@ interface SendParam extends TokenInfo {
   privacyPaymentInfoList: PaymentInfoModel[];
   nativeFee: string;
   privacyFee: string;
+  memo?: string;
 }
 
 interface CreateTxParam extends TokenInfo {
@@ -62,6 +64,7 @@ interface CreateTxParam extends TokenInfo {
   customExtractInfoFromInitedTxMethod?(
     resInitTxBytes: Uint8Array
   ): { b58CheckEncodeTx: string; lockTime: number; tokenID?: TokenIdType };
+  memo?: string;
 }
 
 interface PrivacyTokenParam {
@@ -119,6 +122,7 @@ export async function createTx({
   metaData,
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
+  memo,
 }: CreateTxParam) {
   new Validator('nativeTxInput', nativeTxInput).required();
   new Validator(
@@ -175,7 +179,7 @@ export async function createTx({
     amount: '0',
     tokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     fee: privacyTokenFeeBN.toString(),
-    paymentInfoForPToken: privacyPaymentInfoList,
+    paymentInfoForPToken: privacyPaymentInfoList || [],
     tokenInputs: privacyTxInput.inputCoinStrs.map((coin) => coin.toJson()),
     ...privacyTokenParamAdditional,
   };
@@ -189,7 +193,7 @@ export async function createTx({
     isPrivacy: usePrivacyForNativeToken,
     isPrivacyForPToken: usePrivacyForPrivacyToken,
     metaData,
-    info: '',
+    info: memo || '',
     commitmentIndicesForNativeToken: nativeTxInput.commitmentIndices,
     myCommitmentIndicesForNativeToken: nativeTxInput.myCommitmentIndices,
     commitmentStrsForNativeToken: nativeTxInput.commitmentStrs,
@@ -199,9 +203,7 @@ export async function createTx({
     commitmentStrsForPToken: privacyTxInput.commitmentStrs,
     sndOutputsForPToken: privacyOutputCoins,
   };
-  L.info('paramInitTx: ', paramInitTx);
   const resInitTx = await initTx(initTxMethod, paramInitTx);
-  L.info('resInitTx: ', resInitTx);
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
   return (customExtractInfoFromInitedTxMethod
@@ -209,8 +211,18 @@ export async function createTx({
     : extractInfoFromInitedTxBytes)(resInitTxBytes);
 }
 
-export const hasExchangeRate = async (tokenId: string) =>
-  rpc.isExchangeRatePToken(tokenId);
+export const hasExchangeRate = async (tokenId: string) => {
+  let tokenFee;
+  try {
+    tokenFee = await getEstFeeFromChain({
+      Prv: Number(DEFAULT_NATIVE_FEE),
+      TokenID: tokenId,
+    });
+  } catch (error) {
+    L.error(`Token ${tokenId} is not has exchange rate.`);
+  }
+  return !!tokenFee;
+};
 
 export default async function sendPrivacyToken({
   accountKeySet,
@@ -219,10 +231,11 @@ export default async function sendPrivacyToken({
   nativePaymentInfoList,
   privacyPaymentInfoList,
   nativeFee = DEFAULT_NATIVE_FEE,
-  privacyFee,
+  privacyFee = '',
   tokenId,
   tokenSymbol,
   tokenName,
+  memo,
 }: SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('nativeAvailableCoins', nativeAvailableCoins).required();
@@ -234,12 +247,12 @@ export default async function sendPrivacyToken({
   new Validator('privacyPaymentInfoList', privacyPaymentInfoList)
     .required()
     .paymentInfoList();
-  new Validator('nativeFee', nativeFee).required().amount();
-  new Validator('privacyFee', privacyFee).required().amount();
+  new Validator('nativeFee', nativeFee).amount();
+  new Validator('privacyFee', privacyFee).amount();
   new Validator('tokenId', tokenId).required().string();
   new Validator('tokenName', tokenName).required().string();
   new Validator('tokenSymbol', tokenSymbol).required().string();
-  const isTokenHasExchangeRate = await rpc.isExchangeRatePToken(tokenId);
+  const isTokenHasExchangeRate = await hasExchangeRate(tokenId);
   if (privacyFee && !isTokenHasExchangeRate) {
     throw new Error(
       `Token ${tokenId} can not use for paying fee, has no exchange rate!`
@@ -270,7 +283,7 @@ export default async function sendPrivacyToken({
     privacyTokenFeeBN,
     usePrivacyForPrivacyToken
   );
-  const txInfo = await createTx({
+  const txInfoParams = {
     nativeTxInput,
     nativePaymentInfoList,
     nativeTokenFeeBN,
@@ -284,7 +297,9 @@ export default async function sendPrivacyToken({
     tokenSymbol,
     tokenName,
     initTxMethod: goMethods.initPrivacyTokenTx,
-  });
+    memo,
+  };
+  const txInfo = await createTx(txInfoParams);
   const sentInfo = await sendB58CheckEncodeTxToChain(
     rpc.sendRawTxCustomTokenPrivacy,
     txInfo.b58CheckEncodeTx
@@ -320,5 +335,6 @@ export default async function sendPrivacyToken({
     usePrivacyForPrivacyToken,
     usePrivacyForNativeToken,
     historyType: HISTORY_TYPE.SEND_PRIVACY_TOKEN,
+    memo,
   });
 }

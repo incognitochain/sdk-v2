@@ -46,7 +46,12 @@ declare class Token implements BaseTokenModel {
         skip: number;
         limit: number;
     }) => Promise<any>;
-    transfer(paymentInfoList: PaymentInfoModel[], nativeFee?: string, privacyFee?: string): void;
+    transfer({ paymentInfoList, nativeFee, privacyFee, memo, }: {
+        paymentInfoList: PaymentInfoModel[];
+        nativeFee?: string;
+        privacyFee?: string;
+        memo?: string;
+    }): void;
     withdrawNodeReward(): Promise<import("../../..").TxHistoryModel>;
 }
 export default Token;

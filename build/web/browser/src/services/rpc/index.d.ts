@@ -31,15 +31,7 @@ declare class RpcClient {
     getEstimateFeePerKB: (paymentAddrSerialize: any, tokenIDStr?: any) => Promise<{
         unitFee: number;
     }>;
-    getTransactionByHash: (txHashStr: any) => Promise<{
-        isInBlock: any;
-        isInMempool: any;
-        err: any;
-    } | {
-        isInBlock: boolean;
-        isInMempool: boolean;
-        err?: undefined;
-    }>;
+    getTransactionByHash: (txHashStr: any) => Promise<any>;
     getStakingAmount: (type: any) => Promise<{
         res: number;
     }>;
@@ -80,12 +72,6 @@ declare class RpcClient {
     listRewardAmount: () => Promise<any>;
     getBeaconBestStateDetail: () => Promise<any>;
     getBeaconHeight: () => Promise<any>;
-    /**
-     *
-     * @param {string} tokenIDStr1
-     * @param {string} tokenIDStr2, default is PRV
-     */
-    isExchangeRatePToken: (tokenIDStr1: any, tokenIDStr2?: string) => Promise<boolean>;
     getTransactionByReceiver: (paymentAdrr: any, viewingKey: any) => Promise<{
         receivedTransactions: any;
     }>;

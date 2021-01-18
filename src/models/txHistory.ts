@@ -37,6 +37,7 @@ export interface TxHistoryModelParam {
   meta?: any;
   accountPublicKeySerialized: string;
   historyType?: number;
+  memo?: string;
 }
 
 export default class TxHistoryModel {
@@ -49,7 +50,7 @@ export default class TxHistoryModel {
   meta: any;
   accountPublicKeySerialized: string;
   historyType: number;
-
+  memo?: string;
   constructor({
     txId,
     txType,
@@ -60,6 +61,7 @@ export default class TxHistoryModel {
     meta,
     accountPublicKeySerialized,
     historyType,
+    memo,
   }: TxHistoryModelParam) {
     this.txId = txId;
     this.txType = txType;
@@ -70,6 +72,7 @@ export default class TxHistoryModel {
     this.meta = meta;
     this.accountPublicKeySerialized = accountPublicKeySerialized;
     this.historyType = historyType;
+    this.memo = memo;
   }
 
   toJson() {
@@ -83,6 +86,7 @@ export default class TxHistoryModel {
       meta: this.meta,
       accountPublicKeySerialized: this.accountPublicKeySerialized,
       historyType: this.historyType,
+      memo: this.memo,
     };
   }
 }

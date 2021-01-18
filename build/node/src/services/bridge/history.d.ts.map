@@ -1,1 +1,1 @@
-{"version":3,"file":"history.d.ts","sourceRoot":"","sources":["../../../../../src/services/bridge/history.ts"],"names":[],"mappings":"AAEA,eAAO,MAAM,gBAAgB,gCAKK,CAAC;AAEnC,eAAO,MAAM,kBAAkB,gCAC0B,CAAC;AAE1D,eAAO,MAAM,mBAAmB,gCAC0B,CAAC"}
+{"version":3,"file":"history.d.ts","sourceRoot":"","sources":["../../../../../src/services/bridge/history.ts"],"names":[],"mappings":"AAGA,eAAO,MAAM,gBAAgB,gCAKK,CAAC;AAEnC,eAAO,MAAM,kBAAkB,gCAC0B,CAAC;AAE1D,eAAO,MAAM,mBAAmB,gCAC0B,CAAC;AAE3D,eAAO,MAAM,oBAAoB;;;kBAiBhC,CAAC"}

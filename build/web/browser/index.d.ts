@@ -1,6 +1,5 @@
 import "./src/utils/polyfill.ts";
 import "./src/global";
-import { checkCachedHistories, getTxHistoryByPublicKey } from "./src/services/history/txHistory";
 import { implementGoMethodManually, implementGoMethodUseWasm } from "./src/go";
 import { setPrivacyUtilRandomBytesFunc } from "./src/services/wallet";
 import * as _TX_CONSTANT from "./src/constants/tx";
@@ -19,10 +18,13 @@ export { default as TxHistoryModel } from "./src/models/txHistory";
 export * from "./src/models/txHistory";
 export { setConfig, getConfig } from "./src/config";
 export { getPrivacyTokenList } from "./src/services/bridge/token";
-export declare const historyServices: {
-    checkCachedHistories: typeof checkCachedHistories;
-    getTxHistoryByPublicKey: typeof getTxHistoryByPublicKey;
-};
+export { default as rpcClient } from "./src/services/rpc";
+export { default as SDKError } from "./src/constants/error";
+export * from "./src/services/history/txHistory";
+export * from "./src/services/bridge/deposit";
+export * from "./src/services/bridge/withdraw";
+export * from "./src/services/bridge/token";
+export * from "./src/services/bridge/history";
 export declare const walletServices: {
     setPrivacyUtilRandomBytesFunc: typeof setPrivacyUtilRandomBytesFunc;
 };
@@ -30,9 +32,6 @@ export declare const goServices: {
     implementGoMethodManually: typeof implementGoMethodManually;
     implementGoMethodUseWasm: typeof implementGoMethodUseWasm;
     GO_METHOD_NAMES: string[];
-};
-export declare const bridgeServices: {
-    removeBridgeHistory: (payload: any) => Promise<any>;
 };
 export declare const keyServices: {
     checkPaymentAddress: (paymentAddr: string) => boolean;

@@ -2,7 +2,6 @@ import httpService from '@src/services/rpc/rpcHttp';
 import { checkDecode, checkEncode } from '@src/utils/base58';
 import { stringToBytes, bytesToString } from '@src/privacy/utils';
 import { ENCODE_VERSION } from '@src/constants/constants';
-import { PRVIDSTR, PDEPOOLKEY } from '@src/constants/wallet';
 import CoinModel, { CoinRawData } from '@src/models/coin';
 
 async function sendRequest(method: string, params: any): Promise<any> {
@@ -33,9 +32,7 @@ class RpcClient {
       ],
       ...(tokenID ? [tokenID] : []),
     ]);
-
     const outCoinsMap = result.Outputs;
-
     let outCoins: object[];
     for (let key in outCoinsMap) {
       if (key == paymentAdrr || (viewingKey !== '' && key == viewingKey)) {
@@ -43,7 +40,6 @@ class RpcClient {
         break;
       }
     }
-
     return {
       outCoins: outCoins?.map((data: CoinRawData) => new CoinModel(data)),
     };
@@ -201,20 +197,8 @@ class RpcClient {
     };
   };
 
-  getTransactionByHash = async (txHashStr: any) => {
-    const result: any = await sendRequest('gettransactionbyhash', [txHashStr]);
-
-    return result
-      ? {
-          isInBlock: result.IsInBlock,
-          isInMempool: result.IsInMempool,
-          err: <any>null,
-        }
-      : {
-          isInBlock: false,
-          isInMempool: false,
-        };
-  };
+  getTransactionByHash = (txHashStr: any) =>
+    sendRequest('gettransactionbyhash', [txHashStr]);
 
   getStakingAmount = async (type: any) => {
     const result: any = await sendRequest('getstackingamount', [type]);
@@ -352,48 +336,6 @@ class RpcClient {
   getBeaconHeight = async () => {
     const data = await this.getBlockChainInfo();
     return data.BestBlocks['-1'].Height;
-  };
-
-  /**
-   *
-   * @param {string} tokenIDStr1
-   * @param {string} tokenIDStr2, default is PRV
-   */
-  isExchangeRatePToken = async (tokenIDStr1: any, tokenIDStr2 = '') => {
-    if (tokenIDStr2 === '') {
-      tokenIDStr2 = PRVIDSTR;
-    }
-    const beaconHeight = await this.getBeaconHeight();
-    const pdeStateRes = await this.getPDEState(beaconHeight);
-    let tokenIDArray = [tokenIDStr1, tokenIDStr2];
-    tokenIDArray.sort();
-    let keyValue =
-      PDEPOOLKEY +
-      '-' +
-      beaconHeight +
-      '-' +
-      tokenIDArray[0] +
-      '-' +
-      tokenIDArray[1];
-    if (
-      pdeStateRes.state.PDEPoolPairs[keyValue] !== null &&
-      pdeStateRes.state.PDEPoolPairs[keyValue] !== undefined
-    ) {
-      if (
-        tokenIDArray[0] == PRVIDSTR &&
-        pdeStateRes.state.PDEPoolPairs[keyValue].Token1PoolValue < 10000 * 1e9
-      ) {
-        return false;
-      }
-      if (
-        tokenIDArray[1] == PRVIDSTR &&
-        pdeStateRes.state.PDEPoolPairs[keyValue].Token2PoolValue < 10000 * 1e9
-      ) {
-        return false;
-      }
-      return true;
-    }
-    return false;
   };
 
   getTransactionByReceiver = async (paymentAdrr: any, viewingKey: any) => {

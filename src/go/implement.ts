@@ -32,7 +32,7 @@ export function implementGoMethodManually(param: GoMethods) {
     if (typeof param[methodName] === 'function') {
       (global as { [key: string]: any })[methodName] = param[methodName];
     } else {
-      throw new ErrorCode(`Implement GO module failed. "${methodName}" must be a function`);
+      throw new Error(`Implement GO module failed. "${methodName}" must be a function`);
     }
   });
 }

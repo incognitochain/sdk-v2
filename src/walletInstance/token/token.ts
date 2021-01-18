@@ -56,7 +56,6 @@ class Token implements BaseTokenModel {
    */
   async getAvailableCoins(tokenId: TokenIdType = this.tokenId) {
     new Validator('tokenId', tokenId).string();
-
     return getAvailableCoins(this.accountKeySet, tokenId, this.isNativeToken);
   }
 
@@ -127,11 +126,17 @@ class Token implements BaseTokenModel {
       Limit: limit,
     });
 
-  transfer(
-    paymentInfoList: PaymentInfoModel[],
-    nativeFee?: string,
-    privacyFee?: string
-  ) {}
+  transfer({
+    paymentInfoList,
+    nativeFee,
+    privacyFee,
+    memo,
+  }: {
+    paymentInfoList: PaymentInfoModel[];
+    nativeFee?: string;
+    privacyFee?: string;
+    memo?: string;
+  }) {}
 
   async withdrawNodeReward() {
     try {

@@ -19,7 +19,7 @@ async function hybridEncryption(publicKeyBytes: KeyBytes, msgBytes: ArrayLike<nu
     let ciphertextBytes = base64Decode(ciphertextEncoded);
     return ciphertextBytes;
   } else {
-    throw new ErrorCode('Can not encrypt message with public key');
+    throw new Error('Can not encrypt message with public key');
   }
 }
 
@@ -35,12 +35,12 @@ async function hybridDecryption(privateKeyBytes: KeyBytes, ciphertextBytes: Arra
   if (typeof goMethods.hybridDecryptionASM === 'function') {
     let plainTextEncoded = await goMethods.hybridDecryptionASM(dataEncoded);
     if (plainTextEncoded === null){
-      throw new ErrorCode('Can not decrypt message with private key');
+      throw new Error('Can not decrypt message with private key');
     }
     let plainTextBytes = base64Decode(plainTextEncoded);
     return plainTextBytes;
   } else {
-    throw new ErrorCode('Can not find hybridDecryptionASM function');
+    throw new Error('Can not find hybridDecryptionASM function');
   }
 }
 

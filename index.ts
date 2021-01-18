@@ -1,16 +1,12 @@
 import '@src/utils/polyfill.ts';
 import '@src/global';
-import {
-  checkCachedHistories,
-  getTxHistoryByPublicKey,
-} from '@src/services/history/txHistory';
+
 import {
   implementGoMethodManually,
   implementGoMethodUseWasm,
   GO_METHOD_NAMES,
 } from '@src/go';
 import { setPrivacyUtilRandomBytesFunc } from '@src/services/wallet';
-import { removeBridgeHistory } from '@src/services/bridge/history';
 import * as _CONSTANT from '@src/constants/constants';
 import * as _TX_CONSTANT from '@src/constants/tx';
 import * as _WALLET_CONSTANT from '@src/constants/wallet';
@@ -31,11 +27,14 @@ export { default as TxHistoryModel } from '@src/models/txHistory';
 export * from '@src/models/txHistory';
 export { setConfig, getConfig } from '@src/config';
 export { getPrivacyTokenList } from '@src/services/bridge/token';
+export { default as rpcClient } from '@src/services/rpc';
+export { default as SDKError } from '@src/constants/error';
 
-export const historyServices = {
-  checkCachedHistories,
-  getTxHistoryByPublicKey,
-};
+export * from '@src/services/history/txHistory';
+export * from '@src/services/bridge/deposit';
+export * from '@src/services/bridge/withdraw';
+export * from '@src/services/bridge/token';
+export * from '@src/services/bridge/history';
 
 export const walletServices = {
   setPrivacyUtilRandomBytesFunc,
@@ -45,10 +44,6 @@ export const goServices = {
   implementGoMethodManually,
   implementGoMethodUseWasm,
   GO_METHOD_NAMES,
-};
-
-export const bridgeServices = {
-  removeBridgeHistory,
 };
 
 export const keyServices = {

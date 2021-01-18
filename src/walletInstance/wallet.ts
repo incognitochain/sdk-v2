@@ -3,6 +3,8 @@ import { MasterAccount } from "./account";
 import { initWalletData, encryptWalletData, decryptWalletData } from '@src/services/wallet';
 import Validator from "@src/utils/validator";
 import mnemonicService from '@src/services/wallet/mnemonic';
+import SDKError, { ERROR_CODE } from '@src/constants/error';
+import { apiGetWalletAccounts, apiUpdateWalletAccounts } from '@src/services/api';
 
 const  DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
 
@@ -28,7 +30,9 @@ class Wallet implements WalletModel {
       const { masterAccount, name, mnemonic, seed } = data;
       const wallet = new Wallet();
 
-      await wallet.restore(name, mnemonic, Buffer.from(seed), MasterAccount.restoreFromBackupData(masterAccount, seed));
+      const seedBuffer = Buffer.from(seed);
+
+      await wallet.restore(name, mnemonic, seedBuffer, MasterAccount.restoreFromBackupData(masterAccount, seedBuffer));
 
       L.info(`Restored wallet "${name}"`);
 
@@ -80,6 +84,12 @@ class Wallet implements WalletModel {
     new Validator('name', name).required().string();
     new Validator('mnemonic', mnemonic).required().string();
 
+    const isValid = mnemonicService.validateMnemonic(mnemonic);
+
+    if (!isValid) {
+      throw new SDKError(ERROR_CODE.INVALID_MNEMONIC);
+    }
+
     const seed = mnemonicService.newSeed(mnemonic);
 
     this.name = name;
@@ -122,6 +132,44 @@ class Wallet implements WalletModel {
     } catch (e) {
       L.error('Created wallet backup string failed', e);
       throw e;
+    }
+  }
+
+  /**
+   * Sync this wallet with the wallet stored on the api
+   * This will get new keychains from the api (if have any)
+   */
+  async sync() {
+    const serverAccounts = await apiGetWalletAccounts(this);
+    const accountIds: number[] = this.masterAccount.deletedIndexes || [];
+
+    for (const account of this.masterAccount.getAccounts()) {
+        accountIds.push(account.getIndex());
+    }
+
+    const newAccounts = serverAccounts.filter(
+        (item: any) => !accountIds.includes(item.id) && !(this.masterAccount.deletedIndexes || []).includes(item.id),
+    );
+
+    if (newAccounts.length > 0) {
+        const newCreatedAccounts = [];
+        for (const account of newAccounts) {
+            // eslint-disable-next-line no-await-in-loop
+            const newAccount = await this.masterAccount.addAccount(account.name, undefined, account.id);
+            newCreatedAccounts.push(newAccount);
+        }
+    }
+  }
+
+  /**
+   * This will update keychain list stored on api with this keychain list
+   */
+  async update() {
+    const serverAccounts = await apiGetWalletAccounts(this);
+    const currentAccounts = this.masterAccount.getAccounts();
+
+    if (serverAccounts.length < currentAccounts.length) {
+      await apiUpdateWalletAccounts(this);
     }
   }
 }

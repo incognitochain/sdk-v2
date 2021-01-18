@@ -25,6 +25,7 @@ export async function getTxHistoryCache() {
       meta: historyData.meta,
       accountPublicKeySerialized: historyData.accountPublicKeySerialized,
       historyType: historyData.historyType,
+      memo: historyData.memo,
     });
   });
   return data;
