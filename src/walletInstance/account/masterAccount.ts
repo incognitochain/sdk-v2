@@ -18,7 +18,7 @@ interface MasterAccountInterface extends MasterAccountModel {};
 class MasterAccount extends BaseAccount implements MasterAccountInterface {
   seed: Buffer;
   child: Account[];
-  deletedIndexes: Number[];
+  deletedIndexes: number[];
 
   constructor(name: string = DEFAULT_MASTER_ACCOUNT_NAME, seed: Buffer) {
     new Validator('walletSeed', seed).required();

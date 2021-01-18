@@ -7,7 +7,7 @@ interface MasterAccountInterface extends MasterAccountModel {
 declare class MasterAccount extends BaseAccount implements MasterAccountInterface {
     seed: Buffer;
     child: Account[];
-    deletedIndexes: Number[];
+    deletedIndexes: number[];
     constructor(name: string, seed: Buffer);
     static restoreFromBackupData(data: any, seed: Buffer): MasterAccount;
     init(): Promise<this>;
@@ -18,7 +18,7 @@ declare class MasterAccount extends BaseAccount implements MasterAccountInterfac
     getAccounts(): Account[];
     importAccount(name: string, privateKey: string): Promise<Account>;
     getBackupData(): {
-        deletedIndexes: Number[];
+        deletedIndexes: number[];
         name: string;
         key: {
             chainCode: number[];
