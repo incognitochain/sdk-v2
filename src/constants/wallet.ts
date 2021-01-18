@@ -33,8 +33,8 @@ const BurnAddress =
 const BurningRequestMeta = 240;
 const WithDrawRewardRequestMeta = 44;
 const PDEContributionMeta = 90;
-const PDETradeRequestMeta = 91;
-const PDETradeResponseMeta = 92;
+const PDETradeRequestMeta = 205;
+const PDETradeResponseMeta = 206;
 const PDEWithdrawalRequestMeta = 93;
 const PDEWithdrawalResponseMeta = 94;
 
