@@ -109,7 +109,7 @@ export async function createTx({
     isPrivacy: usePrivacyForNativeToken,
     tokenID: '',
     metaData,
-    info: memo,
+    info: memo || '',
     commitmentIndices: nativeTxInput.commitmentIndices,
     myCommitmentIndices: nativeTxInput.myCommitmentIndices,
     commitmentStrs: nativeTxInput.commitmentStrs,

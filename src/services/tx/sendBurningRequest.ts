@@ -85,11 +85,9 @@ export default async function sendBurningRequest({
     'subPrivacyPaymentInfoList',
     subPrivacyPaymentInfoList
   ).paymentInfoList();
-
   const burningAmountBN = toBNAmount(burningAmount);
-  const privacyFeeBN = toBNAmount(privacyFee);
   const nativeFeeBN = toBNAmount(nativeFee);
-  const totalBurningAmountBN = burningAmountBN.add(privacyFeeBN);
+  const totalBurningAmountBN = burningAmountBN;
   const burningAddress = await getBurningAddress();
   const nativePaymentInfoList: PaymentInfoModel[] = [
     ...subNativePaymentInfoList,

@@ -5,6 +5,7 @@ import Validator from "@src/utils/validator";
 import mnemonicService from '@src/services/wallet/mnemonic';
 import SDKError, { ERROR_CODE } from '@src/constants/error';
 import { apiGetWalletAccounts, apiUpdateWalletAccounts } from '@src/services/api';
+import _ from 'lodash';
 
 const  DEFAULT_WALLET_NAME = 'INCOGNITO_WALLET';
 
@@ -168,7 +169,13 @@ class Wallet implements WalletModel {
     const serverAccounts = await apiGetWalletAccounts(this);
     const currentAccounts = this.masterAccount.getAccounts();
 
-    if (serverAccounts.length < currentAccounts.length) {
+    const serverAccountIds = serverAccounts.map((item: any) => item.id);
+
+    if (_.some(currentAccounts, account =>{
+      const accountInfo = account.getSerializedInformations();
+      const id = accountInfo.index;
+      return !account.isImport && !serverAccountIds.includes(id);
+    })) {
       await apiUpdateWalletAccounts(this);
     }
   }
