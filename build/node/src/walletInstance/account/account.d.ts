@@ -51,7 +51,7 @@ declare class Account extends BaseAccount implements AccountModelInterface {
     };
     getNodeRewards(): Promise<any>;
     getNodeStatus(): Promise<any>;
-    getSignPublicKey(): any;
+    getSignPublicKey(): Promise<any>;
 }
 export default Account;
 //# sourceMappingURL=account.d.ts.map
