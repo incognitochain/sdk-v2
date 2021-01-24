@@ -172,6 +172,18 @@ export async function createTx({
       item.message = base64Encode(item.message);
     });
 
+  const paramPaymentInfos: PaymentInfoModel[] = nativePaymentInfoList
+    ? nativePaymentInfoList.filter((item: PaymentInfoModel) =>
+        new BN(item.amount).gt(new bn(0))
+      )
+    : [];
+  const paymentInfoForPToken: PaymentInfoModel[] = privacyPaymentInfoList
+    ? privacyPaymentInfoList.filter((item: PaymentInfoModel) =>
+        new BN(item.amount).gt(new bn(0))
+      )
+    : [];
+  L.info('paramPaymentInfos', JSON.stringify(paramPaymentInfos));
+  L.info('paymentInfoForPToken', JSON.stringify(paymentInfoForPToken));
   const privacyTokenParam: PrivacyTokenParam = {
     propertyID: tokenId,
     propertyName: tokenName,
@@ -179,15 +191,14 @@ export async function createTx({
     amount: '0',
     tokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     fee: privacyTokenFeeBN.toString(),
-    paymentInfoForPToken: privacyPaymentInfoList || [],
+    paymentInfoForPToken,
     tokenInputs: privacyTxInput.inputCoinStrs.map((coin) => coin.toJson()),
     ...privacyTokenParamAdditional,
   };
-
   const paramInitTx = {
     privacyTokenParam,
     senderSK: privateKeySerialized,
-    paramPaymentInfos: nativePaymentInfoList || [],
+    paramPaymentInfos,
     inputCoinStrs: nativeTxInput.inputCoinStrs.map((coin) => coin.toJson()),
     fee: nativeTokenFeeBN.toString(),
     isPrivacy: usePrivacyForNativeToken,
@@ -203,6 +214,7 @@ export async function createTx({
     commitmentStrsForPToken: privacyTxInput.commitmentStrs,
     sndOutputsForPToken: privacyOutputCoins,
   };
+  L.info('Param init tx', paramInitTx);
   const resInitTx = await initTx(initTxMethod, paramInitTx);
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
