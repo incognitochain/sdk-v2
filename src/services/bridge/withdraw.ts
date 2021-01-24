@@ -38,6 +38,7 @@ export const estUserFeeCentralizedWithdraw = ({
   tokenId,
   currencyType,
   memo,
+  signPublicKey = '',
 }: {
   incognitoAmount: string;
   requestedAmount: string;
@@ -46,6 +47,7 @@ export const estUserFeeCentralizedWithdraw = ({
   tokenId: string;
   currencyType: number;
   memo?: string;
+  signPublicKey?: string;
 }): Promise<string> => {
   new Validator('incognitoAmount', incognitoAmount).required().amount();
   new Validator('requestedAmount', requestedAmount).required().string();
@@ -54,6 +56,7 @@ export const estUserFeeCentralizedWithdraw = ({
   new Validator('tokenId', tokenId).required().string();
   new Validator('currencyType', currencyType).required().number();
   new Validator('memo', memo).string();
+  new Validator('signPublicKey', signPublicKey).string();
   const payload = {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.WITHDRAW,
@@ -63,6 +66,7 @@ export const estUserFeeCentralizedWithdraw = ({
     WalletAddress: walletAddress,
     PrivacyTokenAddress: tokenId,
     ...(memo ? { Memo: memo } : {}),
+    SignPublicKeyEncode: signPublicKey,
   };
   L.info('Estimate user fees centralized', payload);
   return http.post('ota/generate', payload).then((res: any) => res);
@@ -76,6 +80,7 @@ export const centralizedWithdraw = ({
   userFeeSelection,
   userFeeLevel,
   incognitoTxToPayOutsideChainFee,
+  signPublicKey = '',
 }: {
   privacyFee: string;
   nativeFee: string;
@@ -83,6 +88,7 @@ export const centralizedWithdraw = ({
   userFeeSelection: number;
   userFeeLevel: number;
   incognitoTxToPayOutsideChainFee: string;
+  signPublicKey?: string;
 }) => {
   new Validator('privacyFee', privacyFee).amount();
   new Validator('nativeFee', nativeFee).amount();
@@ -95,6 +101,7 @@ export const centralizedWithdraw = ({
   )
     .required()
     .string();
+  new Validator('signPublicKey', signPublicKey).string();
   const payload = {
     Address: address, //temp address
     PrivacyFee: nativeFee,
@@ -103,6 +110,7 @@ export const centralizedWithdraw = ({
     UserFeeSelection: userFeeSelection,
     UserFeeLevel: userFeeLevel,
     IncognitoTxToPayOutsideChainFee: incognitoTxToPayOutsideChainFee, //txId of incognito tx withdraw
+    SignPublicKeyEncode: signPublicKey,
   };
   L.info('Withdraw centralized', payload);
   return http.post('ota/update-fee', payload).then((res: any) => res);
@@ -127,6 +135,7 @@ export const decentralizedWithdraw = ({
   id,
   userFeeSelection,
   userFeeLevel,
+  signPublicKey = '',
 }: {
   incognitoAmount: string;
   requestedAmount: string;
@@ -139,6 +148,7 @@ export const decentralizedWithdraw = ({
   id: string;
   userFeeSelection: number;
   userFeeLevel: number;
+  signPublicKey?: string;
 }) => {
   new Validator('incognitoAmount', incognitoAmount).required().amount();
   new Validator('requestedAmount', requestedAmount).required().string();
@@ -151,6 +161,7 @@ export const decentralizedWithdraw = ({
   new Validator('id', id).required().number();
   new Validator('userFeeSelection', userFeeSelection).required().number();
   new Validator('userFeeLevel', userFeeLevel).required().number();
+  new Validator('signPublicKey', signPublicKey).string();
   const payload = {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.WITHDRAW,
@@ -164,6 +175,7 @@ export const decentralizedWithdraw = ({
     ID: id, // user fee id
     UserFeeSelection: userFeeSelection, // 1: privacy fee; 2: token fee
     UserFeeLevel: userFeeLevel, // 1 or 2
+    SignPublicKeyEncode: signPublicKey,
   };
   L.info('Withdraw decentralized', payload);
   return http.post('eta/add-tx-withdraw', payload).then((res: any) => res);
@@ -177,7 +189,8 @@ export const estUserFeeDecentralizedWithdraw = ({
   incognitoAmount,
   paymentAddress,
   walletAddress,
-  erc20TokenAddress,
+  erc20TokenAddress = '',
+  signPublicKey = '',
 }: {
   tokenId: string;
   requestedAmount: string;
@@ -186,6 +199,7 @@ export const estUserFeeDecentralizedWithdraw = ({
   paymentAddress: string;
   walletAddress: string;
   erc20TokenAddress?: string;
+  signPublicKey?: string;
 }) => {
   new Validator('tokenId', tokenId).string().required();
   new Validator('incognitoAmount', incognitoAmount).required().amount();
@@ -194,6 +208,7 @@ export const estUserFeeDecentralizedWithdraw = ({
   new Validator('paymentAddress', paymentAddress).string().required();
   new Validator('walletAddress', walletAddress).paymentAddress().required();
   new Validator('erc20TokenAddress', erc20TokenAddress).string();
+  new Validator('signPublicKey', signPublicKey).string();
   const payload = {
     TokenID: tokenId,
     RequestedAmount: requestedAmount,
@@ -201,10 +216,11 @@ export const estUserFeeDecentralizedWithdraw = ({
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.WITHDRAW,
     IncognitoAmount: incognitoAmount,
     PaymentAddress: paymentAddress,
-    Erc20TokenAddress: erc20TokenAddress || '',
+    Erc20TokenAddress: erc20TokenAddress,
     PrivacyTokenAddress: tokenId,
     WalletAddress: walletAddress,
     IncognitoTx: '',
+    SignPublicKeyEncode: signPublicKey,
   };
   L.info('Estimate user fees decentralized', payload);
   return http.post('eta/estimate-fees', payload).then((res: any) => res);
