@@ -2,7 +2,7 @@ export declare const checkValidAddress: ({ address, currencyType, }: {
     address: string;
     currencyType: number;
 }) => Promise<any>;
-export declare const estUserFeeCentralizedWithdraw: ({ incognitoAmount, requestedAmount, paymentAddress, walletAddress, tokenId, currencyType, memo, }: {
+export declare const estUserFeeCentralizedWithdraw: ({ incognitoAmount, requestedAmount, paymentAddress, walletAddress, tokenId, currencyType, memo, signPublicKey, }: {
     incognitoAmount: string;
     requestedAmount: string;
     paymentAddress: string;
@@ -10,16 +10,18 @@ export declare const estUserFeeCentralizedWithdraw: ({ incognitoAmount, requeste
     tokenId: string;
     currencyType: number;
     memo?: string;
+    signPublicKey?: string;
 }) => Promise<string>;
-export declare const centralizedWithdraw: ({ privacyFee, nativeFee, address, userFeeSelection, userFeeLevel, incognitoTxToPayOutsideChainFee, }: {
+export declare const centralizedWithdraw: ({ privacyFee, nativeFee, address, userFeeSelection, userFeeLevel, incognitoTxToPayOutsideChainFee, signPublicKey, }: {
     privacyFee: string;
     nativeFee: string;
     address: string;
     userFeeSelection: number;
     userFeeLevel: number;
     incognitoTxToPayOutsideChainFee: string;
+    signPublicKey?: string;
 }) => Promise<any>;
-export declare const decentralizedWithdraw: ({ incognitoAmount, requestedAmount, paymentAddress, walletAddress, tokenId, incognitoTx, currencyType, erc20TokenAddress, id, userFeeSelection, userFeeLevel, }: {
+export declare const decentralizedWithdraw: ({ incognitoAmount, requestedAmount, paymentAddress, walletAddress, tokenId, incognitoTx, currencyType, erc20TokenAddress, id, userFeeSelection, userFeeLevel, signPublicKey, }: {
     incognitoAmount: string;
     requestedAmount: string;
     paymentAddress: string;
@@ -31,8 +33,9 @@ export declare const decentralizedWithdraw: ({ incognitoAmount, requestedAmount,
     id: string;
     userFeeSelection: number;
     userFeeLevel: number;
+    signPublicKey?: string;
 }) => Promise<any>;
-export declare const estUserFeeDecentralizedWithdraw: ({ tokenId, requestedAmount, currencyType, incognitoAmount, paymentAddress, walletAddress, erc20TokenAddress, }: {
+export declare const estUserFeeDecentralizedWithdraw: ({ tokenId, requestedAmount, currencyType, incognitoAmount, paymentAddress, walletAddress, erc20TokenAddress, signPublicKey, }: {
     tokenId: string;
     requestedAmount: string;
     currencyType: number;
@@ -40,5 +43,6 @@ export declare const estUserFeeDecentralizedWithdraw: ({ tokenId, requestedAmoun
     paymentAddress: string;
     walletAddress: string;
     erc20TokenAddress?: string;
+    signPublicKey?: string;
 }) => Promise<any>;
 //# sourceMappingURL=withdraw.d.ts.map
