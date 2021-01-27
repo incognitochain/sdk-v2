@@ -121,11 +121,13 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     nativeFee,
     privacyFee,
     memo,
+    txIdHandler,
   }: {
     paymentInfoList: PaymentInfoModel[];
     nativeFee?: string;
     privacyFee?: string;
     memo?: string;
+    txIdHandler: (txId: string) => void;
   }) {
     try {
       new Validator('paymentList', paymentInfoList)
@@ -151,6 +153,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         tokenName: this.name,
         tokenSymbol: this.symbol,
         memo,
+        txIdHandler,
       });
       return history;
     } catch (e) {

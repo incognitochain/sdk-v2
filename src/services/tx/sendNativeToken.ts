@@ -28,6 +28,7 @@ interface SendParam {
   nativePaymentInfoList: PaymentInfoModel[];
   nativeFee: string;
   memo?: string;
+  txIdHandler?: (txId: string) => void
 }
 
 interface CreateNativeTxParam {
@@ -43,6 +44,7 @@ interface CreateNativeTxParam {
     resInitTxBytes: Uint8Array
   ): { b58CheckEncodeTx: string; lockTime: number };
   memo?: string;
+  txIdHandler?: (txId: string) => void;
 }
 
 export function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array) {
@@ -75,6 +77,7 @@ export async function createTx({
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
   memo,
+  txIdHandler,
 }: CreateNativeTxParam) {
   new Validator('nativeTokenFeeBN', nativeTokenFeeBN).required();
   new Validator('nativePaymentAmountBN', nativePaymentAmountBN).required();
@@ -118,6 +121,11 @@ export async function createTx({
 
   const resInitTx = await initTx(initTxMethod, paramInitTx);
 
+  if (txIdHandler) {
+    const txId = await goMethods.parseNativeRawTx(resInitTx);
+    await txIdHandler(txId);
+  }
+
   const resInitTxBytes = base64Decode(resInitTx);
 
   return (customExtractInfoFromInitedTxMethod
@@ -131,6 +139,7 @@ export default async function sendNativeToken({
   accountKeySet,
   availableCoins,
   memo,
+  txIdHandler,
 }: SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('availableCoins', availableCoins).required();
@@ -159,6 +168,7 @@ export default async function sendNativeToken({
     initTxMethod: goMethods.initPrivacyTx,
     usePrivacyForNativeToken,
     memo,
+    txIdHandler,
   });
   const sentInfo = await sendB58CheckEncodeTxToChain(
     rpc.sendRawTx,

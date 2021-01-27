@@ -29,6 +29,8 @@ const asyncFuncName = [
   'hybridEncryptionASM',
   'hybridDecryptionASM',
   'getSignPublicKey',
+  'parseNativeRawTx',
+  'parsePrivacyTokenRawTx',
 ];
 
 const syncFuncName = ['generateKeyFromSeed', 'scalarMultBase'];
@@ -118,6 +120,8 @@ const wasmFuncs = new Proxy(
     hybridDecryptionASM: null,
     generateBLSKeyPairFromSeed: null,
     getSignPublicKey: null,
+    parseNativeRawTx: null,
+    parsePrivacyTokenRawTx: null,
   },
   {
     get: function (obj, prop: string) {

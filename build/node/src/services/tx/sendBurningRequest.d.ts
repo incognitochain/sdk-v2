@@ -17,7 +17,8 @@ interface BurnParam extends TokenInfo {
     subNativePaymentInfoList?: PaymentInfoModel[];
     subPrivacyPaymentInfoList?: PaymentInfoModel[];
     memo?: string;
+    txIdHandler?: (txId: string) => void;
 }
-export default function sendBurningRequest({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, outchainAddress, burningAmount, subNativePaymentInfoList, subPrivacyPaymentInfoList, memo, }: BurnParam): Promise<import("../../..").TxHistoryModel>;
+export default function sendBurningRequest({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, outchainAddress, burningAmount, subNativePaymentInfoList, subPrivacyPaymentInfoList, memo, txIdHandler, }: BurnParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendBurningRequest.d.ts.map

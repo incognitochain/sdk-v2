@@ -44,6 +44,7 @@ interface SendParam extends TokenInfo {
   nativeFee: string;
   privacyFee: string;
   memo?: string;
+  txIdHandler?: (txId: string) => void;
 }
 
 interface CreateTxParam extends TokenInfo {
@@ -65,6 +66,7 @@ interface CreateTxParam extends TokenInfo {
     resInitTxBytes: Uint8Array
   ): { b58CheckEncodeTx: string; lockTime: number; tokenID?: TokenIdType };
   memo?: string;
+  txIdHandler?: (txId: string) => void;
 }
 
 interface PrivacyTokenParam {
@@ -123,6 +125,7 @@ export async function createTx({
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
   memo,
+  txIdHandler,
 }: CreateTxParam) {
   new Validator('nativeTxInput', nativeTxInput).required();
   new Validator(
@@ -216,6 +219,12 @@ export async function createTx({
   };
   L.info('Param init tx', paramInitTx);
   const resInitTx = await initTx(initTxMethod, paramInitTx);
+
+  if (txIdHandler) {
+    const txId = await goMethods.parsePrivacyTokenRawTx(resInitTx);
+    await txIdHandler(txId);
+  }
+
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
   return (customExtractInfoFromInitedTxMethod
@@ -248,6 +257,7 @@ export default async function sendPrivacyToken({
   tokenSymbol,
   tokenName,
   memo,
+  txIdHandler,
 }: SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('nativeAvailableCoins', nativeAvailableCoins).required();
@@ -310,6 +320,7 @@ export default async function sendPrivacyToken({
     tokenName,
     initTxMethod: goMethods.initPrivacyTokenTx,
     memo,
+    txIdHandler,
   };
   const txInfo = await createTx(txInfoParams);
   const sentInfo = await sendB58CheckEncodeTxToChain(
