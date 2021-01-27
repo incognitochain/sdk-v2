@@ -31,10 +31,12 @@ class NativeToken extends Token implements NativeTokenModel {
     paymentInfoList,
     nativeFee,
     memo,
+    txIdHandler,
   }: {
     paymentInfoList: PaymentInfoModel[];
     nativeFee: string;
     memo?: string;
+    txIdHandler?: (txId: string) => void;
   }) {
     try {
       new Validator('paymentInfoList', paymentInfoList)
@@ -49,6 +51,7 @@ class NativeToken extends Token implements NativeTokenModel {
         accountKeySet: this.accountKeySet, // all key of account
         availableCoins: await this.getAvailableCoins(), //available bills (unspent)
         memo, // memo field
+        txIdHandler,
       });
       L.info(`Native token transfered successfully with tx id ${history.txId}`);
       return history;

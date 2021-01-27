@@ -9,6 +9,7 @@ interface SendParam {
     nativePaymentInfoList: PaymentInfoModel[];
     nativeFee: string;
     memo?: string;
+    txIdHandler?: (txId: string) => void;
 }
 interface CreateNativeTxParam {
     nativeTxInput: TxInputType;
@@ -24,15 +25,16 @@ interface CreateNativeTxParam {
         lockTime: number;
     };
     memo?: string;
+    txIdHandler?: (txId: string) => void;
 }
 export declare function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array): {
     b58CheckEncodeTx: string;
     lockTime: number;
 };
-export declare function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput, nativePaymentInfoList, privateKeySerialized, usePrivacyForNativeToken, metaData, initTxMethod, customExtractInfoFromInitedTxMethod, memo, }: CreateNativeTxParam): Promise<{
+export declare function createTx({ nativeTokenFeeBN, nativePaymentAmountBN, nativeTxInput, nativePaymentInfoList, privateKeySerialized, usePrivacyForNativeToken, metaData, initTxMethod, customExtractInfoFromInitedTxMethod, memo, txIdHandler, }: CreateNativeTxParam): Promise<{
     b58CheckEncodeTx: string;
     lockTime: number;
 }>;
-export default function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins, memo, }: SendParam): Promise<import("../../..").TxHistoryModel>;
+export default function sendNativeToken({ nativePaymentInfoList, nativeFee, accountKeySet, availableCoins, memo, txIdHandler, }: SendParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendNativeToken.d.ts.map

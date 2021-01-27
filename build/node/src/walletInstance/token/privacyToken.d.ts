@@ -23,11 +23,12 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     get bridgeDecentralizedNumber(): 0 | 1;
     hasExchangeRate(): Promise<boolean>;
     getNativeAvailableCoins(): Promise<import("../../models/coin").default[]>;
-    transfer({ paymentInfoList, nativeFee, privacyFee, memo, }: {
+    transfer({ paymentInfoList, nativeFee, privacyFee, memo, txIdHandler, }: {
         paymentInfoList: PaymentInfoModel[];
         nativeFee?: string;
         privacyFee?: string;
         memo?: string;
+        txIdHandler: (txId: string) => void;
     }): Promise<import("../../..").TxHistoryModel>;
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;
