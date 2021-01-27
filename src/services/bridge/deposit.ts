@@ -7,6 +7,7 @@ interface CentralizedDepositParam {
   walletAddress: string;
   tokenId: string;
   currencyType: number;
+  signPublicKey?: string;
 }
 
 type ETHDepositParam = CentralizedDepositParam;
@@ -20,11 +21,13 @@ export const genCentralizedDepositAddress = ({
   walletAddress,
   tokenId,
   currencyType,
+  signPublicKey = '',
 }: CentralizedDepositParam) => {
   new Validator('paymentAddress', paymentAddress).required().paymentAddress();
   new Validator('walletAddress', walletAddress).required().paymentAddress();
   new Validator('tokenId', tokenId).required().string();
   new Validator('currencyType', currencyType).required().number();
+  new Validator('signPublicKey', signPublicKey).string();
   const payload: any = {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.DEPOSIT,
@@ -32,6 +35,7 @@ export const genCentralizedDepositAddress = ({
     PaymentAddress: paymentAddress,
     WalletAddress: walletAddress ?? paymentAddress,
     PrivacyTokenAddress: tokenId,
+    SignPublicKeyEncode: signPublicKey,
   };
   L.info('Gen centralized deposit address', payload);
   return http.post('ota/generate', payload).then((res: any) => res?.Address);
@@ -42,11 +46,13 @@ export const genETHDepositAddress = ({
   walletAddress,
   tokenId,
   currencyType,
+  signPublicKey = '',
 }: ETHDepositParam) => {
   new Validator('paymentAddress', paymentAddress).required().paymentAddress();
   new Validator('walletAddress', walletAddress).required().paymentAddress();
   new Validator('tokenId', tokenId).required().string();
   new Validator('currencyType', currencyType).required().number();
+  new Validator('signPublicKey', signPublicKey).string();
   const payload: any = {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.DEPOSIT,
@@ -55,6 +61,7 @@ export const genETHDepositAddress = ({
     WalletAddress: walletAddress ?? paymentAddress,
     Erc20TokenAddress: '',
     PrivacyTokenAddress: tokenId,
+    SignPublicKeyEncode: signPublicKey,
   };
   L.info('Gen ETH deposit address', payload);
   return http.post('eta/generate', payload).then((res: any) => res?.Address);
@@ -66,12 +73,14 @@ export const genERC20DepositAddress = ({
   tokenId,
   tokenContractID,
   currencyType,
+  signPublicKey = '',
 }: ERC20DepositParam) => {
   new Validator('paymentAddress', paymentAddress).required().paymentAddress();
   new Validator('walletAddress', walletAddress).required().paymentAddress();
   new Validator('tokenId', tokenId).required().string();
   new Validator('currencyType', currencyType).required().number();
   new Validator('tokenContractID', tokenContractID).required().string();
+  new Validator('signPublicKey', signPublicKey).string();
   const payload: any = {
     CurrencyType: currencyType,
     AddressType: TokenInfo.BRIDGE_PRIVACY_TOKEN.ADDRESS_TYPE.DEPOSIT,
@@ -80,6 +89,7 @@ export const genERC20DepositAddress = ({
     WalletAddress: walletAddress ?? paymentAddress,
     Erc20TokenAddress: tokenContractID,
     PrivacyTokenAddress: tokenId,
+    SignPublicKeyEncode: signPublicKey,
   };
   L.info('Gen ERC20 deposit address', payload);
   return http.post('eta/generate', payload).then((res: any) => res?.Address);
