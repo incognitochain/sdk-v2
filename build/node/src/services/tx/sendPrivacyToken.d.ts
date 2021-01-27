@@ -17,6 +17,7 @@ interface SendParam extends TokenInfo {
     nativeFee: string;
     privacyFee: string;
     memo?: string;
+    txIdHandler?: (txId: string) => void;
 }
 interface CreateTxParam extends TokenInfo {
     nativeTxInput: TxInputType;
@@ -39,6 +40,7 @@ interface CreateTxParam extends TokenInfo {
         tokenID?: TokenIdType;
     };
     memo?: string;
+    txIdHandler?: (txId: string) => void;
 }
 interface PrivacyTokenParam {
     propertyID?: TokenIdType;
@@ -55,12 +57,12 @@ export declare function extractInfoFromInitedTxBytes(resInitTxBytes: Uint8Array)
     lockTime: number;
     tokenID: string;
 };
-export declare function createTx({ nativeTxInput, nativePaymentInfoList, nativeTokenFeeBN, nativePaymentAmountBN, privacyTxInput, privacyPaymentInfoList, privacyTokenFeeBN, privacyPaymentAmountBN, privateKeySerialized, tokenId, tokenName, tokenSymbol, privacyTokenParamAdditional, usePrivacyForNativeToken, usePrivacyForPrivacyToken, metaData, initTxMethod, customExtractInfoFromInitedTxMethod, memo, }: CreateTxParam): Promise<{
+export declare function createTx({ nativeTxInput, nativePaymentInfoList, nativeTokenFeeBN, nativePaymentAmountBN, privacyTxInput, privacyPaymentInfoList, privacyTokenFeeBN, privacyPaymentAmountBN, privateKeySerialized, tokenId, tokenName, tokenSymbol, privacyTokenParamAdditional, usePrivacyForNativeToken, usePrivacyForPrivacyToken, metaData, initTxMethod, customExtractInfoFromInitedTxMethod, memo, txIdHandler, }: CreateTxParam): Promise<{
     b58CheckEncodeTx: string;
     lockTime: number;
     tokenID?: string;
 }>;
 export declare const hasExchangeRate: (tokenId: string) => Promise<boolean>;
-export default function sendPrivacyToken({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativePaymentInfoList, privacyPaymentInfoList, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, memo, }: SendParam): Promise<import("../../..").TxHistoryModel>;
+export default function sendPrivacyToken({ accountKeySet, nativeAvailableCoins, privacyAvailableCoins, nativePaymentInfoList, privacyPaymentInfoList, nativeFee, privacyFee, tokenId, tokenSymbol, tokenName, memo, txIdHandler, }: SendParam): Promise<import("../../..").TxHistoryModel>;
 export {};
 //# sourceMappingURL=sendPrivacyToken.d.ts.map

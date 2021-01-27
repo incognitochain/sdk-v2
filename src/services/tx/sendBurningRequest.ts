@@ -40,6 +40,7 @@ interface BurnParam extends TokenInfo {
   subNativePaymentInfoList?: PaymentInfoModel[];
   subPrivacyPaymentInfoList?: PaymentInfoModel[];
   memo?: string;
+  txIdHandler?: (txId: string) => void;
 }
 
 function parseOutchainAddress(outchainAddress: string) {
@@ -66,6 +67,7 @@ export default async function sendBurningRequest({
   subNativePaymentInfoList,
   subPrivacyPaymentInfoList,
   memo,
+  txIdHandler,
 }: BurnParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('nativeAvailableCoins', nativeAvailableCoins).required();
@@ -151,6 +153,7 @@ export default async function sendBurningRequest({
     metaData: burningReqMetadata,
     initTxMethod: goMethods.initBurningRequestTx,
     memo,
+    txIdHandler,
   };
   const txInfo = await createTx(txInfoParams);
   const sentInfo = await sendB58CheckEncodeTxToChain(
