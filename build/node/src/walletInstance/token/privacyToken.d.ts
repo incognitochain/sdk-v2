@@ -28,7 +28,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         nativeFee?: string;
         privacyFee?: string;
         memo?: string;
-        txIdHandler: (txId: string) => void;
+        txIdHandler?: (txId: string) => void;
     }): Promise<import("../../..").TxHistoryModel>;
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;
