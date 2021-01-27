@@ -35,6 +35,7 @@ export * from '@src/services/bridge/deposit';
 export * from '@src/services/bridge/withdraw';
 export * from '@src/services/bridge/token';
 export * from '@src/services/bridge/history';
+export * from '@src/services/user/profile';
 
 export const walletServices = {
   setPrivacyUtilRandomBytesFunc,
