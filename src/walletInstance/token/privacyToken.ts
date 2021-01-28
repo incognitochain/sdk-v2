@@ -542,6 +542,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         memo,
         privacyPaymentInfoList,
         nativePaymentInfoList,
+        txIdHandler,
       });
       new Validator('outchainAddress', outchainAddress).required().string();
       new Validator('burningAmount', burningAmount).required().amount();
