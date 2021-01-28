@@ -218,13 +218,13 @@ export async function createTx({
     sndOutputsForPToken: privacyOutputCoins,
   };
   L.info('Param init tx', paramInitTx);
+  L.info('txIdHandler', txIdHandler);
   const resInitTx = await initTx(initTxMethod, paramInitTx);
-
-  if (txIdHandler) {
+  if (typeof txIdHandler === 'function') {
     const txId = await goMethods.parsePrivacyTokenRawTx(resInitTx);
+    L.info('rawTxId', txId);
     await txIdHandler(txId);
   }
-
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
   return (customExtractInfoFromInitedTxMethod
