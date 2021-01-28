@@ -62,7 +62,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         memo?: string;
         signPublicKey?: string;
     }): Promise<any>;
-    bridgeBurningDecentralized({ outchainAddress, burningAmount, nativeFee, privacyFee, privacyPaymentInfoList, nativePaymentInfoList, memo, txIdHandler }: {
+    bridgeBurningDecentralized({ outchainAddress, burningAmount, nativeFee, privacyFee, privacyPaymentInfoList, nativePaymentInfoList, memo, txIdHandler, }: {
         outchainAddress: string;
         burningAmount: string;
         nativeFee: string;
@@ -72,12 +72,13 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         memo?: string;
         txIdHandler?: (txId: string) => void;
     }): Promise<import("../../..").TxHistoryModel>;
-    bridgeBurningCentralized({ privacyPaymentInfoList, nativePaymentInfoList, nativeFee, privacyFee, memo, }: {
+    bridgeBurningCentralized({ privacyPaymentInfoList, nativePaymentInfoList, nativeFee, privacyFee, memo, txIdHandler, }: {
         privacyPaymentInfoList: PaymentInfoModel[];
         nativePaymentInfoList?: PaymentInfoModel[];
         nativeFee?: string;
         privacyFee?: string;
         memo?: string;
+        txIdHandler?: (txId: string) => void;
     }): Promise<import("../../..").TxHistoryModel>;
     bridgeWithdrawCentralized({ burningTxId, userFeeSelection, userFeeLevel, tempAddress, privacyFee, nativeFee, signPublicKey, }: {
         burningTxId: string;
