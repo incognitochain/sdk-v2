@@ -517,6 +517,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     privacyPaymentInfoList,
     nativePaymentInfoList,
     memo,
+    txIdHandler
   }: {
     outchainAddress: string;
     burningAmount: string;
@@ -525,6 +526,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     privacyPaymentInfoList: PaymentInfoModel[];
     nativePaymentInfoList?: PaymentInfoModel[];
     memo?: string;
+    txIdHandler?: (txId: string) => void;
   }) {
     try {
       if (!this.bridgeInfo) {
@@ -568,6 +570,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         subNativePaymentInfoList: nativePaymentInfoList || [],
         subPrivacyPaymentInfoList: privacyPaymentInfoList || [],
         memo,
+        txIdHandler
       });
       L.info(
         `Privacy token ${this.tokenId} send burning request successfully with tx id ${history.txId}`
