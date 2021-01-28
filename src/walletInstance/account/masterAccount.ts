@@ -68,7 +68,7 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     return _.find(this.getAccounts(), account => account.key.keySet.privateKeySerialized === privateKeySerialized);
   }
 
-  async addAccount(name: string, shardId?: number, index?: number, depth? = 1) {
+  async addAccount(name: string, shardId?: number, index?: number, depth = 1): Promise<Account | any> {
     try {
       new Validator('name', name).required().string();
       new Validator('shardId', shardId).shardId();
