@@ -39,4 +39,5 @@ export declare const HISTORY_TYPE: {
 };
 export declare const MaxInputNumberForDefragment = 32;
 export declare const MaxInfoSize = 512;
+export declare const MAX_NUMBER_OF_BILLS_PER_TX = 30;
 //# sourceMappingURL=tx.d.ts.map

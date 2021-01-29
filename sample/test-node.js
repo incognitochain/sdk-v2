@@ -115,6 +115,11 @@ async function main() {
         'shield',
         '112t8rnZCyrvapkNCFFBKEpesfDMK8oyfW9eewDDJkF9UkqUk1NTSoYFQJXaBhmBBdboLEaDmufLJTSZ71ZpaWeAH9k4Jny5DVCfvCJbZL7k'
       );
+      state.account = await state.wallet.masterAccount.importAccount(
+        'account',
+        '112t8rnYgxdVVzLxuodo4FnFxyjafoayBTxB7FYbSosYF4NX4SswYVmJjLHTsdWfMQVfudcnwYkn7eGJpMimx7jpGoLVUjVwi3msAGdYHsFi'
+      );
+
       // const hash = await incognito.rpcClient.getTransactionByHash(
       //   'f522cb4325e0e5260a3fcaca95053e0165eefe13b1689b023460a7416321f934'
       // );
@@ -149,12 +154,12 @@ async function main() {
       //   { skip: 0, limit: 10 }
       // );
       // // console.debug('HISTORY TOKEN', history);
-      // const txPRV = await state.importedAccount.nativeToken.transfer({
+      // const txPRV = await state.account.nativeToken.transfer({
       //   paymentInfoList: [
       //     {
       //       paymentAddressStr:
       //         '12RsmnBZgeSvkewuYMC4xctgt8FRGvpShmJo4z1J5S9YsoUng1y8dUU9BC4R18jdFBLRQnDgvE54KJSiH6GpRthiSVVZ2UxX961AmRQ',
-      //       amount: '69000',
+      //       amount: '327317',
       //       message: 'send prv',
       //     },
       //   ],
@@ -171,8 +176,8 @@ async function main() {
     });
 
     /** */
-    const tokenId =
-      '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc';
+    // const tokenId =
+    //   '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc';
     // state.privacyToken = await state.unshieldAccount.getPrivacyTokenById(
     //   // 'a0a22d131bbfdc892938542f0dbe1a7f2f48e16bc46bf1c5404319335dc1f0df' //tomo,
     //   // '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc' //zil
@@ -184,11 +189,11 @@ async function main() {
     // 7450ad98cb8c967afb76503944ab30b4ce3560ed8f3acc3155f687641ae34135 LTC
     //   tokenId
     // );
-    const signPublicKey = await state.shieldAccount.getSignPublicKey();
-    let depositAddress = '';
-    let historyId;
-    let history;
-    state.privacyToken = await state.shieldAccount.getPrivacyTokenById(tokenId);
+    // const signPublicKey = await state.shieldAccount.getSignPublicKey();
+    // let depositAddress = '';
+    // let historyId;
+    // let history;
+    // state.privacyToken = await state.shieldAccount.getPrivacyTokenById(tokenId);
 
     // await section('BRIDGE GET HISTORIES', async () => {
     //   const histories = await state.privacyToken.bridgeGetHistory({
@@ -197,17 +202,17 @@ async function main() {
     //   console.debug('histories', histories[0]);
     // });
 
-    await section('BRIDGE GENERATE DEPOSIT ADDRESS', async () => {
-      depositAddress = await state.privacyToken.bridgeGenerateDepositAddress({
-        signPublicKey,
-      });
-      depositAddress = depositAddress.address;
-      console.debug('depositAddress', depositAddress);
-    });
+    // await section('BRIDGE GENERATE DEPOSIT ADDRESS', async () => {
+    //   depositAddress = await state.privacyToken.bridgeGenerateDepositAddress({
+    //     signPublicKey,
+    //   });
+    //   depositAddress = depositAddress.address;
+    //   console.debug('depositAddress', depositAddress);
+    // });
 
-    state.privacyToken = await state.unshieldAccount.getPrivacyTokenById(
-      tokenId
-    );
+    // state.privacyToken = await state.unshieldAccount.getPrivacyTokenById(
+    //   tokenId
+    // );
 
     // await section('BRIDGE GET HISTORIES', async () => {
     //   const histories = await state.privacyToken.bridgeGetHistory({
@@ -504,11 +509,15 @@ async function main() {
     // });
 
     // await section('GET TOTAL BALANCE NATIVE TOKEN', async () => {
-    //   console.log((await state.importedAccount.nativeToken.getTotalBalance()).toNumber());
+    //   console.log(
+    //     (await state.account.nativeToken.getTotalBalance()).toNumber()
+    //   );
     // });
 
     // await section('GET AVAILABALE BALANCE NATIVE TOKEN', async () => {
-    //   console.log((await state.importedAccount.nativeToken.getAvaiableBalance()).toNumber());
+    //   console.log(
+    //     (await state.account.nativeToken.getAvaiableBalance()).toNumber()
+    //   );
     // });
 
     // await section('ACCOUNT FOLLOW TOKEN', async () => {
