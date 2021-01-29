@@ -1,6 +1,7 @@
 export const ERROR_CODE = {
   NOT_ENOUGH_COIN: '-5',
   INVALID_MNEMONIC: '-102',
+  UTXO: '-3006',
 };
 
 export const ERROR_MESSAGE: any = {
