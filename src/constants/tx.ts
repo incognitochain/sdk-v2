@@ -2,7 +2,7 @@ export const TxVersion = 1;
 
 export const PRIVACY_TOKEN_TX_TYPE = {
   INIT: 0,
-  TRANSFER: 1
+  TRANSFER: 1,
 };
 
 /**
@@ -15,12 +15,12 @@ export const TX_TYPE = {
   NORMAL: 'n',
   SALARY: 's',
   PRIVACY_TOKEN_WITHOUT_PRIVACY_MODE: 't',
-  PRIVACY_TOKEN_WITH_PRIVACY_MODE: 'tp'
+  PRIVACY_TOKEN_WITH_PRIVACY_MODE: 'tp',
 };
 
 export const STAKING_TYPES = {
   SHARD: 0,
-  BEACON: 1
+  BEACON: 1,
 };
 
 export const TX_STATUS = {
@@ -40,9 +40,11 @@ export const HISTORY_TYPE = {
   PDE_TRADE_REQUEST_PRIVACY_TOKEN: 7,
   STAKING_REQUEST: 8,
   WITHDRAW_REWARD: 9,
-  DEFRAGMENT_NATIVE_TOKEN: 10
+  DEFRAGMENT_NATIVE_TOKEN: 10,
 };
 
 export const MaxInputNumberForDefragment = 32;
 
 export const MaxInfoSize = 512;
+
+export const MAX_NUMBER_OF_BILLS_PER_TX = 30;

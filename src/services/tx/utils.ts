@@ -1,3 +1,4 @@
+import { MAX_NUMBER_OF_BILLS_PER_TX } from '@src/constants/tx';
 import bn from 'bn.js';
 import goMethods from '@src/go';
 import { base64Decode } from '@src/privacy/utils';
@@ -161,6 +162,10 @@ export async function getNativeTokenTxInput(
       }
     : chooseBestCoinToSpent(availableNativeCoins, totalAmountBN);
   const coinsToSpend: CoinModel[] = bestCoins.resultInputCoins;
+  L.info('coinsToSpend', coinsToSpend.length);
+  if (coinsToSpend.length > MAX_NUMBER_OF_BILLS_PER_TX) {
+    throw new SDKError(ERROR_CODE.UTXO);
+  }
   const totalValueToSpendBN = getValueFromCoins(coinsToSpend);
   if (totalAmountBN.cmp(totalValueToSpendBN) === 1) {
     throw new SDKError(ERROR_CODE.NOT_ENOUGH_COIN);
@@ -222,14 +227,15 @@ export async function getPrivacyTokenTxInput(
       privacyAvailableCoins,
       totalAmountBN
     );
-
     coinsToSpend = bestCoins.resultInputCoins;
+    L.info('coinsToSpend', coinsToSpend.length);
+    if (coinsToSpend.length > MAX_NUMBER_OF_BILLS_PER_TX) {
+      throw new SDKError(ERROR_CODE.UTXO);
+    }
     totalValueToSpentBN = getValueFromCoins(coinsToSpend);
-
     if (totalAmountBN.cmp(totalValueToSpentBN) === 1) {
       throw new SDKError(ERROR_CODE.NOT_ENOUGH_COIN);
     }
-
     const RandomCommitmentData = await getRandomCommitments(
       paymentAddress,
       coinsToSpend,
