@@ -20,6 +20,8 @@ declare const wasmFuncs: {
     hybridDecryptionASM: any;
     generateBLSKeyPairFromSeed: any;
     getSignPublicKey: any;
+    parseNativeRawTx: any;
+    parsePrivacyTokenRawTx: any;
 };
 export default wasmFuncs;
 //# sourceMappingURL=index.d.ts.map

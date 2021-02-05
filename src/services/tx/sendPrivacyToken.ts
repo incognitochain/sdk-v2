@@ -44,6 +44,7 @@ interface SendParam extends TokenInfo {
   nativeFee: string;
   privacyFee: string;
   memo?: string;
+  txIdHandler?: (txId: string) => void;
 }
 
 interface CreateTxParam extends TokenInfo {
@@ -65,6 +66,7 @@ interface CreateTxParam extends TokenInfo {
     resInitTxBytes: Uint8Array
   ): { b58CheckEncodeTx: string; lockTime: number; tokenID?: TokenIdType };
   memo?: string;
+  txIdHandler?: (txId: string) => void;
 }
 
 interface PrivacyTokenParam {
@@ -123,6 +125,7 @@ export async function createTx({
   initTxMethod,
   customExtractInfoFromInitedTxMethod,
   memo,
+  txIdHandler,
 }: CreateTxParam) {
   new Validator('nativeTxInput', nativeTxInput).required();
   new Validator(
@@ -172,6 +175,18 @@ export async function createTx({
       item.message = base64Encode(item.message);
     });
 
+  const paramPaymentInfos: PaymentInfoModel[] = nativePaymentInfoList
+    ? nativePaymentInfoList.filter((item: PaymentInfoModel) =>
+        new BN(item.amount).gt(new bn(0))
+      )
+    : [];
+  const paymentInfoForPToken: PaymentInfoModel[] = privacyPaymentInfoList
+    ? privacyPaymentInfoList.filter((item: PaymentInfoModel) =>
+        new BN(item.amount).gt(new bn(0))
+      )
+    : [];
+  L.info('paramPaymentInfos', JSON.stringify(paramPaymentInfos));
+  L.info('paymentInfoForPToken', JSON.stringify(paymentInfoForPToken));
   const privacyTokenParam: PrivacyTokenParam = {
     propertyID: tokenId,
     propertyName: tokenName,
@@ -179,15 +194,14 @@ export async function createTx({
     amount: '0',
     tokenTxType: PRIVACY_TOKEN_TX_TYPE.TRANSFER,
     fee: privacyTokenFeeBN.toString(),
-    paymentInfoForPToken: privacyPaymentInfoList || [],
+    paymentInfoForPToken,
     tokenInputs: privacyTxInput.inputCoinStrs.map((coin) => coin.toJson()),
     ...privacyTokenParamAdditional,
   };
-
   const paramInitTx = {
     privacyTokenParam,
     senderSK: privateKeySerialized,
-    paramPaymentInfos: nativePaymentInfoList || [],
+    paramPaymentInfos,
     inputCoinStrs: nativeTxInput.inputCoinStrs.map((coin) => coin.toJson()),
     fee: nativeTokenFeeBN.toString(),
     isPrivacy: usePrivacyForNativeToken,
@@ -203,7 +217,14 @@ export async function createTx({
     commitmentStrsForPToken: privacyTxInput.commitmentStrs,
     sndOutputsForPToken: privacyOutputCoins,
   };
+  L.info('Param init tx', paramInitTx);
+  L.info('txIdHandler', txIdHandler);
   const resInitTx = await initTx(initTxMethod, paramInitTx);
+  if (typeof txIdHandler === 'function') {
+    const txId = await goMethods.parsePrivacyTokenRawTx(resInitTx);
+    L.info('rawTxId', txId);
+    await txIdHandler(txId);
+  }
   //base64 decode txjson
   let resInitTxBytes = base64Decode(resInitTx);
   return (customExtractInfoFromInitedTxMethod
@@ -236,6 +257,7 @@ export default async function sendPrivacyToken({
   tokenSymbol,
   tokenName,
   memo,
+  txIdHandler,
 }: SendParam) {
   new Validator('accountKeySet', accountKeySet).required();
   new Validator('nativeAvailableCoins', nativeAvailableCoins).required();
@@ -298,6 +320,7 @@ export default async function sendPrivacyToken({
     tokenName,
     initTxMethod: goMethods.initPrivacyTokenTx,
     memo,
+    txIdHandler,
   };
   const txInfo = await createTx(txInfoParams);
   const sentInfo = await sendB58CheckEncodeTxToChain(

@@ -68,7 +68,7 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     return _.find(this.getAccounts(), account => account.key.keySet.privateKeySerialized === privateKeySerialized);
   }
 
-  async addAccount(name: string, shardId?: number, index?: number) {
+  async addAccount(name: string, shardId?: number, index?: number, depth = 1): Promise<Account | any> {
     try {
       new Validator('name', name).required().string();
       new Validator('shardId', shardId).shardId();
@@ -79,6 +79,10 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
       L.info('Add new account', { name, shardId });
 
       if (this.getAccountByName(name)) {
+        if (index) {
+          return this.addAccount(name + depth, shardId, index, depth + 1);
+        }
+
         throw new Error(`Account with name ${name} was existed`);
       }
 

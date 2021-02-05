@@ -13,7 +13,7 @@ declare class MasterAccount extends BaseAccount implements MasterAccountInterfac
     init(): Promise<this>;
     getAccountByName(name: string): Account;
     getAccountByPrivateKey(privateKeySerialized: string): Account;
-    addAccount(name: string, shardId?: number, index?: number): Promise<Account>;
+    addAccount(name: string, shardId?: number, index?: number, depth?: number): Promise<Account | any>;
     removeAccount(name: string): void;
     getAccounts(): Account[];
     importAccount(name: string, privateKey: string): Promise<Account>;

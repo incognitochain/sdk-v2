@@ -204,7 +204,7 @@ class Account extends BaseAccount implements AccountModelInterface {
     return getStakerStatus(await this.getBLSPublicKeyB58CheckEncode());
   }
 
-  getSignPublicKey() {
+  async getSignPublicKey() {
     const privateKey = this.key.keySet.privateKeySerialized;
     new Validator('privateKey', privateKey).string().required();
     if (!privateKey) {
@@ -216,7 +216,7 @@ class Account extends BaseAccount implements AccountModelInterface {
       },
     };
     if (typeof goMethods.getSignPublicKey === 'function') {
-      return goMethods.getSignPublicKey(JSON.stringify(args));
+      return await goMethods.getSignPublicKey(JSON.stringify(args));
     }
   }
 }

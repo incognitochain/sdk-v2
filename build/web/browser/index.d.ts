@@ -16,7 +16,7 @@ export { default as storageService } from "./src/services/storage";
 export { default as mnemonicService } from "./src/services/wallet/mnemonic";
 export { default as TxHistoryModel } from "./src/models/txHistory";
 export * from "./src/models/txHistory";
-export { setConfig, getConfig } from "./src/config";
+export { setConfig, getConfig, getToken } from "./src/config";
 export { getPrivacyTokenList } from "./src/services/bridge/token";
 export { default as rpcClient } from "./src/services/rpc";
 export { default as SDKError } from "./src/constants/error";
@@ -25,6 +25,7 @@ export * from "./src/services/bridge/deposit";
 export * from "./src/services/bridge/withdraw";
 export * from "./src/services/bridge/token";
 export * from "./src/services/bridge/history";
+export * from "./src/services/user/profile";
 export declare const walletServices: {
     setPrivacyUtilRandomBytesFunc: typeof setPrivacyUtilRandomBytesFunc;
 };

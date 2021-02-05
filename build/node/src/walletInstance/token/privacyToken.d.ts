@@ -20,44 +20,49 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     get bridgeBinance(): boolean;
     get bridgeBEP2(): boolean;
     get bridgeDecentralized(): boolean;
+    get bridgeDecentralizedNumber(): 0 | 1;
     hasExchangeRate(): Promise<boolean>;
     getNativeAvailableCoins(): Promise<import("../../models/coin").default[]>;
-    transfer({ paymentInfoList, nativeFee, privacyFee, memo, }: {
+    transfer({ paymentInfoList, nativeFee, privacyFee, memo, txIdHandler, }: {
         paymentInfoList: PaymentInfoModel[];
         nativeFee?: string;
         privacyFee?: string;
         memo?: string;
+        txIdHandler?: (txId: string) => void;
     }): Promise<import("../../..").TxHistoryModel>;
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string, privacyFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, privacyFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;
     getEstFeeFromNativeFee({ nativeFee }: {
         nativeFee: number;
     }): Promise<any>;
-    bridgeGenerateDepositAddress(): Promise<any>;
-    bridgeGetHistory(): Promise<any>;
-    bridgeRetryHistory({ id, decentralized, walletAddress, addressType, currencyType, userPaymentAddress, privacyTokenAddress, erc20TokenAddress, outChainTx, }: {
+    bridgeGenerateDepositAddress({ signPublicKey, }: {
+        signPublicKey?: string;
+    }): Promise<any>;
+    bridgeGetHistory({ signPublicKey }: {
+        signPublicKey?: string;
+    }): Promise<any>;
+    bridgeRetryHistory({ id, addressType, privacyTokenAddress, signPublicKey, }: {
         id: number;
-        decentralized: number;
-        walletAddress: string;
         addressType: number;
-        currencyType: number;
-        userPaymentAddress: string;
         privacyTokenAddress: string;
-        erc20TokenAddress: string;
-        outChainTx: string;
+        signPublicKey?: string;
     }): Promise<any>;
-    bridgeRemoveHistory({ id, currencyType, decentralized, }: {
+    bridgeRemoveHistory({ id, signPublicKey, }: {
         id: number;
-        currencyType: number;
-        decentralized: number;
+        signPublicKey?: string;
     }): Promise<any>;
-    bridgeWithdrawEstUserFee({ requestedAmount, incognitoAmount, paymentAddress, memo, }: {
+    bridgeGetHistoryById({ signPublicKey, historyId, }: {
+        signPublicKey?: string;
+        historyId: number;
+    }): Promise<any>;
+    bridgeWithdrawEstUserFee({ requestedAmount, incognitoAmount, paymentAddress, memo, signPublicKey, }: {
         requestedAmount: string;
         incognitoAmount: string;
         paymentAddress: string;
         memo?: string;
+        signPublicKey?: string;
     }): Promise<any>;
-    bridgeBurningDecentralized({ outchainAddress, burningAmount, nativeFee, privacyFee, privacyPaymentInfoList, nativePaymentInfoList, memo, }: {
+    bridgeBurningDecentralized({ outchainAddress, burningAmount, nativeFee, privacyFee, privacyPaymentInfoList, nativePaymentInfoList, memo, txIdHandler, }: {
         outchainAddress: string;
         burningAmount: string;
         nativeFee: string;
@@ -65,23 +70,26 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         privacyPaymentInfoList: PaymentInfoModel[];
         nativePaymentInfoList?: PaymentInfoModel[];
         memo?: string;
+        txIdHandler?: (txId: string) => void;
     }): Promise<import("../../..").TxHistoryModel>;
-    bridgeBurningCentralized({ privacyPaymentInfoList, nativePaymentInfoList, nativeFee, privacyFee, memo, }: {
+    bridgeBurningCentralized({ privacyPaymentInfoList, nativePaymentInfoList, nativeFee, privacyFee, memo, txIdHandler, }: {
         privacyPaymentInfoList: PaymentInfoModel[];
         nativePaymentInfoList?: PaymentInfoModel[];
         nativeFee?: string;
         privacyFee?: string;
         memo?: string;
+        txIdHandler?: (txId: string) => void;
     }): Promise<import("../../..").TxHistoryModel>;
-    bridgeWithdrawCentralized({ burningTxId, userFeeSelection, userFeeLevel, tempAddress, privacyFee, nativeFee, }: {
+    bridgeWithdrawCentralized({ burningTxId, userFeeSelection, userFeeLevel, tempAddress, privacyFee, nativeFee, signPublicKey, }: {
         burningTxId: string;
         userFeeSelection: number;
         userFeeLevel: number;
         tempAddress: string;
         privacyFee?: string;
         nativeFee?: string;
+        signPublicKey?: string;
     }): Promise<any>;
-    bridgeWithdrawDecentralized({ incognitoAmount, requestedAmount, paymentAddress, burningTxId, userFeeId, userFeeSelection, userFeeLevel, }: {
+    bridgeWithdrawDecentralized({ incognitoAmount, requestedAmount, paymentAddress, burningTxId, userFeeId, userFeeSelection, userFeeLevel, signPublicKey, }: {
         incognitoAmount: string;
         requestedAmount: string;
         paymentAddress: string;
@@ -89,6 +97,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         userFeeId: string;
         userFeeSelection: number;
         userFeeLevel: number;
+        signPublicKey?: string;
     }): Promise<any>;
     bridgeWithdrawCheckValAddress({ address }: {
         address: string;
