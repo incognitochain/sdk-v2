@@ -4,11 +4,8 @@
 
 # Get Started
 ## Install
-`$ yarn add https://github.com/incognitochain/sdk-v2#develop` 
-or
-`$ yarn add https://github.com/incognitochain/sdk-v2`
+`$ yarn add incognito-js`
 
-Please use branch #develop. We are building sdk-v2.
 Follow example at https://github.com/incognitochain/sdk-v2/blob/master/sample/test-node.js
 
 ## Usage 
@@ -20,7 +17,7 @@ Copy wasm binary to your root project:
 `cp node_modules/incognito-js/privacy.wasm .`
 
 ```javascript
-const incognitoJs = require('incognito-js/build/node');
+const incognitoJs = require('incognito-js');
 
 // Load WebAssembly:
 await incognitoJs.goServices.implementGoMethodUseWasm();
