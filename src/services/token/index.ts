@@ -1,3 +1,4 @@
+import { getConfig } from '@src/config';
 import {
   getAllOutputCoins,
   deriveSerialNumbers,
@@ -9,7 +10,12 @@ import rpc from '@src/services/rpc';
 import { getTxHistoryCache } from '../cache/txHistory';
 import { TX_STATUS } from '@src/constants/tx';
 import Validator from '@src/utils/validator';
-
+import { http } from '@src/services/http';
+import toUpper from 'lodash/toUpper';
+import isEqual from 'lodash/isEqual';
+import trim from 'lodash/trim';
+import { axios } from '@src/services/http';
+import createAxiosInstance from '../http/axios';
 /**
  * Return list of coins that not existed in chain (not use yet)
  */
@@ -90,12 +96,46 @@ export async function getSpendingSerialCoins(): Promise<{
 
 export function getTotalBalance(unspentCoins: CoinModel[]) {
   new Validator('unspentCoins', unspentCoins).required().array();
-
   return getValueFromCoins(unspentCoins);
 }
 
 export function getAvailableBalance(availableCoins: CoinModel[]) {
   new Validator('availableCoins', availableCoins).required().array();
-
   return getValueFromCoins(availableCoins);
 }
+
+export const detectERC20Token = (erc20Address: string) => {
+  new Validator('erc20Address', erc20Address).required().string();
+  return http
+    .post('eta/detect-erc20', {
+      Address: erc20Address,
+    })
+    .then((res: any) => ({
+      symbol: res?.Symbol || '',
+      name: res?.Name || '',
+    }))
+    .catch((error: any) => error);
+};
+
+let BEP2Tokens: any[] = [];
+
+export const getBEP2Token = () => {
+  const axios = createAxiosInstance({
+    baseURL: getConfig().dexBinanceApiURL,
+  });
+  return axios.get('tokens?limit=100000').then((res: any) => res);
+};
+
+export const detectBEP2Token = async (symbol: string) => {
+  new Validator('symbol', symbol).required().string();
+  if (BEP2Tokens.length === 0) {
+    const results: any[] = await getBEP2Token();
+    BEP2Tokens = [...results].map((item: any) => ({
+      symbol: item?.original_symbol || item?.symbol || '',
+      name: item?.name || '',
+    }));
+  }
+  return BEP2Tokens.find((item) =>
+    isEqual(toUpper(trim(item.originalSymbol)), toUpper(trim(symbol)))
+  );
+};

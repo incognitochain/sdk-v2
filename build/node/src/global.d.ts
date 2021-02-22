@@ -6,6 +6,8 @@ interface ENV {
     DEFAULT_API_URL_TESTNET: string;
     DEFAULT_API_2_URL_MAINNET: string;
     DEFAULT_API_2_URL_TESTNET: string;
+    DEX_BINANCE_API_URL_TESTNET: string;
+    DEX_BINANCE_API_URL_MAINNET: string;
     IS_PROD: boolean;
     MAINNET: boolean;
 }

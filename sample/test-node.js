@@ -39,7 +39,7 @@ async function main() {
     console.log('Incognito module', incognito);
 
     incognito.setConfig({
-      mainnet: false,
+      mainnet: true,
       wasmPath: path.resolve(__dirname, '../privacy.wasm'),
       deviceId: '1234',
       deviceToken: '1234',
@@ -66,6 +66,15 @@ async function main() {
 
     await section('RESTORE WALLET', async () => {
       await incognito.WalletInstance.restore(state.encWallet, '2');
+    });
+
+    await section('DETECT TOKEN', async () => {
+      const result = await incognito.detectBEP2Token('BNB');
+      console.debug('result', result);
+      const result2 = await incognito.detectERC20Token(
+        '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+      );
+      console.debug('result2', result2);
     });
 
     // try {
@@ -107,31 +116,28 @@ async function main() {
     // });
 
     await section('IMPORT ACCOUNT', async () => {
-      state.unshieldAccount = await state.wallet.masterAccount.importAccount(
-        'unshield',
-        '112t8rnYvp4J1mjBwrjyHWpdGJvq59Zf7dkPbi3CUwYZM6f384FQwpdgNpVPsWnQN2ugpKJQzeqwPT4Yk4HxDBDaoveeSNcThUgnw3p4UUkX'
-      );
-      state.shieldAccount = await state.wallet.masterAccount.importAccount(
-        'shield',
-        '112t8rnZCyrvapkNCFFBKEpesfDMK8oyfW9eewDDJkF9UkqUk1NTSoYFQJXaBhmBBdboLEaDmufLJTSZ71ZpaWeAH9k4Jny5DVCfvCJbZL7k'
-      );
-      state.account = await state.wallet.masterAccount.importAccount(
-        'account',
-        '112t8rnYgxdVVzLxuodo4FnFxyjafoayBTxB7FYbSosYF4NX4SswYVmJjLHTsdWfMQVfudcnwYkn7eGJpMimx7jpGoLVUjVwi3msAGdYHsFi'
-      );
-
+      // state.unshieldAccount = await state.wallet.masterAccount.importAccount(
+      //   'unshield',
+      //   '112t8rnYvp4J1mjBwrjyHWpdGJvq59Zf7dkPbi3CUwYZM6f384FQwpdgNpVPsWnQN2ugpKJQzeqwPT4Yk4HxDBDaoveeSNcThUgnw3p4UUkX'
+      // );
+      // state.shieldAccount = await state.wallet.masterAccount.importAccount(
+      //   'shield',
+      //   '112t8rnZCyrvapkNCFFBKEpesfDMK8oyfW9eewDDJkF9UkqUk1NTSoYFQJXaBhmBBdboLEaDmufLJTSZ71ZpaWeAH9k4Jny5DVCfvCJbZL7k'
+      // );
+      // state.account = await state.wallet.masterAccount.importAccount(
+      //   'account',
+      //   '112t8rnYgxdVVzLxuodo4FnFxyjafoayBTxB7FYbSosYF4NX4SswYVmJjLHTsdWfMQVfudcnwYkn7eGJpMimx7jpGoLVUjVwi3msAGdYHsFi'
+      // );
       // const hash = await incognito.rpcClient.getTransactionByHash(
       //   'f522cb4325e0e5260a3fcaca95053e0165eefe13b1689b023460a7416321f934'
       // );
       // console.debug('hash', hash);
-
       // try {
       //   const result = await state.privacyToken.bridgeGetMinMaxWithdraw();
       //   console.log(result);
       // } catch (error) {
       //   console.log(error);
       // }
-
       // try {
       //   const result = await state.privacyToken.bridgeWithdrawCheckValAddress({
       //     address: 'tbnb18gpq7t8p0zd8laqfr7cs6zphxvglnkm3svkwyx',
@@ -140,9 +146,7 @@ async function main() {
       // } catch (error) {
       //   console.log(error);
       // }
-
       // // const paymentAddress = 'tbnb1q4jssmd7ppgz6dcw3kd86mqpxjfvq4gqxaw68h';
-
       // const list = await state.privacyToken.bridgeGetHistory();
       // console.log('list', list);
       // const result = await incognito.bridgeServices.getBridgeHistoryById({
