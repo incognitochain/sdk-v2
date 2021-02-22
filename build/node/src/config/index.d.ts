@@ -12,6 +12,7 @@ export declare function getConfig(): {
     apiURL: string;
     chainURL: string;
     api2URL: string;
+    dexBinanceApiURL: string;
     logMethod: (message: string) => void;
     mainnet: boolean;
     wasmPath: string;

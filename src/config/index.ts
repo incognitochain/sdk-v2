@@ -20,6 +20,7 @@ interface IConfig {
   deviceId: string;
   deviceToken: string;
   token: string;
+  dexBinanceApiURL?: string;
 }
 
 // default config
@@ -33,6 +34,7 @@ let config: IConfig = {
   deviceId: '',
   deviceToken: '',
   token: '',
+  dexBinanceApiURL: '',
 };
 
 export function getConfig() {
@@ -51,11 +53,15 @@ export function getConfig() {
     (config.mainnet
       ? ENV.DEFAULT_API_2_URL_MAINNET
       : ENV.DEFAULT_API_2_URL_TESTNET);
+  const dexBinanceApiURL = config.mainnet
+    ? ENV.DEX_BINANCE_API_URL_MAINNET
+    : ENV.DEX_BINANCE_API_URL_TESTNET;
   return {
     ...config,
     apiURL,
     chainURL,
     api2URL,
+    dexBinanceApiURL,
   };
 }
 
