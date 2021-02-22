@@ -69,7 +69,7 @@ async function main() {
     });
 
     await section('DETECT TOKEN', async () => {
-      const result = await incognito.detectBEP2Token('BNB');
+      const result = await incognito.detectBEP2Token('AAVE');
       console.debug('result', result);
       const result2 = await incognito.detectERC20Token(
         '0xdAC17F958D2ee523a2206206994597C13D831ec7'

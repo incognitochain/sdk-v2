@@ -123,19 +123,19 @@ export const getBEP2Token = () => {
   const axios = createAxiosInstance({
     baseURL: getConfig().dexBinanceApiURL,
   });
-  return axios.get('tokens?limit=100000').then((res: any) => res);
+  return axios.get('tokens?limit=100000');
 };
 
 export const detectBEP2Token = async (symbol: string) => {
   new Validator('symbol', symbol).required().string();
   if (BEP2Tokens.length === 0) {
-    const results: any[] = await getBEP2Token();
-    BEP2Tokens = [...results].map((item: any) => ({
+    const results: any = await getBEP2Token();
+    BEP2Tokens = results.map((item: any) => ({
       symbol: item?.original_symbol || item?.symbol || '',
       name: item?.name || '',
     }));
   }
   return BEP2Tokens.find((item) =>
-    isEqual(toUpper(trim(item.originalSymbol)), toUpper(trim(symbol)))
+    isEqual(toUpper(trim(item.symbol)), toUpper(trim(symbol)))
   );
 };
