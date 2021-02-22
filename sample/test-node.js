@@ -39,7 +39,7 @@ async function main() {
     console.log('Incognito module', incognito);
 
     incognito.setConfig({
-      mainnet: true,
+      mainnet: false,
       wasmPath: path.resolve(__dirname, '../privacy.wasm'),
       deviceId: '1234',
       deviceToken: '1234',
@@ -69,12 +69,20 @@ async function main() {
     });
 
     await section('DETECT TOKEN', async () => {
-      const result = await incognito.detectBEP2Token('AAVE');
-      console.debug('result', result);
+      // const result = await incognito.detectBEP2Token('3LAU');
+      // console.debug('result', result);
+      // const token = await incognito.addBEP2Token({
+      //   ...result,
+      // });
+      // console.debug('token', token);
       const result2 = await incognito.detectERC20Token(
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+        '0xf380e40e22b8d1956da6bc239e79393cff3b26db'
       );
       console.debug('result2', result2);
+      const token = await incognito.addERC20Token({
+        ...result2,
+      });
+      console.debug('token', token);
     });
 
     // try {

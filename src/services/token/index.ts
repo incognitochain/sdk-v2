@@ -113,8 +113,9 @@ export const detectERC20Token = (erc20Address: string) => {
     .then((res: any) => ({
       symbol: res?.Symbol || '',
       name: res?.Name || '',
-    }))
-    .catch((error: any) => error);
+      contractId: res?.Address || '',
+      decimals: res?.Decimals || 0,
+    }));
 };
 
 let BEP2Tokens: any[] = [];
@@ -131,11 +132,58 @@ export const detectBEP2Token = async (symbol: string) => {
   if (BEP2Tokens.length === 0) {
     const results: any = await getBEP2Token();
     BEP2Tokens = results.map((item: any) => ({
-      symbol: item?.original_symbol || item?.symbol || '',
+      symbol: item?.symbol || '',
       name: item?.name || '',
+      originalSymbol: item?.original_symbol || '',
     }));
   }
   return BEP2Tokens.find((item) =>
-    isEqual(toUpper(trim(item.symbol)), toUpper(trim(symbol)))
+    isEqual(toUpper(trim(item.originalSymbol)), toUpper(trim(symbol)))
   );
+};
+
+export const addERC20Token = ({
+  symbol,
+  name,
+  contractId,
+  decimals,
+}: {
+  symbol: string;
+  name: string;
+  contractId: string;
+  decimals: number;
+}) => {
+  new Validator('symbol', symbol).required().string();
+  new Validator('name', name).required().string();
+  new Validator('contractId', contractId).required().string();
+  new Validator('decimals', decimals).required().number();
+  return http
+    .post('ptoken/add', {
+      Symbol: symbol,
+      Name: name,
+      ContractID: contractId,
+      Decimals: decimals,
+    })
+    .then((res: any) => res);
+};
+
+export const addBEP2Token = ({
+  symbol,
+  name,
+  originalSymbol,
+}: {
+  symbol: string;
+  name: string;
+  originalSymbol: string;
+}) => {
+  new Validator('symbol', symbol).required().string();
+  new Validator('name', name).required().string();
+  new Validator('originalSymbol', originalSymbol).required().string();
+  return http
+    .post('ptoken/bep2/add', {
+      Symbol: symbol,
+      Name: name,
+      OriginalSymbol: originalSymbol,
+    })
+    .then((res: any) => res);
 };
