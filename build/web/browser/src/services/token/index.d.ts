@@ -19,7 +19,23 @@ export declare function getSpendingSerialCoins(): Promise<{
 }>;
 export declare function getTotalBalance(unspentCoins: CoinModel[]): import("bn.js");
 export declare function getAvailableBalance(availableCoins: CoinModel[]): import("bn.js");
-export declare const detectERC20Token: (erc20Address: string) => Promise<any>;
+export declare const detectERC20Token: (erc20Address: string) => Promise<{
+    symbol: any;
+    name: any;
+    contractId: any;
+    decimals: any;
+}>;
 export declare const getBEP2Token: () => Promise<import("axios").AxiosResponse<any>>;
 export declare const detectBEP2Token: (symbol: string) => Promise<any>;
+export declare const addERC20Token: ({ symbol, name, contractId, decimals, }: {
+    symbol: string;
+    name: string;
+    contractId: string;
+    decimals: number;
+}) => Promise<any>;
+export declare const addBEP2Token: ({ symbol, name, originalSymbol, }: {
+    symbol: string;
+    name: string;
+    originalSymbol: string;
+}) => Promise<any>;
 //# sourceMappingURL=index.d.ts.map
