@@ -5,4 +5,6 @@ module.exports = {
   DEFAULT_API_URL_TESTNET: 'https://staging-api-service.incognito.org',
   DEFAULT_API_2_URL_MAINNET: 'https://device-network.incognito.org',
   DEFAULT_API_2_URL_TESTNET: 'https://device-network-staging.incognito.org',
+  DEX_BINANCE_API_URL_TESTNET: 'https://testnet-dex.binance.org/api/v1',
+  DEX_BINANCE_API_URL_MAINNET: 'https://dex.binance.org/api/v1',
 };
