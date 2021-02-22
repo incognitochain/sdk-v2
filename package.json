@@ -1,6 +1,6 @@
 {
   "name": "incognito-js",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Incognito Javascript library",
   "main": "build/node",
   "browser": "build/web/browser",
