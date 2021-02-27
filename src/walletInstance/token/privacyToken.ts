@@ -54,6 +54,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
   symbol: string;
   isPrivacyToken: boolean;
   totalSupply: string;
+  contractId?: string;
   bridgeInfo: BridgeInfoInterface;
 
   constructor({ accountKeySet, privacyTokenApi }: PrivacyTokenParam) {
@@ -70,6 +71,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     this.totalSupply = privacyTokenApi.supplyAmount;
     this.isPrivacyToken = true;
     this.bridgeInfo = privacyTokenApi.bridgeInfo;
+    this.contractId = privacyTokenApi?.bridgeInfo?.contractID
   }
 
   get bridgeErc20Token() {
@@ -787,6 +789,21 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
       throw error;
     }
   }
+
+  // async trade() {
+  //   try {
+  //     return await this.depositTrade({
+  //       tokenId: '0000000000000000000000000000000000000000000000000000000000000004',
+  //       depositAmount: 999999600,
+  //       depositFee: 400,
+  //       networkFeeTokenId: '0000000000000000000000000000000000000000000000000000000000000004',
+  //       receiverAddress: '12S3K7WTvayYdmCNeBLM9DsyshFppsJNwmoGoQuCj3AYZAUG5ZfHdF3SA5uJb398kjtiPKoiNUVPKxf48ZaiC9Qr1hmXTXVLN5krBEi',
+  //       priority: 'MEDIUM'
+  //     });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }
 
 export default PrivacyToken;

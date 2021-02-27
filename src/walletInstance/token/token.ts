@@ -12,6 +12,7 @@ import { getTxHistoryByPublicKey } from '@src/services/history/txHistory';
 import PaymentInfoModel from '@src/models/paymentInfo';
 import sendWithdrawReward from '@src/services/tx/sendWithdrawReward';
 import Validator from '@src/utils/validator';
+import { http } from "@src/services/http";
 
 interface NativeTokenParam {
   tokenId: string;
@@ -27,6 +28,7 @@ class Token implements BaseTokenModel {
   accountKeySet: AccountKeySetModel;
   isNativeToken: boolean;
   isPrivacyToken: boolean;
+  contractId?: string;
 
   constructor({ accountKeySet, tokenId, name, symbol }: NativeTokenParam) {
     this.accountKeySet = accountKeySet;
@@ -156,6 +158,103 @@ class Token implements BaseTokenModel {
       throw e;
     }
   }
+
+  async depositTrade({
+    depositAmount,
+    depositFee,
+    depositFeeTokenId,
+    paymentAddress,
+    priority
+  }: {
+    depositAmount: number;
+    depositFee: number;
+    depositFeeTokenId: string;
+    paymentAddress: string;
+    priority: string;
+  }): Promise<any> {
+    new Validator('depositAmount', depositAmount).required().number();
+    new Validator('depositFee', depositFee).required().number();
+    new Validator('depositFeeTokenId', depositFeeTokenId).required().string();
+    new Validator('paymentAddress', paymentAddress).required().string();
+    new Validator('priority', priority).required().string();
+
+    return http.post('pdefi/request-deposit', {
+      'TokenID': this.tokenId,
+      'Amount': Math.floor(depositAmount),
+      'NetworkFee': Math.floor(depositFee),
+      'NetworkFeeTokenID': depositFeeTokenId,
+      'ReceiverAddress': paymentAddress,
+      'Type': 1,
+      'FeeLevel': priority ? priority.toLowerCase() : 'MEDIUM'
+    }).then(data => data);
+  }
+
+  calculateFee({
+    tokenFee,
+    prvFee,
+    isAddTradingFee,
+    tradingFee = 0
+  }: {
+    tokenFee: number,
+    prvFee: number,
+    isAddTradingFee: boolean,
+    tradingFee?: number
+  }) {
+    new Validator('tokenFee', tokenFee).required().number();
+    new Validator('prvFee', prvFee).required().number();
+    const MAX_PDEX_TRADE_STEPS = 4;
+    let serverFee = (tokenFee / MAX_PDEX_TRADE_STEPS) * (MAX_PDEX_TRADE_STEPS - 1);
+    if (isAddTradingFee) serverFee += tradingFee;
+    const tokenNetworkFee = tokenFee / MAX_PDEX_TRADE_STEPS;
+    const prvNetworkFee = prvFee / MAX_PDEX_TRADE_STEPS;
+    let prvAmount = (prvFee / MAX_PDEX_TRADE_STEPS) * (MAX_PDEX_TRADE_STEPS - 1) + tradingFee;
+    return {
+      tokenNetworkFee,
+      prvNetworkFee,
+      prvAmount,
+      serverFee
+    };
+  }
+
+  tradeAPI({
+    depositId,
+    tradingFee,
+    buyTokenId,
+    buyAmount,
+  }: {
+    depositId: number;
+    tradingFee?: number,
+    buyTokenId: string,
+    buyAmount: number,
+  }) {
+    new Validator('depositId', depositId).required().number();
+    new Validator('buyTokenId', buyTokenId).required().string();
+    new Validator('buyAmount', buyAmount).required().number();
+    return http.post('pdefi/request-pdex-trade', {
+      'DepositID': depositId,
+      'TradingFee': Math.floor(tradingFee || 0),
+      'BuyTokenID': buyTokenId,
+      'BuyAmount': Math.floor(buyAmount),
+      'MinimumAmount': Math.floor(buyAmount),
+      'BuyExpectedAmount': Math.floor(buyAmount),
+    });
+  };
+
+  // async trade({
+  //   tradeAmount,
+  //   protocol,
+  //   networkFee,
+  //   networkFeeId,
+  //   tradingFee,
+  //   minimumReceiveAmount
+  // }: {
+  //   tradeAmount: number; // inputValue
+  //   protocol?: string; // PDex | kyber | uniswap,
+  //   networkFee: number,
+  //   networkFeeId: string;
+  //   tradingFee?: number
+  //   minimumReceiveAmount: number
+  // }): Promise<any> {}
 }
 
 export default Token;

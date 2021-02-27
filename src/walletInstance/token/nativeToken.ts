@@ -9,6 +9,8 @@ import sendNativeTokenPdeContribution from '@src/services/tx/sendNativeTokenPdeC
 import sendNativeTokenPdeTradeRequest from '@src/services/tx/sendNativeTokenPdeTradeRequest';
 import Validator from '@src/utils/validator';
 import sendNativeTokenDefragment from '@src/services/tx/sendNativeTokenDefragment';
+import storage from "@src/services/storage";
+import KEYS from "@src/constants/keys";
 
 class NativeToken extends Token implements NativeTokenModel {
   tokenId: string;
@@ -213,6 +215,79 @@ class NativeToken extends Token implements NativeTokenModel {
     } catch (e) {
       L.error('Native token defragmented failed', e);
       throw e;
+    }
+  }
+
+  async trade({
+    tradeAmount,
+    networkFee,
+    tradingFee,
+    buyAmount,
+    buyTokenId,
+    paymentAddress,
+    priority
+  }: {
+    tradeAmount: number; // inputValue
+
+    networkFee: number;
+    tradingFee: number;
+
+    buyAmount: number,
+    buyTokenId: string;
+    paymentAddress: string;
+    priority?: string; // default is medium
+  }) {
+    try {
+      const prvFee = networkFee;
+      const tokenFee = networkFee;
+
+      const {
+        tokenNetworkFee,
+        prvNetworkFee,
+        prvAmount,
+        serverFee
+      } = this.calculateFee({ tokenFee, prvFee, isAddTradingFee: true, tradingFee });
+
+      L.info(`About Fee prvFee: ${prvFee} tokenFee: ${tokenFee} tradingFee: ${tradingFee} tokenNetworkFee: ${tokenNetworkFee} prvNetworkFee: ${prvNetworkFee} prvAmount: ${prvAmount} serverFee: ${serverFee}`);
+
+      /** Step 1: deposit  */
+      const { DepositID: depositId, WalletAddress: walletAddress } = await this.depositTrade({
+        depositAmount: tradeAmount,
+        depositFee: networkFee,
+        depositFeeTokenId: this.tokenId,
+        paymentAddress,
+        priority
+      });
+
+      L.info(`Deposit with id: ${depositId} and address: ${walletAddress}`)
+
+      /** Step 2: trade */
+      const tradeResponse = this.tradeAPI({
+        depositId,
+        tradingFee,
+        buyAmount,
+        buyTokenId
+      })
+
+      L.info(`Trade response: ${tradeResponse}`)
+
+      /** Step 3: send transaction */
+      const paymentInfos: PaymentInfoModel[] = [{
+          paymentAddressStr: paymentAddress,
+          amount: `${tradeAmount}`,
+          message: '',
+      }];
+      const transaction = this.transfer({
+        paymentInfoList: paymentInfos,
+        nativeFee: `${serverFee + tradeAmount}`
+      })
+
+      await storage.set(KEYS.TRADE_PENDING_SEND_TRANSACTION, { buyTokenId: true })
+      L.info(`Trade send transaction info: ${transaction}`)
+      return transaction;
+    } catch (error) {
+      L.info(`Trade error: ${error}`)
+      throw error;
     }
   }
 }

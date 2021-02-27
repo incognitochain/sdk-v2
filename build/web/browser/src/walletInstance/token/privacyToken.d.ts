@@ -13,6 +13,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     symbol: string;
     isPrivacyToken: boolean;
     totalSupply: string;
+    contractId?: string;
     bridgeInfo: BridgeInfoInterface;
     constructor({ accountKeySet, privacyTokenApi }: PrivacyTokenParam);
     get bridgeErc20Token(): boolean;

@@ -15,6 +15,7 @@ declare class Token implements BaseTokenModel {
     accountKeySet: AccountKeySetModel;
     isNativeToken: boolean;
     isPrivacyToken: boolean;
+    contractId?: string;
     constructor({ accountKeySet, tokenId, name, symbol }: NativeTokenParam);
     getAllOutputCoins(tokenId: TokenIdType): Promise<import("../../models/coin").default[]>;
     deriveSerialNumbers(tokenId: TokenIdType): Promise<{
@@ -53,6 +54,30 @@ declare class Token implements BaseTokenModel {
         memo?: string;
     }): void;
     withdrawNodeReward(): Promise<import("../../..").TxHistoryModel>;
+    depositTrade({ depositAmount, depositFee, depositFeeTokenId, paymentAddress, priority }: {
+        depositAmount: number;
+        depositFee: number;
+        depositFeeTokenId: string;
+        paymentAddress: string;
+        priority: string;
+    }): Promise<any>;
+    calculateFee({ tokenFee, prvFee, isAddTradingFee, tradingFee }: {
+        tokenFee: number;
+        prvFee: number;
+        isAddTradingFee: boolean;
+        tradingFee?: number;
+    }): {
+        tokenNetworkFee: number;
+        prvNetworkFee: number;
+        prvAmount: number;
+        serverFee: number;
+    };
+    tradeAPI({ depositId, tradingFee, buyTokenId, buyAmount, }: {
+        depositId: number;
+        tradingFee?: number;
+        buyTokenId: string;
+        buyAmount: number;
+    }): Promise<import("axios").AxiosResponse<any>>;
 }
 export default Token;
 //# sourceMappingURL=token.d.ts.map

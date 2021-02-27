@@ -124,6 +124,38 @@ async function main() {
     // });
 
     await section('IMPORT ACCOUNT', async () => {
+      state.account = await state.wallet.masterAccount.importAccount(
+        'SangWallet',
+        '112t8rnXUbFHzsnX7zdQouzxXEWArruE4rYzeswrEtvL3iBkcgXAXsQk4kQk23XfLNU6wMknyKk8UAu8fLBfkcUVMgxTNsfrYtRcpJ7YAtiX'
+      );
+
+      const priority = {
+        MEDIUM:   'MEDIUM',
+        FAST:     'FAST',
+        FASTEST:  'FASTEST',
+      };
+
+      /** Trade native token */
+      const test =  await incognito.rpcClient.getTransactionByHash(
+        'c7e05204e87305fe0be3c7d5eda72a139739910f4d5bc0613a9e42c1c9ee49ac'
+      );
+      const nativeToken = await state.account.nativeToken;
+      const response =  await state.account.nativeToken.trade({
+        tradeAmount: 999999600,
+        networkFee: 400,
+        paymentAddress: '12S3K7WTvayYdmCNeBLM9DsyshFppsJNwmoGoQuCj3AYZAUG5ZfHdF3SA5uJb398kjtiPKoiNUVPKxf48ZaiC9Qr1hmXTXVLN5krBEi',
+        tradingFee: 0,
+        priority: priority.MEDIUM,
+        buyAmount: 64,
+        buyTokenId: '4946b16a08a9d4afbdf416edf52ef15073db0fc4a63e78eb9de80f94f6c0852a'
+      });
+      console.log('Trade response: ', response);
+
+      /** Trade privacy token */
+      // const inputToken = await state.account.getPrivacyTokenById('ffd8d42dc40a8d166ea4848baf8b5f6e9fe0e9c30d60062eb7d44a8df9e00854');
+      // console.log('Deposit response: ', state.privacyToken);
+
+
       // state.unshieldAccount = await state.wallet.masterAccount.importAccount(
       //   'unshield',
       //   '112t8rnYvp4J1mjBwrjyHWpdGJvq59Zf7dkPbi3CUwYZM6f384FQwpdgNpVPsWnQN2ugpKJQzeqwPT4Yk4HxDBDaoveeSNcThUgnw3p4UUkX'
