@@ -136,25 +136,64 @@ async function main() {
       };
 
       /** Trade native token */
-      const test =  await incognito.rpcClient.getTransactionByHash(
-        'c7e05204e87305fe0be3c7d5eda72a139739910f4d5bc0613a9e42c1c9ee49ac'
-      );
-      const nativeToken = await state.account.nativeToken;
       const response =  await state.account.nativeToken.trade({
-        tradeAmount: 999999600,
+        sellAmount: 1000000000,
         networkFee: 400,
         paymentAddress: '12S3K7WTvayYdmCNeBLM9DsyshFppsJNwmoGoQuCj3AYZAUG5ZfHdF3SA5uJb398kjtiPKoiNUVPKxf48ZaiC9Qr1hmXTXVLN5krBEi',
-        tradingFee: 0,
-        priority: priority.MEDIUM,
+        tradingFee: 400,
+        priority: priority.FAST,
         buyAmount: 64,
         buyTokenId: '4946b16a08a9d4afbdf416edf52ef15073db0fc4a63e78eb9de80f94f6c0852a'
       });
       console.log('Trade response: ', response);
 
       /** Trade privacy token */
-      // const inputToken = await state.account.getPrivacyTokenById('ffd8d42dc40a8d166ea4848baf8b5f6e9fe0e9c30d60062eb7d44a8df9e00854');
-      // console.log('Deposit response: ', state.privacyToken);
-
+      // const testQuote = {
+      //   'maxAmountOut':999000000,
+      //   'maxAmountIn':1000000000000000000,
+      //   'expectAmount':'999000000000000000',
+      //   'protocol':'Kyber',
+      //   'dAppAddress':'0x18c1C19b31b08407633776AB24B26Cfac137099d',
+      //   'priorityList':{
+      //     'MEDIUM':{
+      //       'key':'MEDIUM',
+      //       'tradingFee':6461734107177,
+      //       'number':1,
+      //       'gasPrice':160000000000
+      //     },
+      //     'FAST':{
+      //       'key':'FAST',
+      //       'tradingFee':6704049136196,
+      //       'number':2,
+      //       'gasPrice':166000000000
+      //     },
+      //     'FASTEST':{
+      //       'key':'FASTEST',
+      //       'tradingFee':7441494533107,
+      //       'number':3,
+      //       'gasPrice':184260000000
+      //     }
+      //   },
+      //   'network':'Kyber',
+      //   'crossTrade':false
+      // };
+      // state.privacyToken = await state.account.getPrivacyTokenById(
+      //   '50e259020c59cf019657f979cfa62af8a32bd5964add70cb2b52f666d53ea98d' //ETH,
+      // );
+      // const response = await state.privacyToken.trade({
+      //   tradeAmount: 999999600,
+      //   networkFee: 400,
+      //   networkFeeTokenId: '0000000000000000000000000000000000000000000000000000000000000004',
+      //   tradingFee: 0,
+      //   buyAmount: 64,
+      //   buyTokenId: '50e259020c59cf019657f979cfa62af8a32bd5964add70cb2b52f666d53ea98d', //WETH
+      //   buyTokenAddress: '0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+      //   paymentAddress: '12S3K7WTvayYdmCNeBLM9DsyshFppsJNwmoGoQuCj3AYZAUG5ZfHdF3SA5uJb398kjtiPKoiNUVPKxf48ZaiC9Qr1hmXTXVLN5krBEi',
+      //   priority: priority.MEDIUM,
+      //   quote: testQuote,
+      // });
+      //
+      // console.log('Trade response: ', response);
 
       // state.unshieldAccount = await state.wallet.masterAccount.importAccount(
       //   'unshield',

@@ -8,6 +8,27 @@ interface NativeTokenParam {
     symbol: string;
     accountKeySet: AccountKeySetModel;
 }
+interface IPriorityList {
+    key: string;
+    tradingFee: number;
+    number: number;
+    gasPrice: number;
+}
+interface PriorityList {
+    MEDIUM: IPriorityList;
+    FAST: IPriorityList;
+    FASTEST: IPriorityList;
+}
+export interface IQuote {
+    maxAmountOut: number;
+    maxAmountIn: number;
+    expectAmount: string;
+    protocol: string;
+    dAppAddress: string;
+    priorityList: PriorityList;
+    network: string;
+    crossTrade: boolean;
+}
 declare class Token implements BaseTokenModel {
     tokenId: string;
     name: string;
@@ -15,7 +36,9 @@ declare class Token implements BaseTokenModel {
     accountKeySet: AccountKeySetModel;
     isNativeToken: boolean;
     isPrivacyToken: boolean;
-    contractId?: string;
+    tokenAddress?: string;
+    pDecimals?: number;
+    decimals?: number;
     constructor({ accountKeySet, tokenId, name, symbol }: NativeTokenParam);
     getAllOutputCoins(tokenId: TokenIdType): Promise<import("../../models/coin").default[]>;
     deriveSerialNumbers(tokenId: TokenIdType): Promise<{
@@ -54,12 +77,13 @@ declare class Token implements BaseTokenModel {
         memo?: string;
     }): void;
     withdrawNodeReward(): Promise<import("../../..").TxHistoryModel>;
-    depositTrade({ depositAmount, depositFee, depositFeeTokenId, paymentAddress, priority }: {
+    depositTrade({ depositAmount, depositFee, depositFeeTokenId, paymentAddress, priority, type, }: {
         depositAmount: number;
         depositFee: number;
         depositFeeTokenId: string;
         paymentAddress: string;
         priority: string;
+        type: number;
     }): Promise<any>;
     calculateFee({ tokenFee, prvFee, isAddTradingFee, tradingFee }: {
         tokenFee: number;
@@ -71,12 +95,25 @@ declare class Token implements BaseTokenModel {
         prvNetworkFee: number;
         prvAmount: number;
         serverFee: number;
+        depositNetworkFee: number;
     };
     tradeAPI({ depositId, tradingFee, buyTokenId, buyAmount, }: {
         depositId: number;
         tradingFee?: number;
         buyTokenId: string;
         buyAmount: number;
+    }): Promise<import("axios").AxiosResponse<any>>;
+    toDecimals({ number }: {
+        number: number;
+    }): string;
+    tradeKyber({ depositId, buyAmount, quote, slippage, buyTokenAddress, priority, tradingFee }: {
+        depositId: string;
+        buyAmount: number;
+        quote: IQuote;
+        slippage: number;
+        buyTokenAddress: string;
+        priority: string;
+        tradingFee: number;
     }): Promise<import("axios").AxiosResponse<any>>;
 }
 export default Token;

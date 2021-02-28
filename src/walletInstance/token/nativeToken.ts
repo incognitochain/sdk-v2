@@ -219,7 +219,7 @@ class NativeToken extends Token implements NativeTokenModel {
   }
 
   async trade({
-    tradeAmount,
+    sellAmount,
     networkFee,
     tradingFee,
     buyAmount,
@@ -227,10 +227,10 @@ class NativeToken extends Token implements NativeTokenModel {
     paymentAddress,
     priority
   }: {
-    tradeAmount: number; // inputValue
+    sellAmount: number; // inputValue
 
     networkFee: number;
-    tradingFee: number;
+    tradingFee?: number;
 
     buyAmount: number,
     buyTokenId: string;
@@ -238,31 +238,42 @@ class NativeToken extends Token implements NativeTokenModel {
     priority?: string; // default is medium
   }) {
     try {
+
+      new Validator('sellAmount', sellAmount).required().number();
+      new Validator('networkFee', networkFee).required().number();
+      new Validator('buyAmount', buyAmount).required().number();
+      new Validator('buyTokenId', buyTokenId).required().string();
+      new Validator('paymentAddress', paymentAddress).required().string();
+
+      tradingFee = tradingFee || 0;
       const prvFee = networkFee;
       const tokenFee = networkFee;
+      sellAmount = Math.floor(sellAmount - tradingFee - networkFee)
 
       const {
         tokenNetworkFee,
         prvNetworkFee,
         prvAmount,
-        serverFee
+        serverFee,
+        depositNetworkFee
       } = this.calculateFee({ tokenFee, prvFee, isAddTradingFee: true, tradingFee });
 
       L.info(`About Fee prvFee: ${prvFee} tokenFee: ${tokenFee} tradingFee: ${tradingFee} tokenNetworkFee: ${tokenNetworkFee} prvNetworkFee: ${prvNetworkFee} prvAmount: ${prvAmount} serverFee: ${serverFee}`);
 
       /** Step 1: deposit  */
       const { DepositID: depositId, WalletAddress: walletAddress } = await this.depositTrade({
-        depositAmount: tradeAmount,
-        depositFee: networkFee,
+        depositAmount: sellAmount,
+        depositFee: depositNetworkFee,
         depositFeeTokenId: this.tokenId,
         paymentAddress,
-        priority
+        priority,
+        type: 1
       });
 
       L.info(`Deposit with id: ${depositId} and address: ${walletAddress}`)
 
       /** Step 2: trade */
-      const tradeResponse = this.tradeAPI({
+      const tradeResponse = await this.tradeAPI({
         depositId,
         tradingFee,
         buyAmount,
@@ -273,16 +284,18 @@ class NativeToken extends Token implements NativeTokenModel {
 
       /** Step 3: send transaction */
       const paymentInfos: PaymentInfoModel[] = [{
-          paymentAddressStr: paymentAddress,
-          amount: `${tradeAmount}`,
+          paymentAddressStr: walletAddress,
+          amount: `${serverFee + sellAmount}`,
           message: '',
       }];
-      const transaction = this.transfer({
+      const transaction = await this.transfer({
         paymentInfoList: paymentInfos,
-        nativeFee: `${serverFee + tradeAmount}`
+        nativeFee: `${prvNetworkFee}`
       })
 
-      await storage.set(KEYS.TRADE_PENDING_SEND_TRANSACTION, { buyTokenId: true })
+      if (transaction && transaction.txId) {
+        // Todo: Trade success
+      }
       L.info(`Trade send transaction info: ${transaction}`)
       return transaction;
     } catch (error) {

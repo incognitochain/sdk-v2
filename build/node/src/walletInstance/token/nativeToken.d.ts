@@ -18,10 +18,10 @@ declare class NativeToken extends Token implements NativeTokenModel {
     pdeContribution(pdeContributionPairID: string, contributedAmount: string, nativeFee: string): Promise<import("../../..").TxHistoryModel>;
     requestTrade(tokenIdBuy: TokenIdType, sellAmount: string, minimumAcceptableAmount: string, nativeFee: string, tradingFee: string): Promise<import("../../..").TxHistoryModel>;
     defragment(defragmentAmount: string, nativeFee: string, maxCoinNumberToDefragment?: number): Promise<import("../../..").TxHistoryModel>;
-    trade({ tradeAmount, networkFee, tradingFee, buyAmount, buyTokenId, paymentAddress, priority }: {
-        tradeAmount: number;
+    trade({ sellAmount, networkFee, tradingFee, buyAmount, buyTokenId, paymentAddress, priority }: {
+        sellAmount: number;
         networkFee: number;
-        tradingFee: number;
+        tradingFee?: number;
         buyAmount: number;
         buyTokenId: string;
         paymentAddress: string;

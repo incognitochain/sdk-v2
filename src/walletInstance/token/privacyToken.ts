@@ -4,7 +4,7 @@ import {
   checkValidAddress,
 } from '@src/services/bridge/withdraw';
 import { getMinMaxDepositAmount } from '@src/services/bridge/deposit';
-import Token from './token';
+import Token, { IQuote } from './token';
 import PrivacyTokenModel from '@src/models/token/privacyToken';
 import AccountKeySetModel from '@src/models/key/accountKeySet';
 import sendPrivacyToken, {
@@ -35,6 +35,8 @@ import {
   estUserFeeDecentralizedWithdraw,
 } from '@src/services/bridge/withdraw';
 import { getEstFeeFromChain } from '@src/services/bridge/token';
+import { PRVIDSTR } from "@src/constants/wallet";
+import {TRADING_DEX} from "@src/constants/constants";
 
 interface PrivacyTokenParam {
   privacyTokenApi: PrivacyTokenApiModel;
@@ -54,7 +56,7 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
   symbol: string;
   isPrivacyToken: boolean;
   totalSupply: string;
-  contractId?: string;
+  tokenAddress?: string;
   bridgeInfo: BridgeInfoInterface;
 
   constructor({ accountKeySet, privacyTokenApi }: PrivacyTokenParam) {
@@ -71,7 +73,14 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     this.totalSupply = privacyTokenApi.supplyAmount;
     this.isPrivacyToken = true;
     this.bridgeInfo = privacyTokenApi.bridgeInfo;
-    this.contractId = privacyTokenApi?.bridgeInfo?.contractID
+    if (this.bridgeInfo) {
+      this.tokenAddress =  this.bridgeInfo.contractID
+      this.pDecimals = this.bridgeInfo.pDecimals;
+      this.decimals = this.bridgeInfo.decimals;
+    }
+    if (privacyTokenApi.symbol === 'ETH') {
+      this.tokenAddress = '0x0000000000000000000000000000000000000000'
+    }
   }
 
   get bridgeErc20Token() {
@@ -790,20 +799,121 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
     }
   }
 
-  // async trade() {
-  //   try {
-  //     return await this.depositTrade({
-  //       tokenId: '0000000000000000000000000000000000000000000000000000000000000004',
-  //       depositAmount: 999999600,
-  //       depositFee: 400,
-  //       networkFeeTokenId: '0000000000000000000000000000000000000000000000000000000000000004',
-  //       receiverAddress: '12S3K7WTvayYdmCNeBLM9DsyshFppsJNwmoGoQuCj3AYZAUG5ZfHdF3SA5uJb398kjtiPKoiNUVPKxf48ZaiC9Qr1hmXTXVLN5krBEi',
-  //       priority: 'MEDIUM'
-  //     });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  async trade({
+    sellAmount,
+    networkFee,
+    networkFeeTokenId,
+    tradingFee,
+    buyAmount,
+    buyTokenId,
+    buyTokenAddress,
+    paymentAddress,
+    priority,
+    quote,
+    slippage
+  }: {
+    sellAmount: number; // inputValue
+
+    networkFee: number;
+    networkFeeTokenId: string;
+    tradingFee: number;
+
+    buyAmount: number,
+    buyTokenId: string;
+    buyTokenAddress: string
+    paymentAddress: string;
+    priority?: string; // default is medium
+    quote: IQuote;
+    slippage: number
+  }) {
+    try {
+
+      tradingFee = tradingFee || 0;
+      slippage = slippage || 0;
+
+      const prvFee = networkFeeTokenId === PRVIDSTR ? networkFee : 0;
+      const tokenFee = prvFee > 0 ? 0 : networkFee;
+
+      if (this.tokenId === networkFeeTokenId) {
+        sellAmount = Math.floor(sellAmount - tradingFee - networkFee)
+      }
+
+      const {
+        tokenNetworkFee,
+        prvNetworkFee,
+        prvAmount,
+        serverFee,
+        depositNetworkFee
+      } = this.calculateFee({ tokenFee, prvFee, isAddTradingFee: false, tradingFee });
+
+      L.info(`About Fee prvFee: ${prvFee} tokenFee: ${tokenFee} tradingFee: ${tradingFee} tokenNetworkFee: ${tokenNetworkFee} prvNetworkFee: ${prvNetworkFee} prvAmount: ${prvAmount} serverFee: ${serverFee}`);
+
+      const isERC20 = this.tokenAddress && buyTokenAddress;
+      let type = 1;
+      if (isERC20  && !quote?.crossTrade) {
+        type = quote && quote.protocol.toUpperCase() === TRADING_DEX.KYBER ? 2 : 4
+      }
+
+      // Trading without PDEX -> add trading fee to depositFee
+      let depositFee = depositNetworkFee;
+      if (quote?.protocol && quote?.protocol.toUpperCase() !== TRADING_DEX.PDEX) {
+        depositFee += tradingFee;
+      }
+
+      /** Step 1: deposit  */
+      const { DepositID: depositId, WalletAddress: walletAddress } = await this.depositTrade({
+        depositAmount: sellAmount,
+        depositFee: depositFee,
+        depositFeeTokenId: this.tokenId,
+        paymentAddress,
+        priority,
+        type
+      });
+
+      /** Step 2: trade */
+      let tradeResponse;
+      if (isERC20 && quote?.crossTrade) {
+        // Trade Kyber
+        tradeResponse = await this.tradeKyber({
+          depositId,
+          buyAmount,
+          quote,
+          slippage,
+          buyTokenAddress,
+          priority,
+          tradingFee
+        });
+      } else {
+        tradeResponse = await this.tradeAPI({
+          depositId,
+          tradingFee,
+          buyAmount,
+          buyTokenId
+        })
+      }
+
+      /** Step 3: send transaction */
+      const sendAmount = serverFee + sellAmount;
+      const paymentInfos: PaymentInfoModel[] = [{
+        paymentAddressStr: walletAddress,
+        amount: `${Math.floor(sendAmount)}`,
+        message: '',
+      }];
+      const transaction = await this.transfer({
+        paymentInfoList: paymentInfos,
+        nativeFee: `${prvNetworkFee}`,
+        privacyFee: `${tokenNetworkFee}`,
+      });
+
+      if (transaction && transaction.txId) {
+        // Todo: Trade success
+      }
+      return transaction;
+    } catch (error) {
+      L.info(`Trade error: ${error}`)
+      throw error;
+    }
+  }
 }
 
 export default PrivacyToken;

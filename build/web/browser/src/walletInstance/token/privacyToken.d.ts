@@ -1,4 +1,4 @@
-import Token from "./token";
+import Token, { IQuote } from "./token";
 import PrivacyTokenModel from "../../models/token/privacyToken";
 import AccountKeySetModel from "../../models/key/accountKeySet";
 import PaymentInfoModel from "../../models/paymentInfo";
@@ -13,7 +13,7 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
     symbol: string;
     isPrivacyToken: boolean;
     totalSupply: string;
-    contractId?: string;
+    tokenAddress?: string;
     bridgeInfo: BridgeInfoInterface;
     constructor({ accountKeySet, privacyTokenApi }: PrivacyTokenParam);
     get bridgeErc20Token(): boolean;
@@ -107,6 +107,19 @@ declare class PrivacyToken extends Token implements PrivacyTokenModel {
         minAmount: any;
         maxAmount: any;
     }>;
+    trade({ sellAmount, networkFee, networkFeeTokenId, tradingFee, buyAmount, buyTokenId, buyTokenAddress, paymentAddress, priority, quote, slippage }: {
+        sellAmount: number;
+        networkFee: number;
+        networkFeeTokenId: string;
+        tradingFee: number;
+        buyAmount: number;
+        buyTokenId: string;
+        buyTokenAddress: string;
+        paymentAddress: string;
+        priority?: string;
+        quote: IQuote;
+        slippage: number;
+    }): Promise<import("../../..").TxHistoryModel>;
 }
 export default PrivacyToken;
 //# sourceMappingURL=privacyToken.d.ts.map

@@ -185,5 +185,10 @@ export declare const CONSTANT: {
     OUTPUT_COINS_PRIVACY_SIZE: 221;
     ED25519_KEY_SIZE: 32;
     DEFAULT_NATIVE_FEE: "100";
+    TRADING_DEX: {
+        PDEX: string;
+        KYBER: string;
+        UNISWAP: string;
+    };
 };
 //# sourceMappingURL=index.d.ts.map
