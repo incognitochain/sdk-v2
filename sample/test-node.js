@@ -55,17 +55,33 @@ async function main() {
       });
     });
 
-    await section('INIT WALLET', async () => {
-      state.wallet = new incognito.WalletInstance();
-      await state.wallet.init('123', 'TEST');
-    });
+    // await section('INIT WALLET', async () => {
+    //   state.wallet = new incognito.WalletInstance();
+    //   await state.wallet.init('123', 'TEST');
+    // });
 
-    await section('BACKUP WALLET', async () => {
-      state.encWallet = state.wallet.backup('2');
-    });
+    // await section('BACKUP WALLET', async () => {
+    //   state.encWallet = state.wallet.backup('2');
+    // });
 
-    await section('RESTORE WALLET', async () => {
-      await incognito.WalletInstance.restore(state.encWallet, '2');
+    // await section('RESTORE WALLET', async () => {
+    //   await incognito.WalletInstance.restore(state.encWallet, '2');
+    // });
+
+    await section('IMPORT MASTER KEY', async () => {
+      try {
+        state.wallet = new incognito.WalletInstance();
+        await state.wallet.import(
+          'MASTER',
+          'thank panda ability south motor interest hammer soft luggage crowd song hand'
+        );
+        const isAccountCreatedBy = await state.wallet.checkIsAccountCreatedBy(
+          '112t8rnZHQecSi69gqrbTsasScGuYrXf8DaaDpx9HMDSHTFJAR5H4rBfnVMyL7dW7dWYUyYSLeDVvJu5dUgtMUAZrRVTkj7CETJPspC4zxPy'
+        );
+        console.log('RESULT', isAccountCreatedBy);
+      } catch (error) {
+        console.log('ERROR', error);
+      }
     });
 
     await section('DETECT TOKEN', async () => {
@@ -75,14 +91,14 @@ async function main() {
       //   ...result,
       // });
       // console.debug('token', token);
-      const result2 = await incognito.detectERC20Token(
-        '0xf380e40e22b8d1956da6bc239e79393cff3b26db'
-      );
-      console.debug('result2', result2);
-      const token = await incognito.addERC20Token({
-        ...result2,
-      });
-      console.debug('token', token);
+      // const result2 = await incognito.detectERC20Token(
+      //   '0xf380e40e22b8d1956da6bc239e79393cff3b26db'
+      // );
+      // console.debug('result2', result2);
+      // const token = await incognito.addERC20Token({
+      //   ...result2,
+      // });
+      // console.debug('token', token);
     });
 
     // try {
