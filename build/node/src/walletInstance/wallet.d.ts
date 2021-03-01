@@ -22,6 +22,7 @@ declare class Wallet implements WalletModel {
      * This will update keychain list stored on api with this keychain list
      */
     update(): Promise<void>;
+    checkIsAccountCreatedBy(privateKey: string): Promise<boolean>;
 }
 export default Wallet;
 //# sourceMappingURL=wallet.d.ts.map

@@ -16,6 +16,7 @@ declare class MasterAccount extends BaseAccount implements MasterAccountInterfac
     addAccount(name: string, shardId?: number, index?: number, depth?: number): Promise<Account | any>;
     removeAccount(name: string): void;
     getAccounts(): Account[];
+    createAccountByPrivateKey(name: string, privateKey: string): Promise<Account>;
     importAccount(name: string, privateKey: string): Promise<Account>;
     getBackupData(): {
         deletedIndexes: number[];
@@ -48,6 +49,10 @@ declare class MasterAccount extends BaseAccount implements MasterAccountInterfac
             isImport: boolean;
         }[];
     };
+    createAccountWithIndex({ name, index, }: {
+        name: string;
+        index: number;
+    }): Promise<Account | any>;
 }
 export default MasterAccount;
 //# sourceMappingURL=masterAccount.d.ts.map
