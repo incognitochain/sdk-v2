@@ -273,14 +273,13 @@ class NativeToken extends Token implements NativeTokenModel {
       L.info(`Deposit with id: ${depositId} and address: ${walletAddress}`)
 
       /** Step 2: trade */
-      const tradeResponse = await this.tradeAPI({
+      await this.tradeAPI({
         depositId,
         tradingFee,
         buyAmount,
         buyTokenId
       })
 
-      L.info(`Trade response: ${tradeResponse}`)
 
       /** Step 3: send transaction */
       const paymentInfos: PaymentInfoModel[] = [{

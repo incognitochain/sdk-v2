@@ -870,11 +870,12 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         type
       });
 
+      L.info(`Deposit with id: ${depositId} and address: ${walletAddress}`)
+
       /** Step 2: trade */
-      let tradeResponse;
       if (isERC20 && quote?.crossTrade) {
         // Trade Kyber
-        tradeResponse = await this.tradeKyber({
+        await this.tradeKyber({
           depositId,
           buyAmount,
           quote,
@@ -884,10 +885,10 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
           tradingFee
         });
       } else {
-        tradeResponse = await this.tradeAPI({
+        await this.tradeAPI({
           depositId,
-          tradingFee,
           buyAmount,
+          tradingFee,
           buyTokenId
         })
       }
@@ -899,11 +900,14 @@ class PrivacyToken extends Token implements PrivacyTokenModel {
         amount: `${Math.floor(sendAmount)}`,
         message: '',
       }];
+
       const transaction = await this.transfer({
         paymentInfoList: paymentInfos,
         nativeFee: `${prvNetworkFee}`,
         privacyFee: `${tokenNetworkFee}`,
       });
+
+      L.info(`Trade send transaction info: ${JSON.stringify(transaction)}`)
 
       if (transaction && transaction.txId) {
         // Todo: Trade success

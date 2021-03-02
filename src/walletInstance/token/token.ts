@@ -208,6 +208,8 @@ class Token implements BaseTokenModel {
     new Validator('priority', priority).required().string();
     new Validator('type', type).required().number();
 
+    L.info(`Deposit with TokenID: ${this.tokenId} and Amount: ${Math.floor(depositAmount)} NetworkFee: ${Math.floor(depositFee)} NetworkFeeTokenID ${depositFeeTokenId} ReceiverAddress ${paymentAddress} Type ${type} FeeLevel ${priority ? priority.toLowerCase() : 'MEDIUM'}`)
+
     return http.post('pdefi/request-deposit', {
       'TokenID': this.tokenId,
       'Amount': Math.floor(depositAmount),
@@ -216,7 +218,7 @@ class Token implements BaseTokenModel {
       'ReceiverAddress': paymentAddress,
       'Type': type,
       'FeeLevel': priority ? priority.toLowerCase() : 'MEDIUM'
-    }).then(data => data);
+    }).then(data => data)
   }
 
   calculateFee({
