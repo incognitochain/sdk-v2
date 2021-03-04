@@ -55,9 +55,6 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
   async init() {
     this.key = await generateKey(this.seed);
     this.serializeKeys();
-
-    await this.addAccount('Anon');
-
     return this;
   }
 
