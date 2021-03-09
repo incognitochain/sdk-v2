@@ -38,6 +38,8 @@ export * from '@src/services/bridge/history';
 export * from '@src/services/user/profile';
 export * from '@src/services/token';
 
+export { isPrivateKey } from '@src/utils/validator';
+
 export const walletServices = {
   setPrivacyUtilRandomBytesFunc,
 };
