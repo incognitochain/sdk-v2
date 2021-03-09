@@ -16,6 +16,7 @@ import isEqual from 'lodash/isEqual';
 import trim from 'lodash/trim';
 import { axios } from '@src/services/http';
 import createAxiosInstance from '../http/axios';
+import { ERROR_MESSAGE } from '@src/constants/error';
 /**
  * Return list of coins that not existed in chain (not use yet)
  */
@@ -115,7 +116,10 @@ export const detectERC20Token = (erc20Address: string) => {
       name: res?.Name || '',
       contractId: res?.Address || '',
       decimals: res?.Decimals || 0,
-    }));
+    }))
+    .catch(() => {
+      throw new Error(ERROR_MESSAGE.DETECT_ERC20_ADDRESS);
+    })
 };
 
 let BEP2Tokens: any[] = [];

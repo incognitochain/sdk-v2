@@ -3,7 +3,10 @@ export declare const ERROR_CODE: {
     INVALID_MNEMONIC: string;
     UTXO: string;
 };
-export declare const ERROR_MESSAGE: any;
+export declare const ERROR_MESSAGE: {
+    DETECT_ERC20_ADDRESS: string;
+    [x: string]: string;
+};
 declare class SDKError extends Error {
     message: string;
     code: string;

@@ -16,7 +16,7 @@ function isPaymentAddress(paymentAddrStr: string) {
   return false;
 }
 
-function isPrivateKey(privateKeyStr: string) {
+export function isPrivateKey(privateKeyStr: string) {
   try {
     const { keyType } = getKeyBytes(privateKeyStr);
 

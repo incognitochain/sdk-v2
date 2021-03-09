@@ -27,6 +27,7 @@ export * from "./src/services/bridge/token";
 export * from "./src/services/bridge/history";
 export * from "./src/services/user/profile";
 export * from "./src/services/token";
+export { isPrivateKey } from "./src/utils/validator";
 export declare const walletServices: {
     setPrivacyUtilRandomBytesFunc: typeof setPrivacyUtilRandomBytesFunc;
 };
