@@ -43,7 +43,7 @@
         if (incognitoJs) {
           console.log('Incognito module', incognitoJs);
           await section('SET CONFIG', () => {
-            incognitoJs.setConfig({ mainnet: false, wasmPath: 'wasm/privacy.wasm' });
+            incognitoJs.setConfig({ mainnet: false, wasmPath: 'privacy.wasm' });
             console.log('Config after updating', incognitoJs.getConfig());
           });
           

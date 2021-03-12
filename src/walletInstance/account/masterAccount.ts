@@ -80,7 +80,7 @@ class MasterAccount extends BaseAccount implements MasterAccountInterface {
     name: string,
     shardId?: number,
     index?: number,
-    depth = 1
+    depth = 0
   ): Promise<Account | any> {
     try {
       new Validator('name', name).required().string();
